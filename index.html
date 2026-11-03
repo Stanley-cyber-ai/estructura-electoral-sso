@@ -388,170 +388,44 @@
         </div>
     </div>
 
-    <!-- MODAL REGISTRO SUPERVISOR DE CENTRO -->
-    <div id="modal-supervisor" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200">
-            <div class="bg-gana-navy text-white p-4 flex justify-between items-center border-b-4 border-gana-orange">
-                <h3 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-user-gear text-gana-orange"></i> Supervisor de Centro de Votación</h3>
-                <button onclick="cerrarModalSupervisor()" class="text-white/80 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <div class="p-5 space-y-4">
-                <div>
-                    <span id="modal-supervisor-cv-nombre" class="text-xs font-bold text-gana-navy block mb-2 bg-blue-50 p-2 rounded-lg border border-blue-200"></span>
-                </div>
-                <div id="supervisor-error-msg" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center gap-2">
-                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm"></i>
-                    <span id="supervisor-error-text"></span>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo del Supervisor <span class="text-red-500">*</span>:</label>
-                    <input type="text" id="input-supervisor-nombre" placeholder="Ej. Juan Antonio López" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">DUI (00000000-0) <span class="text-red-500">*</span>:</label>
-                    <input type="text" id="input-supervisor-dui" placeholder="Ej. 12345678-9" maxlength="10" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono (0000-0000) <span class="text-red-500">*</span>:</label>
-                    <input type="text" id="input-supervisor-tel" placeholder="Ej. 7788-9900" maxlength="9" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
-                </div>
-            </div>
-            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-                <button onclick="cerrarModalSupervisor()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Cancelar</button>
-                <button onclick="guardarSupervisorCentro()" class="px-4 py-2 bg-gana-navy text-white font-bold rounded-xl text-xs hover:bg-navy-800 transition shadow-sm">Guardar Supervisor</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL TABLA DE JRV POR CENTRO -->
-    <div id="modal-jrv" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
-            
-            <!-- Header Modal -->
-            <div class="bg-gana-navy text-white p-5 flex justify-between items-start gap-4 border-b-4 border-gana-orange">
-                <div>
-                    <span id="modal-codigo" class="text-xs font-bold text-orange-300 bg-white/10 px-2.5 py-1 rounded-md"></span>
-                    <h2 id="modal-titulo" class="text-xl font-black mt-1"></h2>
-                    <p id="modal-direccion" class="text-xs text-slate-300 mt-1"></p>
-                </div>
-                <button onclick="cerrarModal()" class="text-white/80 hover:text-white p-1 text-xl">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <!-- Contenido Modal (Tabla de JRVs) -->
-            <div class="p-5 overflow-y-auto flex-1 bg-slate-50">
-                <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-sm bg-white">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-100 text-slate-700 text-xs uppercase font-bold border-b border-slate-200">
-                            <tr>
-                                <th class="p-3 text-center w-16">N° JRV</th>
-                                <th class="p-3">Persona en Mesa</th>
-                                <th class="p-3">DUI</th>
-                                <th class="p-3">Teléfono</th>
-                                <th class="p-3">Vigilante GANA</th>
-                                <th class="p-3">DUI</th>
-                                <th class="p-3">Teléfono</th>
-                                <th class="p-3 text-center">Estado</th>
-                                <th class="p-3 text-center">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-jrv" class="divide-y divide-slate-100">
-                            <!-- Filas generadas dinámicamente -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Footer Modal -->
-            <div class="p-4 bg-white border-t border-slate-200 flex justify-end gap-3">
-                <button onclick="cerrarModal()" class="px-5 py-2 bg-gana-navy text-white font-bold rounded-xl text-sm hover:bg-navy-800 transition shadow-sm">
-                    Guardar y Cerrar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SUB-MODAL INTEGRANTES DE MESA -->
-    <div id="submodal-integrantes" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
-            <div class="bg-gana-navy text-white p-4 flex justify-between items-center border-b-4 border-gana-orange">
-                <h3 class="font-bold text-base flex items-center gap-2">
-                    <i class="fa-solid fa-users-gear text-gana-orange"></i> Integrantes de JRV N° <span id="submodal-jrv-num" class="text-gana-orange"></span>
-                </h3>
-                <button onclick="cerrarSubmodalIntegrantes()" class="text-white/80 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            
-            <div class="p-5 space-y-4">
-                <div id="integrantes-error-msg" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center gap-2">
-                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm"></i>
-                    <span id="integrantes-error-text"></span>
-                </div>
-
-                <!-- Sección Persona en Mesa -->
-                <div class="bg-orange-50/60 border border-orange-200 rounded-xl p-4 space-y-3">
-                    <h4 class="text-xs font-black uppercase text-gana-orange flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-check"></i> Persona en Mesa
-                    </h4>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Nombre Completo <span class="text-red-500">*</span>:</label>
-                        <input type="text" id="input-submodal-mesa" placeholder="Nombre completo" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">DUI (00000000-0) <span class="text-red-500">*</span>:</label>
-                        <input type="text" id="input-submodal-dui-mesa" placeholder="12345678-9" maxlength="10" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Teléfono <span class="text-red-500">*</span>:</label>
-                        <input type="text" id="input-submodal-tel-mesa" placeholder="7788-9900" maxlength="9" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
-                    </div>
-                </div>
-
-                <!-- Sección Vigilante GANA -->
-                <div class="bg-blue-50/60 border border-blue-200 rounded-xl p-4 space-y-3">
-                    <h4 class="text-xs font-black uppercase text-gana-navy flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-shield"></i> Vigilante GANA
-                    </h4>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Nombre Completo <span class="text-red-500">*</span>:</label>
-                        <input type="text" id="input-submodal-vig" placeholder="Nombre completo" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">DUI (00000000-0) <span class="text-red-500">*</span>:</label>
-                        <input type="text" id="input-submodal-dui-vig" placeholder="12345678-9" maxlength="10" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Teléfono <span class="text-red-500">*</span>:</label>
-                        <input type="text" id="input-submodal-tel-vig" placeholder="7788-9900" maxlength="9" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-                <button onclick="cerrarSubmodalIntegrantes()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Cancelar</button>
-                <button onclick="guardarIntegrantesSubmodal()" class="px-4 py-2 bg-gana-orange text-white font-bold rounded-xl text-xs hover:bg-orange-600 transition shadow-sm">Guardar Integrantes</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast-notification" class="fixed bottom-5 right-5 bg-gana-navy text-white px-4 py-3 rounded-xl shadow-2xl border border-white/20 text-xs font-bold hidden flex items-center gap-2 z-[100]">
-        <i class="fa-solid fa-circle-check text-gana-orange text-base"></i>
-        <span id="toast-text">Operación realizada con éxito</span>
-    </div>
+    <!-- IFRAME Y FORMULARIO INVISIBLE PARA ENVÍO A GOOGLE APPS SCRIPT SIN BLOQUEO DE NAVEGADOR -->
+    <iframe name="hidden_iframe_gsheets" id="hidden_iframe_gsheets" style="display:none;" onload="if(window.submittedToGSheets){console.log('Enviado a Google Sheets con éxito');}"></iframe>
+    <form id="form_hidden_gsheets" action="https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec" method="GET" target="hidden_iframe_gsheets" class="hidden">
+        <input type="hidden" name="tipo" id="hidden_tipo">
+        <input type="hidden" name="id" id="hidden_id">
+        <input type="hidden" name="nombre1" id="hidden_nombre1">
+        <input type="hidden" name="dui1" id="hidden_dui1">
+        <input type="hidden" name="tel1" id="hidden_tel1">
+        <input type="hidden" name="nombre2" id="hidden_nombre2">
+        <input type="hidden" name="dui2" id="hidden_dui2">
+        <input type="hidden" name="tel2" id="hidden_tel2">
+    </form>
 
     <!-- SCRIPT DE CONEXIÓN A GOOGLE SHEETS Y SINCRONIZACIÓN -->
     <script>
         // URL DE TU GOOGLE APPS SCRIPT CONFIGURADA
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec";
 
-        // Envío multicanal garantizado a Google Sheets
-        async function guardarEnGoogleSheets(payload) {
+        // Envío multicanal infalible a Google Sheets
+        function guardarEnGoogleSheets(payload) {
             const syncStatus = document.getElementById('sync-status-text');
             if (syncStatus) syncStatus.innerText = 'Guardando en la nube...';
             
             try {
-                // Construir URL con parámetros de consulta para disparar doGet() en Apps Script
+                // METODO 1: Formulario nativo a iFrame oculto (100% Inmune a bloqueos CORS/Browser)
+                document.getElementById('hidden_tipo').value = payload.tipo || '';
+                document.getElementById('hidden_id').value = payload.id || '';
+                document.getElementById('hidden_nombre1').value = payload.nombre1 || '';
+                document.getElementById('hidden_dui1').value = payload.dui1 || '';
+                document.getElementById('hidden_tel1').value = payload.tel1 || '';
+                document.getElementById('hidden_nombre2').value = payload.nombre2 || '';
+                document.getElementById('hidden_dui2').value = payload.dui2 || '';
+                document.getElementById('hidden_tel2').value = payload.tel2 || '';
+
+                window.submittedToGSheets = true;
+                document.getElementById('form_hidden_gsheets').submit();
+
+                // METODO 2: Respaldo por URL Query params
                 const queryParams = new URLSearchParams({
                     tipo: payload.tipo || '',
                     id: payload.id || '',
@@ -564,13 +438,12 @@
                 }).toString();
 
                 const finalUrl = `${GOOGLE_SHEETS_URL}?${queryParams}`;
-
-                // 1. Envío por Image Ping (Ejecuta doGet en Apps Script al instante)
+                
+                // Disparo secundario
                 const img = new Image();
                 img.src = finalUrl;
 
-                // 2. Respaldo directo con fetch no-cors
-                fetch(finalUrl, { method: 'GET', mode: 'no-cors' }).catch(err => console.log(err));
+                fetch(finalUrl, { method: 'GET', mode: 'no-cors' }).catch(e => console.log(e));
 
                 if (syncStatus) {
                     setTimeout(() => {
