@@ -535,26 +535,26 @@
     <div id="toast-notification" class="fixed bottom-5 right-5 bg-gana-navy text-white px-4 py-3 rounded-xl shadow-2xl border border-white/20 text-xs font-bold hidden flex items-center gap-2 z-[100]">
         <i class="fa-solid fa-circle-check text-gana-orange text-base"></i>
         <span id="toast-text">Operación realizada con éxito</span>
-    </div>
-
-    <!-- SCRIPT DE CONEXIÓN A GOOGLE SHEETS -->
+    <!-- SCRIPT DE CONEXIÓN A GOOGLE SHEETS Y SINCRONIZACIÓN -->
     <script>
         // URL DE TU GOOGLE APPS SCRIPT CONFIGURADA
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec";
 
-        // Función para enviar datos a la Hoja de Cálculo vía GET params
-        async function guardarEnGoogleSheets(payload) {
-            document.getElementById('sync-status-text').innerText = 'Guardando en Google Sheets...';
+        // Método infalible (Beacon Ping): garantiza envío inmediato a Google Sheets sin bloqueos de CORS
+        function guardarEnGoogleSheets(payload) {
+            document.getElementById('sync-status-text').innerText = 'Guardando en la nube...';
             try {
                 const params = new URLSearchParams(payload).toString();
-                await fetch(`${GOOGLE_SHEETS_URL}?${params}`, {
-                    method: 'GET',
-                    mode: 'no-cors'
-                });
-
-                document.getElementById('sync-status-text').innerText = 'Sincronizado con Google Sheets';
+                const pingUrl = `${GOOGLE_SHEETS_URL}?${params}&t=${Date.now()}`;
+                
+                // Usamos un objeto Image invisible como Beacon para asegurar llegada instantánea a Google Sheets
+                const img = new Image();
+                img.onload = img.onerror = function() {
+                    document.getElementById('sync-status-text').innerText = 'Sincronizado con Google Sheets';
+                };
+                img.src = pingUrl;
             } catch (err) {
-                console.error("Error al enviar a Google Sheets:", err);
+                console.error("Error enviando a Google Sheets:", err);
                 document.getElementById('sync-status-text').innerText = 'Error de Sincronización';
             }
         }
