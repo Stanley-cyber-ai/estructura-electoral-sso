@@ -542,15 +542,14 @@
         // URL DE TU GOOGLE APPS SCRIPT CONFIGURADA
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec";
 
-        // Función centralizada para enviar datos a la Hoja de Cálculo
+        // Función para enviar datos a la Hoja de Cálculo vía GET params
         async function guardarEnGoogleSheets(payload) {
             document.getElementById('sync-status-text').innerText = 'Guardando en Google Sheets...';
             try {
-                await fetch(GOOGLE_SHEETS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Permite enviar desde GitHub/Google Sites a Google Sheets
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                const params = new URLSearchParams(payload).toString();
+                await fetch(`${GOOGLE_SHEETS_URL}?${params}`, {
+                    method: 'GET',
+                    mode: 'no-cors'
                 });
 
                 document.getElementById('sync-status-text').innerText = 'Sincronizado con Google Sheets';
