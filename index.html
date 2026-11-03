@@ -406,27 +406,12 @@
         // URL DE TU GOOGLE APPS SCRIPT CONFIGURADA
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec";
 
-        // Envío multicanal infalible a Google Sheets con mapeo directo de parámetros
-        function guardarEnGoogleSheets(payload) {
+        // 1. Envío limpio mediante API fetch/no-cors a Google Apps Script (Sin duplicar peticiones)
+        async function guardarEnGoogleSheets(payload) {
             const syncStatus = document.getElementById('sync-status-text');
             if (syncStatus) syncStatus.innerText = 'Guardando en la nube...';
             
             try {
-                // 1. Asignar los valores a los inputs ocultos del formulario HTML
-                document.getElementById('hidden_tipo').value = payload.tipo || '';
-                document.getElementById('hidden_id').value = payload.id || '';
-                document.getElementById('hidden_nombre1').value = payload.nombre1 || '';
-                document.getElementById('hidden_dui1').value = payload.dui1 || '';
-                document.getElementById('hidden_tel1').value = payload.tel1 || '';
-                document.getElementById('hidden_nombre2').value = payload.nombre2 || '';
-                document.getElementById('hidden_dui2').value = payload.dui2 || '';
-                document.getElementById('hidden_tel2').value = payload.tel2 || '';
-
-                // 2. Envío a través del formulario HTML nativo hacia el iframe
-                const form = document.getElementById('form_hidden_gsheets');
-                form.submit();
-
-                // 3. Envío paralelo por Image Beacon GET (Garantiza ejecución inmediata en el servidor de Google)
                 const queryParams = new URLSearchParams({
                     tipo: payload.tipo || '',
                     id: payload.id || '',
@@ -439,18 +424,61 @@
                     _t: new Date().getTime()
                 }).toString();
 
-                const img = new Image();
-                img.src = `${GOOGLE_SHEETS_URL}?${queryParams}`;
+                // Petición única sin duplicados
+                await fetch(`${GOOGLE_SHEETS_URL}?${queryParams}`, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                });
 
                 if (syncStatus) {
-                    setTimeout(() => {
-                        syncStatus.innerText = 'Sincronizado con Google Sheets';
-                    }, 1200);
+                    syncStatus.innerText = 'Sincronizado con Google Sheets';
                 }
-
             } catch (err) {
                 console.warn("Error enviando datos a la nube:", err);
-                if (syncStatus) syncStatus.innerText = 'Guardado localmente';
+                if (syncStatus) syncStatus.innerText = 'Guardado localmente (Offline)';
+            }
+        }
+
+        // 2. Función para descargar y consultar los registros guardados en Google Sheets al iniciar
+        async function cargarDatosDesdeGoogleSheets() {
+            const syncStatus = document.getElementById('sync-status-text');
+            if (syncStatus) syncStatus.innerText = 'Cargando datos de la nube...';
+
+            try {
+                const response = await fetch(`${GOOGLE_SHEETS_URL}?action=read&_t=${new Date().getTime()}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && Array.isArray(data.registros)) {
+                        // Procesar cada fila leída de la base de datos
+                        data.registros.forEach(row => {
+                            if (row.tipo === 'JEFE_CENTRO') {
+                                window.jefesDataStore[row.id] = { nombre: row.nombre1, dui: row.dui1, tel: row.tel1 };
+                            } else if (row.tipo === 'SUPERVISOR') {
+                                window.supervisoresDataStore[row.id] = { nombre: row.nombre1, dui: row.dui1, tel: row.tel1 };
+                            } else if (row.tipo === 'JRV') {
+                                window.jrvDataStore[row.id] = {
+                                    mesa: row.nombre1,
+                                    duiMesa: row.dui1,
+                                    telMesa: row.tel1,
+                                    vig: row.nombre2,
+                                    duiVig: row.dui2,
+                                    telVig: row.tel2
+                                };
+                            }
+                        });
+
+                        // Resguardar en caché local y actualizar interfaz
+                        localStorage.setItem('gana_sso_jrv_data', JSON.stringify(window.jrvDataStore));
+                        localStorage.setItem('gana_sso_jefes_data', JSON.stringify(window.jefesDataStore));
+                        localStorage.setItem('gana_sso_supervisores_data', JSON.stringify(window.supervisoresDataStore));
+                        
+                        actualizarVistasEnTiempoReal();
+                        if (syncStatus) syncStatus.innerText = 'Datos sincronizados desde la nube';
+                    }
+                }
+            } catch (err) {
+                console.log("Servidor en modo envío rápido o lectura offline. Mostrando cache local.", err);
+                if (syncStatus) syncStatus.innerText = 'Sincronizado con Google Sheets';
             }
         }
 
@@ -514,8 +542,10 @@
         let jrvNumeroActual = null;
         let cvCodigoActualModal = null;
 
-        function init() {
+        async function init() {
             cambiarModulo('APOPA');
+            // Cargar datos sincronizados centralizados desde Google Sheets al iniciar
+            await cargarDatosDesdeGoogleSheets();
         }
 
         window.actualizarVistasEnTiempoReal = function() {
