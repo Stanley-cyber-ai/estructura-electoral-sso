@@ -540,22 +540,39 @@
         // URL DE TU GOOGLE APPS SCRIPT CONFIGURADA
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec";
 
-        // Método infalible (Beacon Ping): garantiza envío inmediato a Google Sheets sin bloqueos de CORS
-        function guardarEnGoogleSheets(payload) {
+        // Método robusto de envío directo a Google Sheets mediante fetch no-cors
+        async function guardarEnGoogleSheets(payload) {
             document.getElementById('sync-status-text').innerText = 'Guardando en la nube...';
+            
             try {
-                const params = new URLSearchParams(payload).toString();
-                const pingUrl = `${GOOGLE_SHEETS_URL}?${params}&t=${Date.now()}`;
-                
-                // Usamos un objeto Image invisible como Beacon para asegurar llegada instantánea a Google Sheets
-                const img = new Image();
-                img.onload = img.onerror = function() {
-                    document.getElementById('sync-status-text').innerText = 'Sincronizado con Google Sheets';
-                };
-                img.src = pingUrl;
+                const formData = new FormData();
+                for (const key in payload) {
+                    formData.append(key, payload[key]);
+                }
+
+                // Intento 1: Envío vía POST con FormData (sin restricciones CORS)
+                await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: formData
+                });
+
+                document.getElementById('sync-status-text').innerText = 'Guardado en Google Sheets';
             } catch (err) {
-                console.error("Error enviando a Google Sheets:", err);
-                document.getElementById('sync-status-text').innerText = 'Error de Sincronización';
+                console.warn("Intento POST falló, ejecutando envío vía URL fallback...", err);
+                
+                // Intento 2 (Fallback): Envío directo por URL URL-Encoded
+                try {
+                    const params = new URLSearchParams(payload).toString();
+                    await fetch(`${GOOGLE_SHEETS_URL}?${params}`, {
+                        method: 'GET',
+                        mode: 'no-cors'
+                    });
+                    document.getElementById('sync-status-text').innerText = 'Guardado en Google Sheets';
+                } catch (e) {
+                    console.error("Error final enviando a Google Sheets:", e);
+                    document.getElementById('sync-status-text').innerText = 'Error de Sincronización';
+                }
             }
         }
     </script>
