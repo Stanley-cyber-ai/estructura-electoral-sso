@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estructura Electoral - GANA San Salvador Oeste | Pablo Vides</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gana: {
+                            orange: '#E86C00',
+                            navy: '#003876',
+                            lightBg: '#F8FAFC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .badge-sso {
+            background-color: #003876;
+            color: #ffffff;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col text-slate-800 overflow-x-hidden selection:bg-gana-orange selection:text-white">
+
+    <!-- HEADER / ENCABEZADO RESPONSIVE -->
+    <header class="bg-gana-orange text-white shadow-lg sticky top-0 z-40 w-full">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+            
+            <!-- Identidad SSO / Candidato -->
+            <div class="flex items-center justify-center sm:justify-start gap-2.5 sm:gap-4 text-center sm:text-left w-full sm:w-auto">
+                <span class="bg-gana-navy text-white font-light text-xl sm:text-2xl tracking-widest px-3 py-1 rounded-xl shadow-md leading-none shrink-0">SSO</span>
+                <div class="sm:border-l-2 sm:border-white/30 sm:pl-3.5">
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight leading-none text-white">PABLO VIDES</h1>
+                    <p class="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-orange-100 mt-0.5">ESTRUCTURA ELECTORAL 2027 — SAN SALVADOR OESTE</p>
+                </div>
+            </div>
+
+            <!-- Métricas Consolidadas Adaptables -->
+            <div class="flex items-center justify-center sm:justify-end gap-1.5 sm:gap-3 bg-gana-navy/25 backdrop-blur-md p-1.5 sm:p-2 rounded-xl border border-white/20 text-xs w-full sm:w-auto">
+                <div class="text-center px-2">
+                    <span class="block font-black text-sm sm:text-base text-white leading-tight" id="stat-cv">28</span>
+                    <span class="text-[9px] sm:text-[10px] uppercase font-bold text-orange-100">Centros</span>
+                </div>
+                <div class="h-6 w-px bg-white/30"></div>
+                <div class="text-center px-2">
+                    <span class="block font-black text-sm sm:text-base text-white leading-tight" id="stat-jrv">214</span>
+                    <span class="text-[9px] sm:text-[10px] uppercase font-bold text-orange-100">JRV Total</span>
+                </div>
+                <div class="h-6 w-px bg-white/30"></div>
+                <div class="text-center px-2">
+                    <span class="block font-black text-sm sm:text-base text-white leading-tight">137,363</span>
+                    <span class="text-[9px] sm:text-[10px] uppercase font-bold text-orange-100">Electores</span>
+                </div>
+                <div class="h-6 w-px bg-white/30"></div>
+                <button onclick="exportarCSV()" class="bg-white text-gana-navy hover:bg-orange-50 active:scale-95 font-bold px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs transition flex items-center gap-1.5 shadow-sm shrink-0">
+                    <i class="fa-solid fa-download"></i> <span class="hidden xs:inline">Exportar</span> CSV
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT RESPONSIVE -->
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-1 w-full">
+        
+        <!-- NAVEGACIÓN DE MÓDULOS Y BÚSQUEDA -->
+        <div class="flex flex-col gap-3 sm:gap-4 mb-5 sm:mb-6">
+            <!-- Tabs de Distritos y Resumen -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200 w-full gap-1.5">
+                <button id="tab-apopa" onclick="cambiarModulo('APOPA')" class="w-full px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 bg-gana-orange text-white shadow-md">
+                    <i class="fa-solid fa-location-dot"></i> Distrito Apopa (21)
+                </button>
+                <button id="tab-nejapa" onclick="cambiarModulo('NEJAPA')" class="w-full px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 text-slate-600 hover:text-gana-navy hover:bg-slate-50">
+                    <i class="fa-solid fa-location-dot"></i> Distrito Nejapa (7)
+                </button>
+                <button id="tab-resumen" onclick="cambiarModulo('RESUMEN')" class="w-full px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 text-slate-600 hover:text-gana-navy hover:bg-slate-50">
+                    <i class="fa-solid fa-chart-column text-gana-orange"></i> Cobertura (28)
+                </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                <!-- Cobertura del Distrito -->
+                <div id="district-coverage" class="w-full sm:w-auto bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-sm text-xs font-bold text-gana-navy flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-gana-orange text-sm"></i> Cobertura: <span id="coverage-text">0 / 0 JRVs (0%)</span>
+                </div>
+
+                <!-- Buscador -->
+                <div class="relative w-full sm:w-80" id="wrapper-buscar">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="input-buscar" oninput="filtrarCentros()" placeholder="Buscar centro de votación..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-gana-orange text-xs sm:text-sm bg-white shadow-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- REJILLA DE CENTROS DE VOTACIÓN -->
+        <div id="grid-centros" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <!-- Cargado dinámicamente -->
+        </div>
+
+        <!-- VISTA DE RESUMEN DE COBERTURA (PENDIENTES Y COMPLETADAS) -->
+        <div id="vista-resumen" class="hidden space-y-4 sm:space-y-6">
+            <!-- Métricas Generales -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200 shadow-sm flex items-center gap-3 sm:gap-4">
+                    <div class="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-orange-100 text-gana-orange flex items-center justify-center text-lg sm:text-xl font-black shrink-0">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block text-[10px] sm:text-xs font-bold text-slate-400 uppercase truncate">JRV Total</span>
+                        <span class="text-xl sm:text-2xl font-black text-gana-navy">214</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200 shadow-sm flex items-center gap-3 sm:gap-4">
+                    <div class="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg sm:text-xl font-black shrink-0">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block text-[10px] sm:text-xs font-bold text-slate-400 uppercase truncate">Completadas</span>
+                        <span class="text-xl sm:text-2xl font-black text-emerald-600" id="resumen-stat-completadas">0</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200 shadow-sm flex items-center gap-3 sm:gap-4">
+                    <div class="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg sm:text-xl font-black shrink-0">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block text-[10px] sm:text-xs font-bold text-slate-400 uppercase truncate">Parciales</span>
+                        <span class="text-xl sm:text-2xl font-black text-amber-600" id="resumen-stat-parciales">0</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200 shadow-sm flex items-center gap-3 sm:gap-4">
+                    <div class="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg sm:text-xl font-black shrink-0">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block text-[10px] sm:text-xs font-bold text-slate-400 uppercase truncate">Pendientes</span>
+                        <span class="text-xl sm:text-2xl font-black text-rose-600" id="resumen-stat-pendientes">214</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla Detallada por Centro de Votación -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-4 bg-gana-navy text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b-4 border-gana-orange">
+                    <h3 class="font-bold text-xs sm:text-sm uppercase tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-gana-orange"></i> Estado de Cobertura por Centro de Votación
+                    </h3>
+                    <span class="text-[11px] sm:text-xs text-orange-200 font-semibold">28 Centros Registrados</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-sm min-w-[640px]">
+                        <thead class="bg-slate-100 text-slate-700 text-[11px] uppercase font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">Distrito</th>
+                                <th class="p-3">Código / Centro de Votación</th>
+                                <th class="p-3 text-center">JRV Total</th>
+                                <th class="p-3 text-center">Completadas</th>
+                                <th class="p-3 text-center">Parciales</th>
+                                <th class="p-3 text-center">Pendientes</th>
+                                <th class="p-3 w-36 sm:w-44">Progreso</th>
+                                <th class="p-3 text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-resumen-cobertura" class="divide-y divide-slate-100">
+                            <!-- Filas de cobertura generadas dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL REGISTRO JEFE DE CENTRO RESPONSIVE -->
+    <div id="modal-jefe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full my-auto overflow-hidden border border-slate-200">
+            <div class="bg-gana-navy text-white p-3.5 sm:p-4 flex justify-between items-center border-b-4 border-gana-orange">
+                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2"><i class="fa-solid fa-user-tie text-gana-orange"></i> Jefe de Centro de Votación</h3>
+                <button onclick="cerrarModalJefe()" class="text-white/80 hover:text-white p-1 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 sm:p-5 space-y-3.5">
+                <div>
+                    <span id="modal-jefe-cv-nombre" class="text-xs font-bold text-gana-navy block mb-1 bg-orange-50 p-2.5 rounded-xl border border-orange-200 leading-snug"></span>
+                </div>
+                <div id="jefe-error-msg" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm shrink-0"></i>
+                    <span id="jefe-error-text"></span>
+                </div>
+                <div>
+                    <label class="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo del Jefe <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-jefe-nombre" placeholder="Ej. Carlos Roberto Mendoza" class="w-full px-3 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">DUI (00000000-0) <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-jefe-dui" placeholder="Ej. 12345678-9" maxlength="10" class="w-full px-3 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">Teléfono de Contacto <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-jefe-tel" placeholder="Ej. 7788-9900" maxlength="9" class="w-full px-3 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+            </div>
+            <div class="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+                <button onclick="cerrarModalJefe()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Cancelar</button>
+                <button onclick="guardarJefeCentro()" class="px-4 py-2 bg-gana-orange text-white font-bold rounded-xl text-xs hover:bg-orange-600 transition shadow-sm">Guardar Jefe de Centro</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO SUPERVISOR DE CENTRO RESPONSIVE -->
+    <div id="modal-supervisor" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full my-auto overflow-hidden border border-slate-200">
+            <div class="bg-gana-navy text-white p-3.5 sm:p-4 flex justify-between items-center border-b-4 border-gana-orange">
+                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2"><i class="fa-solid fa-user-gear text-gana-orange"></i> Supervisor de Centro de Votación</h3>
+                <button onclick="cerrarModalSupervisor()" class="text-white/80 hover:text-white p-1 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 sm:p-5 space-y-3.5">
+                <div>
+                    <span id="modal-supervisor-cv-nombre" class="text-xs font-bold text-gana-navy block mb-1 bg-blue-50 p-2.5 rounded-xl border border-blue-200 leading-snug"></span>
+                </div>
+                <div id="supervisor-error-msg" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm shrink-0"></i>
+                    <span id="supervisor-error-text"></span>
+                </div>
+                <div>
+                    <label class="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo del Supervisor <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-supervisor-nombre" placeholder="Ej. Juan Antonio López" class="w-full px-3 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">DUI (00000000-0) <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-supervisor-dui" placeholder="Ej. 12345678-9" maxlength="10" class="w-full px-3 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">Teléfono (0000-0000) <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-supervisor-tel" placeholder="Ej. 7788-9900" maxlength="9" class="w-full px-3 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+            </div>
+            <div class="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+                <button onclick="cerrarModalSupervisor()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Cancelar</button>
+                <button onclick="guardarSupervisorCentro()" class="px-4 py-2 bg-gana-navy text-white font-bold rounded-xl text-xs hover:bg-navy-800 transition shadow-sm">Guardar Supervisor</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TABLA DE JRV POR CENTRO RESPONSIVE -->
+    <div id="modal-jrv" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-slate-200">
+            
+            <!-- Header Modal -->
+            <div class="bg-gana-navy text-white p-3.5 sm:p-5 flex justify-between items-start gap-3 border-b-4 border-gana-orange shrink-0">
+                <div class="min-w-0">
+                    <span id="modal-codigo" class="inline-block text-[10px] sm:text-xs font-bold text-orange-300 bg-white/10 px-2 py-0.5 sm:py-1 rounded-md mb-1"></span>
+                    <h2 id="modal-titulo" class="text-sm sm:text-xl font-black leading-snug truncate"></h2>
+                    <p id="modal-direccion" class="text-[10px] sm:text-xs text-slate-300 line-clamp-1 mt-0.5"></p>
+                </div>
+                <button onclick="cerrarModal()" class="text-white/80 hover:text-white p-1 text-lg sm:text-xl shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Contenido Modal (Tabla de JRVs Responsiva) -->
+            <div class="p-3 sm:p-5 overflow-y-auto flex-1 bg-slate-50">
+                <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-sm bg-white">
+                    <table class="w-full text-left text-xs sm:text-sm min-w-[700px]">
+                        <thead class="bg-slate-100 text-slate-700 text-[11px] uppercase font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-2.5 sm:p-3 text-center w-14 sm:w-16">N° JRV</th>
+                                <th class="p-2.5 sm:p-3">Persona en Mesa</th>
+                                <th class="p-2.5 sm:p-3">DUI</th>
+                                <th class="p-2.5 sm:p-3">Teléfono</th>
+                                <th class="p-2.5 sm:p-3">Vigilante GANA</th>
+                                <th class="p-2.5 sm:p-3">DUI</th>
+                                <th class="p-2.5 sm:p-3">Teléfono</th>
+                                <th class="p-2.5 sm:p-3 text-center">Estado</th>
+                                <th class="p-2.5 sm:p-3 text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-jrv" class="divide-y divide-slate-100">
+                            <!-- Filas generadas dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="p-3 sm:p-4 bg-white border-t border-slate-200 flex justify-end gap-2 shrink-0">
+                <button onclick="cerrarModal()" class="px-4 py-2 bg-gana-navy text-white font-bold rounded-xl text-xs sm:text-sm hover:bg-navy-800 transition shadow-sm">
+                    Guardar y Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUB-MODAL INTEGRANTES DE MESA RESPONSIVE -->
+    <div id="submodal-integrantes" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full my-auto overflow-hidden border border-slate-200">
+            <div class="bg-gana-navy text-white p-3.5 sm:p-4 flex justify-between items-center border-b-4 border-gana-orange">
+                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear text-gana-orange"></i> Integrantes de JRV N° <span id="submodal-jrv-num" class="text-gana-orange"></span>
+                </h3>
+                <button onclick="cerrarSubmodalIntegrantes()" class="text-white/80 hover:text-white p-1 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="p-4 sm:p-5 space-y-3.5 max-h-[75vh] overflow-y-auto">
+                <div id="integrantes-error-msg" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm shrink-0"></i>
+                    <span id="integrantes-error-text"></span>
+                </div>
+
+                <!-- Sección Persona en Mesa -->
+                <div class="bg-orange-50/60 border border-orange-200 rounded-xl p-3.5 sm:p-4 space-y-2.5">
+                    <h4 class="text-xs font-black uppercase text-gana-orange flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-check"></i> Persona en Mesa
+                    </h4>
+                    <div>
+                        <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Nombre Completo <span class="text-red-500">*</span>:</label>
+                        <input type="text" id="input-submodal-mesa" placeholder="Nombre completo" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">DUI <span class="text-red-500">*</span>:</label>
+                            <input type="text" id="input-submodal-dui-mesa" placeholder="12345678-9" maxlength="10" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Teléfono <span class="text-red-500">*</span>:</label>
+                            <input type="text" id="input-submodal-tel-mesa" placeholder="7788-9900" maxlength="9" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección Vigilante GANA -->
+                <div class="bg-blue-50/60 border border-blue-200 rounded-xl p-3.5 sm:p-4 space-y-2.5">
+                    <h4 class="text-xs font-black uppercase text-gana-navy flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-shield"></i> Vigilante GANA
+                    </h4>
+                    <div>
+                        <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Nombre Completo <span class="text-red-500">*</span>:</label>
+                        <input type="text" id="input-submodal-vig" placeholder="Nombre completo" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">DUI <span class="text-red-500">*</span>:</label>
+                            <input type="text" id="input-submodal-dui-vig" placeholder="12345678-9" maxlength="10" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Teléfono <span class="text-red-500">*</span>:</label>
+                            <input type="text" id="input-submodal-tel-vig" placeholder="7788-9900" maxlength="9" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+                <button onclick="cerrarSubmodalIntegrantes()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Cancelar</button>
+                <button onclick="guardarIntegrantesSubmodal()" class="px-4 py-2 bg-gana-orange text-white font-bold rounded-xl text-xs hover:bg-orange-600 transition shadow-sm">Guardar Integrantes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION RESPONSIVE -->
+    <div id="toast-notification" class="fixed bottom-4 right-4 left-4 sm:left-auto max-w-sm bg-gana-navy text-white px-4 py-3 rounded-xl shadow-2xl border border-white/20 text-xs font-bold hidden flex items-center justify-between gap-3 z-[100]">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-gana-orange text-base shrink-0"></i>
+            <span id="toast-text">Operación realizada con éxito</span>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO SUPERVISOR DE CENTRO -->
+    <div id="modal-supervisor" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200">
+            <div class="bg-gana-navy text-white p-4 flex justify-between items-center border-b-4 border-gana-orange">
+                <h3 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-user-gear text-gana-orange"></i> Supervisor de Centro de Votación</h3>
+                <button onclick="cerrarModalSupervisor()" class="text-white/80 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <span id="modal-supervisor-cv-nombre" class="text-xs font-bold text-gana-navy block mb-2 bg-blue-50 p-2 rounded-lg border border-blue-200"></span>
+                </div>
+                <div id="supervisor-error-msg" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm"></i>
+                    <span id="supervisor-error-text"></span>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo del Supervisor <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-supervisor-nombre" placeholder="Ej. Juan Antonio López" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">DUI (00000000-0) <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-supervisor-dui" placeholder="Ej. 12345678-9" maxlength="10" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono (0000-0000) <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-supervisor-tel" placeholder="Ej. 7788-9900" maxlength="9" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+                <button onclick="cerrarModalSupervisor()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Cancelar</button>
+                <button onclick="guardarSupervisorCentro()" class="px-4 py-2 bg-gana-navy text-white font-bold rounded-xl text-xs hover:bg-navy-800 transition shadow-sm">Guardar Supervisor</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TABLA DE JRV POR CENTRO -->
+    <div id="modal-jrv" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
+            
+            <!-- Header Modal -->
+            <div class="bg-gana-navy text-white p-5 flex justify-between items-start gap-4 border-b-4 border-gana-orange">
+                <div>
+                    <span id="modal-codigo" class="text-xs font-bold text-orange-300 bg-white/10 px-2.5 py-1 rounded-md"></span>
+                    <h2 id="modal-titulo" class="text-xl font-black mt-1"></h2>
+                    <p id="modal-direccion" class="text-xs text-slate-300 mt-1"></p>
+                </div>
+                <button onclick="cerrarModal()" class="text-white/80 hover:text-white p-1 text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Contenido Modal (Tabla de JRVs) -->
+            <div class="p-5 overflow-y-auto flex-1 bg-slate-50">
+                <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-sm bg-white">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-700 text-xs uppercase font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3 text-center w-16">N° JRV</th>
+                                <th class="p-3">Persona en Mesa</th>
+                                <th class="p-3">DUI</th>
+                                <th class="p-3">Teléfono</th>
+                                <th class="p-3">Vigilante GANA</th>
+                                <th class="p-3">DUI</th>
+                                <th class="p-3">Teléfono</th>
+                                <th class="p-3 text-center">Estado</th>
+                                <th class="p-3 text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-jrv" class="divide-y divide-slate-100">
+                            <!-- Filas generadas dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="p-4 bg-white border-t border-slate-200 flex justify-end gap-3">
+                <button onclick="cerrarModal()" class="px-5 py-2 bg-gana-navy text-white font-bold rounded-xl text-sm hover:bg-navy-800 transition shadow-sm">
+                    Guardar y Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUB-MODAL INTEGRANTES DE MESA -->
+    <div id="submodal-integrantes" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
+            <div class="bg-gana-navy text-white p-4 flex justify-between items-center border-b-4 border-gana-orange">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear text-gana-orange"></i> Integrantes de JRV N° <span id="submodal-jrv-num" class="text-gana-orange"></span>
+                </h3>
+                <button onclick="cerrarSubmodalIntegrantes()" class="text-white/80 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="p-5 space-y-4">
+                <div id="integrantes-error-msg" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm"></i>
+                    <span id="integrantes-error-text"></span>
+                </div>
+
+                <!-- Sección Persona en Mesa -->
+                <div class="bg-orange-50/60 border border-orange-200 rounded-xl p-4 space-y-3">
+                    <h4 class="text-xs font-black uppercase text-gana-orange flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-check"></i> Persona en Mesa
+                    </h4>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Nombre Completo <span class="text-red-500">*</span>:</label>
+                        <input type="text" id="input-submodal-mesa" placeholder="Nombre completo" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">DUI (00000000-0) <span class="text-red-500">*</span>:</label>
+                        <input type="text" id="input-submodal-dui-mesa" placeholder="12345678-9" maxlength="10" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Teléfono <span class="text-red-500">*</span>:</label>
+                        <input type="text" id="input-submodal-tel-mesa" placeholder="7788-9900" maxlength="9" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                    </div>
+                </div>
+
+                <!-- Sección Vigilante GANA -->
+                <div class="bg-blue-50/60 border border-blue-200 rounded-xl p-4 space-y-3">
+                    <h4 class="text-xs font-black uppercase text-gana-navy flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-shield"></i> Vigilante GANA
+                    </h4>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Nombre Completo <span class="text-red-500">*</span>:</label>
+                        <input type="text" id="input-submodal-vig" placeholder="Nombre completo" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">DUI (00000000-0) <span class="text-red-500">*</span>:</label>
+                        <input type="text" id="input-submodal-dui-vig" placeholder="12345678-9" maxlength="10" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Teléfono <span class="text-red-500">*</span>:</label>
+                        <input type="text" id="input-submodal-tel-vig" placeholder="7788-9900" maxlength="9" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+                <button onclick="cerrarSubmodalIntegrantes()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Cancelar</button>
+                <button onclick="guardarIntegrantesSubmodal()" class="px-4 py-2 bg-gana-orange text-white font-bold rounded-xl text-xs hover:bg-orange-600 transition shadow-sm">Guardar Integrantes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 bg-gana-navy text-white px-4 py-3 rounded-xl shadow-2xl border border-white/20 text-xs font-bold hidden flex items-center gap-2 z-[100]">
+        <i class="fa-solid fa-circle-check text-gana-orange text-base"></i>
+        <span id="toast-text">Operación realizada con éxito</span>
+    </div>
+
+    <!-- SCRIPTS CON LA BASE DE DATOS SSO Y LÓGICA -->
+    <script>
+        const datosSSO = [
+            // APOPA (21 Centros)
+            { codigo: 1020101, distrito: "APOPA", nombre: "CENTRO ESCOLAR VICENTE ACOSTA", direccion: "CUARTA CALLE PONIENTE NUMERO 38 BARRIO EL CALVARIO, APOPA", electores: 8614, jrvInicial: 88, jrvFinal: 100, totalJrv: 13 },
+            { codigo: 1020102, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO PROFESORA ANGELA DE JESUS DE ROMERO", direccion: "COLONIA CIUDAD OBRERA, CALLE BRACILIA, CONTIGUO A CANCHA OFICIAL DE APOPA", electores: 7937, jrvInicial: 101, jrvFinal: 112, totalJrv: 12 },
+            { codigo: 1020103, distrito: "APOPA", nombre: "CENTRO ESCOLAR REPUBLICA DE CHINA", direccion: "AVENIDA PRINCIPAL, COLONIA CHINTUC NUMERO 1", electores: 3163, jrvInicial: 113, jrvFinal: 117, totalJrv: 5 },
+            { codigo: 1020104, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO SARA PALMA DE JULE", direccion: "FINAL CALLE PRINCIPAL COLONIA CHINTUC 2, AVENIDA CIRCUNVALACION, CALLE MARIONA", electores: 7543, jrvInicial: 118, jrvFinal: 128, totalJrv: 11 },
+            { codigo: 1020105, distrito: "APOPA", nombre: "CENTRO ESCOLAR URBANIZACION SANTA TERESA DE LAS FLORES", direccion: "CALLE DEL RIO, CARRETERA TRONCAL DEL NORTE KILOMETRO 16 URBANIZACION SANTA TERESA DE LAS FLORES", electores: 5115, jrvInicial: 129, jrvFinal: 136, totalJrv: 8 },
+            { codigo: 1020106, distrito: "APOPA", nombre: "CENTRO ESCOLAR COLONIA LA ERMITA", direccion: "FINAL CALLE PRINCIPAL, COLONIA LA ERMITA 2, AVENIDA CENTRAL Y PASAJE 7", electores: 6315, jrvInicial: 137, jrvFinal: 145, totalJrv: 9 },
+            { codigo: 1020107, distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON SAN NICOLAS", direccion: "CARRETERA TRONCAL DEL NORTE, KILOMETRO 13 Y MEDIO ANTIGUA CALLE A LA PONDEROSA, CANTON SAN NICOLAS", electores: 3009, jrvInicial: 146, jrvFinal: 150, totalJrv: 5 },
+            { codigo: 1020108, distrito: "APOPA", nombre: "CENTRO ESCOLAR BENJAMIN BLOOM", direccion: "FINAL TERCERA AVENIDA SUR CARRETERA TRONCAL DEL NORTE KILOMETRO 12 Y MEDIO APOPA", electores: 4686, jrvInicial: 151, jrvFinal: 157, totalJrv: 7 },
+            { codigo: 1020109, distrito: "APOPA", nombre: "CENTRO ESCOLAR DE POPOTLAN", direccion: "CALLE PRINCIPAL PADRE FERNANDEZ Y BAÑEZ AVENIDA SIHUATAN Y COLONIA POPOTLAN", electores: 7472, jrvInicial: 158, jrvFinal: 168, totalJrv: 11 },
+            { codigo: 1020110, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO PROFESOR IVAN ALEXANDER BURGOS FUENTES", direccion: "COLONIA POPOTLAN NUMERO 2, AVENIDA MAZATEPEQUE, PASAJE EL ZARZAL NUMERO 18", electores: 7024, jrvInicial: 169, jrvFinal: 179, totalJrv: 11 },
+            { codigo: 1020111, distrito: "APOPA", nombre: "CENTRO ESCOLAR VALLE VERDE", direccion: "URBANIZACION VALLE VERDE, CALLE PRINCIPAL, POLIGONO 37, CONTIGUO A DELEGACION PNC", electores: 6310, jrvInicial: 180, jrvFinal: 188, totalJrv: 9 },
+            { codigo: 1020112, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO COLONIA LOS NARANJOS", direccion: "FINAL PASAJE 'E' PONIENTE COLONIA LOS NARANJOS, APOPA", electores: 6610, jrvInicial: 189, jrvFinal: 198, totalJrv: 10 },
+            { codigo: 1020113, distrito: "APOPA", nombre: "CANCHA DE B.K.B. DE LA COLONIA SAN SEBASTIAN", direccion: "CALLE PRINCIPAL COLONIA SAN SEBASTIAN", electores: 5264, jrvInicial: 199, jrvFinal: 206, totalJrv: 8 },
+            { codigo: 1020114, distrito: "APOPA", nombre: "ESCUELA DE EDUCACION PARVULARIA JARDINES DEL NORTE II", direccion: "CARRETERA TRONCAL DEL NORTE KILOMETRO 12, CALLE A LA ESTACION, COLONIA JARDINES DEL NORTE II", electores: 4563, jrvInicial: 207, jrvFinal: 213, totalJrv: 7 },
+            { codigo: 1020115, distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON EL ANGEL", direccion: "PASAJE N GRUPO 35 COLONIA LOS ANGELES", electores: 4652, jrvInicial: 214, jrvFinal: 220, totalJrv: 7 },
+            { codigo: 1020116, distrito: "APOPA", nombre: "CENTRO ESCOLAR LOTIFICACION SANTA CARLOTA NUMERO 1", direccion: "CARRETERA A QUEZALTEPEQUE KILOMETRO 17 LOTIFICACION SANTA CARLOTA NUMERO 1", electores: 3432, jrvInicial: 221, jrvFinal: 225, totalJrv: 5 },
+            { codigo: 1020117, distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON GUADALUPE", direccion: "CASERIO CENTRAL NUMERO 50 CANTON GUADALUPE 3 KILOMETRO AL SUR DE LA PLANTA NEJAPA POWER", electores: 1388, jrvInicial: 226, jrvFinal: 227, totalJrv: 2 },
+            { codigo: 1020118, distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON LAS DELICIAS", direccion: "CASERIO LOS RAMIREZ, CANTON LAS DELICIAS CALLE NUEVA A QUEZALTEPEQUE", electores: 1324, jrvInicial: 228, jrvFinal: 229, totalJrv: 2 },
+            { codigo: 1020119, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO INGENIERO GUILLERMO BORJA NATHAN", direccion: "FINAL CALLE 5 PARCELACION EL ANGEL KILOMETRO 15 CARRETERA A QUEZALTEPEQUE", electores: 3763, jrvInicial: 230, jrvFinal: 235, totalJrv: 6 },
+            { codigo: 1020120, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO INGENIERO JOSE NAPOLEON DUARTE", direccion: "URBANIZACION EL TIKAL, CALLE TECANA Y AVENIDA ACATENANGO", electores: 4950, jrvInicial: 236, jrvFinal: 243, totalJrv: 8 },
+            { codigo: 1020121, distrito: "APOPA", nombre: "CENTRO ESCOLAR VALLE DEL SOL", direccion: "AVENIDA JUAN MARTI BLOCK 'B' URBANIZACION VALLE DEL SOL", electores: 9924, jrvInicial: 244, jrvFinal: 258, totalJrv: 15 },
+
+            // NEJAPA (7 Centros)
+            { codigo: 1020201, distrito: "NEJAPA", nombre: "CENTRO ESCOLAR JOSE MATIAS DELGADO", direccion: "AVENIDA NORBERTO MORAN, BARRIO EL CALVARIO NUMERO 29, NEJAPA", electores: 10494, jrvInicial: 259, jrvFinal: 273, totalJrv: 15 },
+            { codigo: 1020202, distrito: "NEJAPA", nombre: "COMPLEJO EDUCATIVO PROFESOR ALBERTO MONTIEL VILLACORTA", direccion: "CANTON COMOTEPEQUE CASERIO HACIENDA MAPILAPA NEJAPA", electores: 5787, jrvInicial: 274, jrvFinal: 282, totalJrv: 9 },
+            { codigo: 1020203, distrito: "NEJAPA", nombre: "COMPLEJO EDUCATIVO CANTON TUTULTEPEQUE", direccion: "CARRETERA TRONCAL DEL NORTE DESVIO AL KILOMETRO 25 1/2 HACIA AGUILARES", electores: 2363, jrvInicial: 283, jrvFinal: 286, totalJrv: 4 },
+            { codigo: 1020204, distrito: "NEJAPA", nombre: "CENTRO ESCOLAR COOPERATIVA EL CEDRAL", direccion: "COOPERATIVA EL CEDRAL, CANTON ALDEA DE LAS MERCEDES, NEJAPA", electores: 3249, jrvInicial: 287, jrvFinal: 291, totalJrv: 5 },
+            { codigo: 1020205, distrito: "NEJAPA", nombre: "COMPLEJO EDUCATIVO CANTON SAN JERONIMO LOS PLANES", direccion: "CALLE QUEZALTEPEQUE A SANTA TECLA, CANTON SAN JERONIMO, LOS PLANES", electores: 543, jrvInicial: 292, jrvFinal: 292, totalJrv: 1 },
+            { codigo: 1020206, distrito: "NEJAPA", nombre: "COMPLEJO DEPORTIVO EL CAMBIO", direccion: "COLONIA EL CAMBIO, POLIGONO NUMERO 29", electores: 3271, jrvInicial: 293, jrvFinal: 297, totalJrv: 5 },
+            { codigo: 1020207, distrito: "NEJAPA", nombre: "CENTRO ESCOLAR CASERIO EL JABALI, CANTON GALERA QUEMADA", direccion: "LOTIFICACION EL JABALI NUMERO 1, CANTON GALERA QUEMADA", electores: 2371, jrvInicial: 298, jrvFinal: 301, totalJrv: 4 }
+        ];
+
+        let distritoActual = 'APOPA';
+        let jrvDataStore = JSON.parse(localStorage.getItem('gana_sso_jrv_data')) || {};
+        let jefesDataStore = JSON.parse(localStorage.getItem('gana_sso_jefes_data')) || {};
+        let supervisoresDataStore = JSON.parse(localStorage.getItem('gana_sso_supervisores_data')) || {};
+        let cvCodigoActualJefe = null;
+        let cvCodigoActualSupervisor = null;
+        let jrvNumeroActual = null;
+        let cvCodigoActualModal = null;
+
+        function init() {
+            cambiarModulo('APOPA');
+        }
+
+        function cambiarModulo(distrito) {
+            distritoActual = distrito;
+            const tabApopa = document.getElementById('tab-apopa');
+            const tabNejapa = document.getElementById('tab-nejapa');
+            const tabResumen = document.getElementById('tab-resumen');
+            const gridCentros = document.getElementById('grid-centros');
+            const vistaResumen = document.getElementById('vista-resumen');
+            const wrapperBuscar = document.getElementById('wrapper-buscar');
+
+            const btnNormal = "flex-1 sm:flex-initial px-5 py-2.5 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 text-slate-600 hover:text-gana-navy";
+            const btnActivo = "flex-1 sm:flex-initial px-5 py-2.5 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 bg-gana-orange text-white shadow-md";
+
+            tabApopa.className = distrito === 'APOPA' ? btnActivo : btnNormal;
+            tabNejapa.className = distrito === 'NEJAPA' ? btnActivo : btnNormal;
+            tabResumen.className = distrito === 'RESUMEN' ? btnActivo : btnNormal;
+
+            if (distrito === 'RESUMEN') {
+                gridCentros.classList.add('hidden');
+                wrapperBuscar.classList.add('hidden');
+                vistaResumen.classList.remove('hidden');
+                renderVistaResumen();
+            } else {
+                gridCentros.classList.remove('hidden');
+                wrapperBuscar.classList.remove('hidden');
+                vistaResumen.classList.add('hidden');
+                filtrarCentros();
+            }
+
+            actualizarResumenDistrito();
+        }
+
+        function renderVistaResumen() {
+            let totalGeneralCompletadas = 0;
+            let totalGeneralParciales = 0;
+            let totalGeneralPendientes = 0;
+
+            const tbody = document.getElementById('tbody-resumen-cobertura');
+            tbody.innerHTML = '';
+
+            datosSSO.forEach(cv => {
+                let completadas = 0;
+                let parciales = 0;
+                let pendientes = 0;
+
+                for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
+                    const d = jrvDataStore[`jrv_${num}`];
+                    if (d && d.mesa && d.vig) {
+                        completadas++;
+                    } else if (d && (d.mesa || d.vig)) {
+                        parciales++;
+                    } else {
+                        pendientes++;
+                    }
+                }
+
+                totalGeneralCompletadas += completadas;
+                totalGeneralParciales += parciales;
+                totalGeneralPendientes += pendientes;
+
+                const porcentaje = ((completadas / cv.totalJrv) * 100).toFixed(0);
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-xs text-slate-500">
+                        <span class="px-2 py-1 rounded-md ${cv.distrito === 'APOPA' ? 'bg-orange-100 text-gana-orange' : 'bg-blue-100 text-gana-navy'}">${cv.distrito}</span>
+                    </td>
+                    <td class="p-3">
+                        <span class="block text-[11px] font-bold text-slate-400">CÓDIGO ${cv.codigo}</span>
+                        <span class="font-bold text-slate-800 text-xs">${cv.nombre}</span>
+                    </td>
+                    <td class="p-3 text-center font-black text-gana-navy text-xs">${cv.totalJrv}</td>
+                    <td class="p-3 text-center font-bold text-emerald-600 text-xs">${completadas}</td>
+                    <td class="p-3 text-center font-bold text-amber-600 text-xs">${parciales}</td>
+                    <td class="p-3 text-center font-bold text-rose-600 text-xs">${pendientes}</td>
+                    <td class="p-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-2.5 rounded-full" style="width: ${porcentaje}%"></div>
+                            </div>
+                            <span class="text-[11px] font-bold text-slate-600 w-8 text-right">${porcentaje}%</span>
+                        </div>
+                    </td>
+                    <td class="p-3 text-center">
+                        <button onclick="abrirModalJRV(${cv.codigo})" class="bg-gana-navy hover:bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-lg transition shadow-sm">
+                            Gestionar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('resumen-stat-completadas').innerText = totalGeneralCompletadas;
+            document.getElementById('resumen-stat-parciales').innerText = totalGeneralParciales;
+            document.getElementById('resumen-stat-pendientes').innerText = totalGeneralPendientes;
+        }
+
+        function actualizarResumenDistrito() {
+            if (distritoActual === 'RESUMEN') {
+                let totalJrvs = 214;
+                let completadas = 0;
+                datosSSO.forEach(cv => {
+                    for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
+                        const d = jrvDataStore[`jrv_${num}`];
+                        if (d && d.mesa && d.vig) completadas++;
+                    }
+                });
+                const porcentaje = ((completadas / totalJrvs) * 100).toFixed(1);
+                document.getElementById('coverage-text').innerText = `${completadas} / ${totalJrvs} JRVs (${porcentaje}%)`;
+                return;
+            }
+
+            const centros = datosSSO.filter(c => c.distrito === distritoActual);
+            let totalJrvs = 0;
+            let completadas = 0;
+
+            centros.forEach(cv => {
+                totalJrvs += cv.totalJrv;
+                for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
+                    const d = jrvDataStore[`jrv_${num}`];
+                    if (d && d.mesa && d.vig) completadas++;
+                }
+            });
+
+            const porcentaje = totalJrvs > 0 ? ((completadas / totalJrvs) * 100).toFixed(1) : 0;
+            document.getElementById('coverage-text').innerText = `${completadas} / ${totalJrvs} JRVs (${porcentaje}%)`;
+        }
+
+        function renderCentros(lista) {
+            const grid = document.getElementById('grid-centros');
+            grid.innerHTML = '';
+
+            if (lista.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-white rounded-2xl p-8 text-center border border-slate-200 shadow-sm">
+                        <i class="fa-solid fa-magnifying-glass text-3xl text-slate-300 mb-2"></i>
+                        <p class="text-slate-500 font-semibold text-sm">No se encontraron centros de votación con el término buscado.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            lista.forEach(cv => {
+                const jefeInfo = jefesDataStore[`cv_${cv.codigo}`] || { nombre: '', tel: '' };
+                const superInfo = supervisoresDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
+
+                // Contar JRVs completas en este centro
+                let completas = 0;
+                for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
+                    const d = jrvDataStore[`jrv_${num}`];
+                    if (d && d.mesa && d.vig) completas++;
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition p-5 flex flex-col justify-between border-l-4 border-l-gana-orange";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <span class="text-[11px] font-bold bg-orange-100 text-gana-orange px-2.5 py-0.5 rounded-md">CÓDIGO ${cv.codigo}</span>
+                            <span class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-users text-gana-navy mr-1"></i>${cv.electores.toLocaleString()} Electores</span>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-base leading-snug mb-1 cursor-pointer hover:text-gana-orange transition" onclick="abrirModalJRV(${cv.codigo})">${cv.nombre}</h3>
+                        <p class="text-xs text-slate-500 line-clamp-2 mb-3"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i>${cv.direccion}</p>
+                        
+                        <!-- Info Jefe de Centro -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 mb-2 flex items-center justify-between text-xs">
+                            <div class="truncate">
+                                <span class="block text-[10px] font-bold uppercase text-slate-400">Jefe de Centro:</span>
+                                <span class="font-bold ${jefeInfo.nombre ? 'text-gana-navy' : 'text-slate-400 italic'} truncate block">${jefeInfo.nombre || '— Por designar —'}</span>
+                            </div>
+                            ${jefeInfo.tel ? `<span class="text-[10px] font-semibold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200 shrink-0"><i class="fa-solid fa-phone mr-1 text-gana-orange"></i>${jefeInfo.tel}</span>` : ''}
+                        </div>
+
+                        <!-- Info Supervisor de Centro -->
+                        <div class="bg-blue-50/60 border border-blue-200 rounded-xl p-2.5 mb-3 flex items-center justify-between text-xs">
+                            <div class="truncate">
+                                <span class="block text-[10px] font-bold uppercase text-slate-400">Supervisor:</span>
+                                <span class="font-bold ${superInfo.nombre ? 'text-gana-navy' : 'text-slate-400 italic'} truncate block">${superInfo.nombre || '— Por nombrar —'}</span>
+                            </div>
+                            ${superInfo.tel ? `<span class="text-[10px] font-semibold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200 shrink-0"><i class="fa-solid fa-phone mr-1 text-gana-navy"></i>${superInfo.tel}</span>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-3 mt-1 flex flex-col gap-2">
+                        <button onclick="abrirModalJefe(${cv.codigo})" class="w-full bg-orange-50 hover:bg-orange-100 text-gana-orange border border-orange-200 text-xs font-bold py-2 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-user-tie"></i> ${jefeInfo.nombre ? 'Editar Jefe de Centro' : 'Asignar Jefe de Centro'}
+                        </button>
+                        
+                        <button onclick="abrirModalSupervisor(${cv.codigo})" class="w-full bg-blue-50 hover:bg-blue-100 text-gana-navy border border-blue-200 text-xs font-bold py-2 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-user-gear"></i> ${superInfo.nombre ? 'Editar Supervisor' : 'Asignar Supervisor'}
+                        </button>
+
+                        <div class="flex justify-between items-center pt-1">
+                            <div>
+                                <span class="block text-[10px] text-slate-400 uppercase font-bold">Rango JRV</span>
+                                <span class="text-xs font-black text-gana-navy">${cv.jrvInicial} - ${cv.jrvFinal} (${completas}/${cv.totalJrv})</span>
+                            </div>
+                            <button onclick="abrirModalJRV(${cv.codigo})" class="bg-gana-navy text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-orange-600 transition flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-table-list"></i> Gestionar JRVs
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function abrirModalJefe(codigo) {
+            cvCodigoActualJefe = codigo;
+            const cv = datosSSO.find(item => item.codigo === codigo);
+            const jefeInfo = jefesDataStore[`cv_${codigo}`] || { nombre: '', dui: '', tel: '' };
+
+            document.getElementById('modal-jefe-cv-nombre').innerText = `CÓDIGO ${cv.codigo} — ${cv.nombre}`;
+            document.getElementById('input-jefe-nombre').value = jefeInfo.nombre || '';
+            document.getElementById('input-jefe-dui').value = jefeInfo.dui || '';
+            document.getElementById('input-jefe-tel').value = jefeInfo.tel || '';
+
+            document.getElementById('jefe-error-msg').classList.add('hidden');
+            document.getElementById('modal-jefe').classList.remove('hidden');
+        }
+
+        // Helpers de Validación con Expresiones Regulares
+        function validarDUI(dui) {
+            const regexDUI = /^\d{8}-\d{1}$/;
+            return regexDUI.test(dui);
+        }
+
+        function validarTelefono(tel) {
+            const regexTel = /^\d{4}-\d{4}$/;
+            return regexTel.test(tel);
+        }
+
+        function guardarJefeCentro() {
+            if (!cvCodigoActualJefe) return;
+
+            const nombreInput = document.getElementById('input-jefe-nombre');
+            const duiInput = document.getElementById('input-jefe-dui');
+            const telInput = document.getElementById('input-jefe-tel');
+            const errorMsg = document.getElementById('jefe-error-msg');
+            const errorText = document.getElementById('jefe-error-text');
+
+            const nombre = nombreInput.value.trim();
+            const dui = duiInput.value.trim();
+            const tel = telInput.value.trim();
+
+            if (!nombre || nombre.length < 5 || !nombre.includes(' ')) {
+                errorText.innerText = 'Ingrese el nombre y apellido completo del Jefe de Centro.';
+                errorMsg.classList.remove('hidden');
+                nombreInput.focus();
+                return;
+            }
+
+            if (!validarDUI(dui)) {
+                errorText.innerText = 'El DUI es inválido. Formato requerido: 00000000-0 (8 dígitos, guion y 1 dígito).';
+                errorMsg.classList.remove('hidden');
+                duiInput.focus();
+                return;
+            }
+
+            if (!validarTelefono(tel)) {
+                errorText.innerText = 'El teléfono es inválido. Formato requerido: 0000-0000 (8 dígitos y guion).';
+                errorMsg.classList.remove('hidden');
+                telInput.focus();
+                return;
+            }
+
+            errorMsg.classList.add('hidden');
+            jefesDataStore[`cv_${cvCodigoActualJefe}`] = { nombre, dui, tel };
+            localStorage.setItem('gana_sso_jefes_data', JSON.stringify(jefesDataStore));
+
+            cerrarModalJefe();
+            filtrarCentros();
+            actualizarResumenDistrito();
+            mostrarToast('Jefe de Centro guardado con éxito');
+        }
+
+        function cerrarModalJefe() {
+            document.getElementById('modal-jefe').classList.add('hidden');
+            cvCodigoActualJefe = null;
+        }
+
+        function abrirModalSupervisor(codigo) {
+            cvCodigoActualSupervisor = codigo;
+            const cv = datosSSO.find(item => item.codigo === codigo);
+            const superInfo = supervisoresDataStore[`cv_${codigo}`] || { nombre: '', dui: '', tel: '' };
+
+            document.getElementById('modal-supervisor-cv-nombre').innerText = `CÓDIGO ${cv.codigo} — ${cv.nombre}`;
+            document.getElementById('input-supervisor-nombre').value = superInfo.nombre || '';
+            document.getElementById('input-supervisor-dui').value = superInfo.dui || '';
+            document.getElementById('input-supervisor-tel').value = superInfo.tel || '';
+            
+            document.getElementById('supervisor-error-msg').classList.add('hidden');
+            document.getElementById('modal-supervisor').classList.remove('hidden');
+        }
+
+        function guardarSupervisorCentro() {
+            if (!cvCodigoActualSupervisor) return;
+
+            const nombreInput = document.getElementById('input-supervisor-nombre');
+            const duiInput = document.getElementById('input-supervisor-dui');
+            const telInput = document.getElementById('input-supervisor-tel');
+            const errorMsg = document.getElementById('supervisor-error-msg');
+            const errorText = document.getElementById('supervisor-error-text');
+
+            const nombre = nombreInput.value.trim();
+            const dui = duiInput.value.trim();
+            const tel = telInput.value.trim();
+
+            if (!nombre || nombre.length < 5 || !nombre.includes(' ')) {
+                errorText.innerText = 'Ingrese el nombre y apellido completo del Supervisor.';
+                errorMsg.classList.remove('hidden');
+                nombreInput.focus();
+                return;
+            }
+
+            if (!validarDUI(dui)) {
+                errorText.innerText = 'El DUI es inválido. Formato requerido: 00000000-0 (8 dígitos, guion y 1 dígito).';
+                errorMsg.classList.remove('hidden');
+                duiInput.focus();
+                return;
+            }
+
+            if (!validarTelefono(tel)) {
+                errorText.innerText = 'El teléfono es inválido. Formato requerido: 0000-0000 (8 dígitos y guion).';
+                errorMsg.classList.remove('hidden');
+                telInput.focus();
+                return;
+            }
+
+            errorMsg.classList.add('hidden');
+            supervisoresDataStore[`cv_${cvCodigoActualSupervisor}`] = { nombre, dui, tel };
+            localStorage.setItem('gana_sso_supervisores_data', JSON.stringify(supervisoresDataStore));
+
+            cerrarModalSupervisor();
+            filtrarCentros();
+            actualizarResumenDistrito();
+            mostrarToast('Supervisor de Centro guardado con éxito');
+        }
+
+        function cerrarModalSupervisor() {
+            document.getElementById('modal-supervisor').classList.add('hidden');
+            cvCodigoActualSupervisor = null;
+        }
+
+        function filtrarCentros() {
+            const query = document.getElementById('input-buscar').value.toLowerCase();
+            const filtrados = datosSSO.filter(cv => 
+                cv.distrito === distritoActual && 
+                (cv.nombre.toLowerCase().includes(query) || cv.codigo.toString().includes(query) || cv.direccion.toLowerCase().includes(query))
+            );
+            renderCentros(filtrados);
+        }
+
+        function abrirModalJRV(codigo) {
+            cvCodigoActualModal = codigo;
+            const cv = datosSSO.find(item => item.codigo === codigo);
+            if (!cv) return;
+
+            document.getElementById('modal-codigo').innerText = `CÓDIGO CV: ${cv.codigo} | DISTRITO: ${cv.distrito}`;
+            document.getElementById('modal-titulo').innerText = cv.nombre;
+            document.getElementById('modal-direccion').innerText = cv.direccion;
+
+            renderTablaJRV(cv);
+            document.getElementById('modal-jrv').classList.remove('hidden');
+        }
+
+        function renderTablaJRV(cv) {
+            const tbody = document.getElementById('tbody-jrv');
+            tbody.innerHTML = '';
+
+            for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
+                const dataKey = `jrv_${num}`;
+                const jrvData = jrvDataStore[dataKey] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
+
+                let estadoBadge = '<span class="text-[10px] font-bold bg-red-100 text-red-600 px-2.5 py-1 rounded-full">Incompleto</span>';
+                if (jrvData.mesa && jrvData.vig) {
+                    estadoBadge = '<span class="text-[10px] font-bold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">✅ Completo</span>';
+                } else if (jrvData.mesa || jrvData.vig) {
+                    estadoBadge = '<span class="text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2.5 py-1 rounded-full">⏳ Parcial</span>';
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-black text-gana-navy bg-orange-50/40">${num}</td>
+                    <td class="p-3 font-semibold text-xs ${jrvData.mesa ? 'text-slate-800' : 'text-slate-400 italic'}">
+                        ${jrvData.mesa || '— Pendiente de registro —'}
+                    </td>
+                    <td class="p-3 text-xs text-slate-600 font-mono">
+                        ${jrvData.duiMesa || '-'}
+                    </td>
+                    <td class="p-3 text-xs text-slate-600 font-mono">
+                        ${jrvData.telMesa || '-'}
+                    </td>
+                    <td class="p-3 font-semibold text-xs ${jrvData.vig ? 'text-slate-800' : 'text-slate-400 italic'}">
+                        ${jrvData.vig || '— Sin acreditar —'}
+                    </td>
+                    <td class="p-3 text-xs text-slate-600 font-mono">
+                        ${jrvData.duiVig || '-'}
+                    </td>
+                    <td class="p-3 text-xs text-slate-600 font-mono">
+                        ${jrvData.telVig || '-'}
+                    </td>
+                    <td class="p-3 text-center">
+                        ${estadoBadge}
+                    </td>
+                    <td class="p-3 text-center">
+                        <button onclick="abrirSubmodalIntegrantes(${num})" class="bg-gana-orange hover:bg-orange-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm flex items-center justify-center gap-1 mx-auto">
+                            <i class="fa-solid fa-user-pen"></i> Ingresar Integrantes
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function abrirSubmodalIntegrantes(numJrv) {
+            jrvNumeroActual = numJrv;
+            const dataKey = `jrv_${numJrv}`;
+            const jrvData = jrvDataStore[dataKey] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
+
+            document.getElementById('submodal-jrv-num').innerText = numJrv;
+            document.getElementById('input-submodal-mesa').value = jrvData.mesa || '';
+            document.getElementById('input-submodal-dui-mesa').value = jrvData.duiMesa || '';
+            document.getElementById('input-submodal-tel-mesa').value = jrvData.telMesa || '';
+            document.getElementById('input-submodal-vig').value = jrvData.vig || '';
+            document.getElementById('input-submodal-dui-vig').value = jrvData.duiVig || '';
+            document.getElementById('input-submodal-tel-vig').value = jrvData.telVig || '';
+
+            document.getElementById('integrantes-error-msg').classList.add('hidden');
+            document.getElementById('submodal-integrantes').classList.remove('hidden');
+        }
+
+        function guardarIntegrantesSubmodal() {
+            if (!jrvNumeroActual) return;
+
+            const mesaInput = document.getElementById('input-submodal-mesa');
+            const duiMesaInput = document.getElementById('input-submodal-dui-mesa');
+            const telMesaInput = document.getElementById('input-submodal-tel-mesa');
+            const vigInput = document.getElementById('input-submodal-vig');
+            const duiVigInput = document.getElementById('input-submodal-dui-vig');
+            const telVigInput = document.getElementById('input-submodal-tel-vig');
+
+            const errorMsg = document.getElementById('integrantes-error-msg');
+            const errorText = document.getElementById('integrantes-error-text');
+
+            const mesa = mesaInput.value.trim();
+            const duiMesa = duiMesaInput.value.trim();
+            const telMesa = telMesaInput.value.trim();
+            const vig = vigInput.value.trim();
+            const duiVig = duiVigInput.value.trim();
+            const telVig = telVigInput.value.trim();
+
+            // Validaciones Persona en Mesa
+            if (!mesa || mesa.length < 5 || !mesa.includes(' ')) {
+                errorText.innerText = 'Ingrese el nombre completo de la Persona en Mesa (Nombre y Apellido).';
+                errorMsg.classList.remove('hidden');
+                mesaInput.focus();
+                return;
+            }
+
+            if (!validarDUI(duiMesa)) {
+                errorText.innerText = 'El DUI de la Persona en Mesa es inválido (Formato: 00000000-0).';
+                errorMsg.classList.remove('hidden');
+                duiMesaInput.focus();
+                return;
+            }
+
+            if (!validarTelefono(telMesa)) {
+                errorText.innerText = 'El teléfono de la Persona en Mesa es inválido (Formato: 0000-0000).';
+                errorMsg.classList.remove('hidden');
+                telMesaInput.focus();
+                return;
+            }
+
+            // Validaciones Vigilante GANA
+            if (!vig || vig.length < 5 || !vig.includes(' ')) {
+                errorText.innerText = 'Ingrese el nombre completo del Vigilante GANA (Nombre y Apellido).';
+                errorMsg.classList.remove('hidden');
+                vigInput.focus();
+                return;
+            }
+
+            if (!validarDUI(duiVig)) {
+                errorText.innerText = 'El DUI del Vigilante GANA es inválido (Formato: 00000000-0).';
+                errorMsg.classList.remove('hidden');
+                duiVigInput.focus();
+                return;
+            }
+
+            if (!validarTelefono(telVig)) {
+                errorText.innerText = 'El teléfono del Vigilante GANA es inválido (Formato: 0000-0000).';
+                errorMsg.classList.remove('hidden');
+                telVigInput.focus();
+                return;
+            }
+
+            errorMsg.classList.add('hidden');
+
+            const dataKey = `jrv_${jrvNumeroActual}`;
+            jrvDataStore[dataKey] = { mesa, duiMesa, telMesa, vig, duiVig, telVig };
+            localStorage.setItem('gana_sso_jrv_data', JSON.stringify(jrvDataStore));
+
+            cerrarSubmodalIntegrantes();
+
+            if (cvCodigoActualModal) {
+                const cv = datosSSO.find(item => item.codigo === cvCodigoActualModal);
+                if (cv) renderTablaJRV(cv);
+            }
+
+            if (distritoActual === 'RESUMEN') {
+                renderVistaResumen();
+            } else {
+                filtrarCentros();
+            }
+
+            actualizarResumenDistrito();
+            mostrarToast(`JRV N° ${jrvNumeroActual} registrada con éxito`);
+        }
+
+        function cerrarSubmodalIntegrantes() {
+            document.getElementById('submodal-integrantes').classList.add('hidden');
+            jrvNumeroActual = null;
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal-jrv').classList.add('hidden');
+            cvCodigoActualModal = null;
+        }
+
+        function mostrarToast(mensaje) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-text').innerText = mensaje;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function exportarCSV() {
+            // BOM UTF-8 para garantizar acentos y formato correcto en Excel
+            let csv = '\uFEFF';
+
+            // Encabezado principal del reporte
+            csv += '========================================================================================\n';
+            csv += 'ESTRUCTURA ELECTORAL 2027 - PABLO VIDES - GANA SAN SALVADOR OESTE\n';
+            csv += `REPORTE DESGLOSADO POR DISTRITO Y JUNTA RECEPTORA DE VOTOS (JRV) - GENERADO: ${new Date().toLocaleDateString()}\n`;
+            csv += '========================================================================================\n\n';
+
+            const distritos = ['APOPA', 'NEJAPA'];
+
+            distritos.forEach(distrito => {
+                const centrosDistrito = datosSSO.filter(cv => cv.distrito === distrito);
+                
+                csv += `########################################################################################\n`;
+                csv += `DISTRITO: ${distrito} (${centrosDistrito.length} CENTROS DE VOTACIÓN)\n`;
+                csv += `########################################################################################\n\n`;
+
+                centrosDistrito.forEach(cv => {
+                    const jefe = jefesDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
+                    const supervisor = supervisoresDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
+
+                    csv += `----------------------------------------------------------------------------------------\n`;
+                    csv += `CENTRO DE VOTACION: "${cv.nombre.replace(/"/g, '""')}" (CODIGO TSE: ${cv.codigo})\n`;
+                    csv += `DIRECCION: "${cv.direccion.replace(/"/g, '""')}" | ELECTORES: ${cv.electores}\n`;
+                    csv += `JEFE DE CENTRO: "${(jefe.nombre || 'Sin Designar').replace(/"/g, '""')}" | DUI: "${jefe.dui || '-'}" | TEL: "${jefe.tel || '-'}"\n`;
+                    csv += `SUPERVISOR DE CENTRO: "${(supervisor.nombre || 'Sin Nombrar').replace(/"/g, '""')}" | DUI: "${supervisor.dui || '-'}" | TEL: "${supervisor.tel || '-'}"\n`;
+                    csv += `----------------------------------------------------------------------------------------\n`;
+                    
+                    // Encabezados de la tabla individual de la JRV
+                    csv += 'N° JRV,ESTADO JRV,PERSONA EN MESA,DUI MESA,TELEFONO MESA,VIGILANTE GANA,DUI VIGILANTE,TELEFONO VIGILANTE\n';
+
+                    for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
+                        const data = jrvDataStore[`jrv_${num}`] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
+                        
+                        let estado = 'INCOMPLETO';
+                        if (data.mesa && data.vig) estado = 'COMPLETO';
+                        else if (data.mesa || data.vig) estado = 'PARCIAL';
+
+                        const pMesa = (data.mesa || 'Pendiente').replace(/"/g, '""');
+                        const dMesa = data.duiMesa || '-';
+                        const tMesa = data.telMesa || '-';
+                        
+                        const pVig = (data.vig || 'Sin acreditar').replace(/"/g, '""');
+                        const dVig = data.duiVig || '-';
+                        const tVig = data.telVig || '-';
+
+                        csv += `${num},"${estado}","${pMesa}","${dMesa}","${tMesa}","${pVig}","${dVig}","${tVig}"\n`;
+                    }
+                    csv += '\n'; // Salto de línea entre centros de votación
+                });
+
+                csv += '\n'; // Salto de línea entre distritos
+            });
+
+            // Descarga segura compatible con iFrames (Google Sites / Netlify / Tiiny.site)
+            const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csv);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `Estructura_Electoral_Desglosada_GANA_SSO_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            mostrarToast('CSV desglosado generado con éxito');
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
