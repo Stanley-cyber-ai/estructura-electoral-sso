@@ -551,31 +551,26 @@
             if (syncStatus) syncStatus.innerText = 'Guardando en la nube...';
             
             try {
-                // Construir URL con parámetros codificados de forma limpia
-                const params = new URLSearchParams();
-                for (const key in payload) {
-                    if (payload.hasOwnProperty(key)) {
-                        params.append(key, payload[key] || '');
-                    }
-                }
-                
-                const finalUrl = `${GOOGLE_SHEETS_URL}?${params.toString()}`;
+                // Construir URL con parámetros de consulta para disparar doGet() en Apps Script
+                const queryParams = new URLSearchParams({
+                    tipo: payload.tipo || '',
+                    id: payload.id || '',
+                    nombre1: payload.nombre1 || '',
+                    dui1: payload.dui1 || '',
+                    tel1: payload.tel1 || '',
+                    nombre2: payload.nombre2 || '',
+                    dui2: payload.dui2 || '',
+                    tel2: payload.tel2 || ''
+                }).toString();
 
-                // 1. Envío primario mediante fetch no-cors
-                fetch(finalUrl, {
-                    method: 'GET',
-                    mode: 'no-cors',
-                    cache: 'no-cache'
-                }).catch(e => console.log('Fetch diferido:', e));
+                const finalUrl = `${GOOGLE_SHEETS_URL}?${queryParams}`;
 
-                // 2. Envío secundario con sendBeacon para asegurar entrega si el usuario navega rápido
-                if (navigator.sendBeacon) {
-                    navigator.sendBeacon(finalUrl);
-                }
-
-                // 3. Método Image ping de respaldo adicional
+                // 1. Envío por Image Ping (Ejecuta doGet en Apps Script al instante)
                 const img = new Image();
                 img.src = finalUrl;
+
+                // 2. Respaldo directo con fetch no-cors
+                fetch(finalUrl, { method: 'GET', mode: 'no-cors' }).catch(err => console.log(err));
 
                 if (syncStatus) {
                     setTimeout(() => {
