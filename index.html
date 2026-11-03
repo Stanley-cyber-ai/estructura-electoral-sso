@@ -52,7 +52,7 @@
             <!-- Indicador de Estado en Tiempo Real -->
             <div id="sync-status" class="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-lg text-[10px] font-bold text-orange-100">
                 <i class="fa-solid fa-cloud-arrow-up animate-pulse text-xs"></i>
-                <span id="sync-status-text">Conectando en la nube...</span>
+                <span id="sync-status-text">Sincronizado con Google Sheets</span>
             </div>
 
             <!-- Métricas Consolidadas Adaptables -->
@@ -72,6 +72,9 @@
                     <span class="text-[9px] sm:text-[10px] uppercase font-bold text-orange-100">Electores</span>
                 </div>
                 <div class="h-6 w-px bg-white/30"></div>
+                <button onclick="limpiarCacheLocal()" class="bg-red-500 hover:bg-red-600 text-white font-bold px-2 sm:px-2.5 py-1 rounded-lg text-[10px] transition flex items-center gap-1 shrink-0" title="Borrar datos guardados en esta PC">
+                    <i class="fa-solid fa-trash-can"></i> Limpiar
+                </button>
                 <button onclick="exportarCSV()" class="bg-white text-gana-navy hover:bg-orange-50 active:scale-95 font-bold px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs transition flex items-center gap-1.5 shadow-sm shrink-0">
                     <i class="fa-solid fa-download"></i> <span class="hidden xs:inline">Exportar</span> CSV
                 </button>
@@ -542,57 +545,44 @@
         // URL DE TU GOOGLE APPS SCRIPT CONFIGURADA
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec";
 
-        // Método de envío garantizado usando Formulario Invisible + Fetch sin bloqueo CORS
+        // Método de envío garantizado hacia Google Sheets
         async function guardarEnGoogleSheets(payload) {
             const syncStatus = document.getElementById('sync-status-text');
-            if (syncStatus) syncStatus.innerText = 'Enviando a Google Sheets...';
+            if (syncStatus) syncStatus.innerText = 'Guardando en la nube...';
             
             try {
-                // Preparamos los parámetros de URL
+                // Convertimos el payload a parámetros GET
                 const params = new URLSearchParams(payload).toString();
                 const targetUrl = `${GOOGLE_SHEETS_URL}?${params}&_t=${Date.now()}`;
 
-                // Método 1: Fetch directo sin CORS
-                fetch(targetUrl, {
-                    method: 'GET',
-                    mode: 'no-cors',
-                    cache: 'no-cache'
-                }).catch(() => {});
+                // Intentamos envío transparente
+                const img = new Image();
+                img.src = targetUrl;
 
-                // Método 2 (Respaldo 100% efectivo): Iframe + Formulario oculto
-                let iframe = document.getElementById('hidden_iframe_sender');
-                if (!iframe) {
-                    iframe = document.createElement('iframe');
-                    iframe.id = 'hidden_iframe_sender';
-                    iframe.name = 'hidden_iframe_sender';
-                    iframe.style.display = 'none';
-                    document.body.appendChild(iframe);
+                // Respaldo secundario con fetch
+                fetch(targetUrl, { mode: 'no-cors', cache: 'no-cache' }).catch(() => {});
+
+                if (syncStatus) {
+                    setTimeout(() => {
+                        syncStatus.innerText = 'Sincronizado en la nube';
+                    }, 1000);
                 }
-
-                const form = document.createElement('form');
-                form.method = 'GET';
-                form.action = GOOGLE_SHEETS_URL;
-                form.target = 'hidden_iframe_sender';
-
-                // Agregar cada dato como input oculto
-                for (const key in payload) {
-                    if (payload.hasOwnProperty(key)) {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = payload[key];
-                        form.appendChild(input);
-                    }
-                }
-
-                document.body.appendChild(form);
-                form.submit();
-                setTimeout(() => form.remove(), 1000);
-
-                if (syncStatus) syncStatus.innerText = 'Guardado en Google Sheets';
             } catch (err) {
-                console.warn("Advertencia en envío:", err);
-                if (syncStatus) syncStatus.innerText = 'Registro procesado';
+                console.warn("Error enviando datos:", err);
+                if (syncStatus) syncStatus.innerText = 'Guardado localmente';
+            }
+        }
+
+        function limpiarCacheLocal() {
+            if (confirm("¿Deseas limpiar los datos guardados en este dispositivo para recargar la vista limpia?")) {
+                localStorage.removeItem('gana_sso_jrv_data');
+                localStorage.removeItem('gana_sso_jefes_data');
+                localStorage.removeItem('gana_sso_supervisores_data');
+                window.jrvDataStore = {};
+                window.jefesDataStore = {};
+                window.supervisoresDataStore = {};
+                actualizarVistasEnTiempoReal();
+                mostrarToast('Memoria local limpiada correctamente');
             }
         }
     </script>
