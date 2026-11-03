@@ -546,55 +546,42 @@
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec";
 
         // Envío multicanal garantizado a Google Sheets
-        function guardarEnGoogleSheets(payload) {
+        async function guardarEnGoogleSheets(payload) {
             const syncStatus = document.getElementById('sync-status-text');
             if (syncStatus) syncStatus.innerText = 'Guardando en la nube...';
             
             try {
-                // 1. Método Formulario Invisible (100% efectivo sin bloqueo CORS)
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = GOOGLE_SHEETS_URL;
-                form.target = 'hidden_iframe_upload';
-                form.style.display = 'none';
-
-                for (const key in payload) {
-                    if (payload.hasOwnProperty(key)) {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = payload[key] || '';
-                        form.appendChild(input);
-                    }
-                }
-
-                // Crear iframe oculto si no existe
-                let iframe = document.getElementById('hidden_iframe_upload');
-                if (!iframe) {
-                    iframe = document.createElement('iframe');
-                    iframe.id = 'hidden_iframe_upload';
-                    iframe.name = 'hidden_iframe_upload';
-                    iframe.style.display = 'none';
-                    document.body.appendChild(iframe);
-                }
-
-                document.body.appendChild(form);
-                form.submit();
-                document.body.removeChild(form);
-
-                // 2. Método Image Ping de Respaldo simultáneo
+                // Construir URL con parámetros codificados de forma limpia
                 const params = new URLSearchParams();
                 for (const key in payload) {
                     if (payload.hasOwnProperty(key)) {
                         params.append(key, payload[key] || '');
                     }
                 }
-                const img = new Image();
-                img.src = `${GOOGLE_SHEETS_URL}?${params.toString()}`;
+                
+                const finalUrl = `${GOOGLE_SHEETS_URL}?${params.toString()}`;
 
-                setTimeout(() => {
-                    if (syncStatus) syncStatus.innerText = 'Sincronizado con Google Sheets';
-                }, 1200);
+                // 1. Envío primario mediante fetch no-cors
+                fetch(finalUrl, {
+                    method: 'GET',
+                    mode: 'no-cors',
+                    cache: 'no-cache'
+                }).catch(e => console.log('Fetch diferido:', e));
+
+                // 2. Envío secundario con sendBeacon para asegurar entrega si el usuario navega rápido
+                if (navigator.sendBeacon) {
+                    navigator.sendBeacon(finalUrl);
+                }
+
+                // 3. Método Image ping de respaldo adicional
+                const img = new Image();
+                img.src = finalUrl;
+
+                if (syncStatus) {
+                    setTimeout(() => {
+                        syncStatus.innerText = 'Sincronizado con Google Sheets';
+                    }, 800);
+                }
 
             } catch (err) {
                 console.warn("Error enviando datos a la nube:", err);
