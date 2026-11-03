@@ -389,8 +389,8 @@
     </div>
 
     <!-- IFRAME Y FORMULARIO INVISIBLE PARA ENVÍO A GOOGLE APPS SCRIPT SIN BLOQUEO DE NAVEGADOR -->
-    <iframe name="hidden_iframe_gsheets" id="hidden_iframe_gsheets" style="display:none;" onload="if(window.submittedToGSheets){console.log('Enviado a Google Sheets con éxito');}"></iframe>
-    <form id="form_hidden_gsheets" action="https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec" method="POST" target="hidden_iframe_gsheets" class="hidden">
+    <iframe name="hidden_iframe_gsheets" id="hidden_iframe_gsheets" style="display:none;"></iframe>
+    <form id="form_hidden_gsheets" action="https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec" method="GET" target="hidden_iframe_gsheets" class="hidden">
         <input type="hidden" name="tipo" id="hidden_tipo">
         <input type="hidden" name="id" id="hidden_id">
         <input type="hidden" name="nombre1" id="hidden_nombre1">
@@ -412,7 +412,7 @@
             if (syncStatus) syncStatus.innerText = 'Guardando en la nube...';
             
             try {
-                // Asignar los valores a los inputs ocultos coincidiendo exactamente con e.parameter de Google Script
+                // 1. Asignar los valores a los inputs ocultos del formulario HTML
                 document.getElementById('hidden_tipo').value = payload.tipo || '';
                 document.getElementById('hidden_id').value = payload.id || '';
                 document.getElementById('hidden_nombre1').value = payload.nombre1 || '';
@@ -422,13 +422,11 @@
                 document.getElementById('hidden_dui2').value = payload.dui2 || '';
                 document.getElementById('hidden_tel2').value = payload.tel2 || '';
 
-                window.submittedToGSheets = true;
-                
-                // Envío principal vía formulario HTML al iFrame oculto
+                // 2. Envío a través del formulario HTML nativo hacia el iframe
                 const form = document.getElementById('form_hidden_gsheets');
                 form.submit();
 
-                // Envío secundario de respaldo con fetch (Query String)
+                // 3. Envío paralelo por Image Beacon GET (Garantiza ejecución inmediata en el servidor de Google)
                 const queryParams = new URLSearchParams({
                     tipo: payload.tipo || '',
                     id: payload.id || '',
@@ -437,15 +435,17 @@
                     tel1: payload.tel1 || '',
                     nombre2: payload.nombre2 || '',
                     dui2: payload.dui2 || '',
-                    tel2: payload.tel2 || ''
+                    tel2: payload.tel2 || '',
+                    _t: new Date().getTime()
                 }).toString();
 
-                fetch(`${GOOGLE_SHEETS_URL}?${queryParams}`, { method: 'GET', mode: 'no-cors' }).catch(e => console.log(e));
+                const img = new Image();
+                img.src = `${GOOGLE_SHEETS_URL}?${queryParams}`;
 
                 if (syncStatus) {
                     setTimeout(() => {
                         syncStatus.innerText = 'Sincronizado con Google Sheets';
-                    }, 1000);
+                    }, 1200);
                 }
 
             } catch (err) {
