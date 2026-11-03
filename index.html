@@ -537,109 +537,34 @@
         <span id="toast-text">Operación realizada con éxito</span>
     </div>
 
-    <!-- FIREBASE SDK EN TIEMPO REAL -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- SCRIPT DE CONEXIÓN A GOOGLE SHEETS -->
+    <script>
+        // PEGA AQUÍ LA URL DE TU GOOGLE APPS SCRIPT
+        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/TU_SCRIPT_ID_AQUI/exec";
 
-        // Configuración de Firebase y Variables Globales del Entorno
-        const firebaseConfig = typeof __firebase_config !== 'undefined' 
-            ? JSON.parse(__firebase_config) 
-            : {
-                apiKey: "demo-key",
-                authDomain: "demo-project.firebaseapp.com",
-                projectId: "demo-project",
-                storageBucket: "demo-project.appspot.com",
-                messagingSenderId: "123456789",
-                appId: "1:123456789:web:demo"
-            };
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'gana-sso-2027';
-
-        // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        window.db = db;
-        window.appId = appId;
-
-        // Rutas Estrictas de Colección
-        window.colPublica = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
-        window.docPublico = (colName, docId) => doc(db, 'artifacts', appId, 'public', 'data', colName, docId);
-
-        // Autenticación Antes de Cualquier Consulta
-        async function initAuth() {
+        // Función centralizada para enviar datos a la Hoja de Cálculo
+        async function guardarEnGoogleSheets(payload) {
+            document.getElementById('sync-status-text').innerText = 'Guardando en Google Sheets...';
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+                if (GOOGLE_SHEETS_URL.includes("TU_SCRIPT_ID_AQUI")) {
+                    console.log("Modo Demo: Se guardará localmente. Configura la URL de Google Sheets para sincronizar.");
+                    document.getElementById('sync-status-text').innerText = 'Modo Local (Sin URL)';
+                    return;
                 }
-                document.getElementById('sync-status-text').innerText = 'En la nube (Tiempo Real)';
-                iniciarEscuchadoresNube();
+
+                await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Permite enviar desde GitHub/Google Sites a Google Sheets
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                document.getElementById('sync-status-text').innerText = 'Sincronizado con Google Sheets';
             } catch (err) {
-                console.error("Error al autenticar en la nube:", err);
-                document.getElementById('sync-status-text').innerText = 'Modo Local (Offline)';
+                console.error("Error al enviar a Google Sheets:", err);
+                document.getElementById('sync-status-text').innerText = 'Error de Sincronización';
             }
         }
-
-        // Escuchadores de Cambios Multi-Dispositivo (onSnapshot)
-        function iniciarEscuchadoresNube() {
-            // 1. Escuchar cambios en JRVs
-            onSnapshot(window.colPublica('jrvs'), (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added" || change.type === "modified") {
-                        window.jrvDataStore[change.doc.id] = change.doc.data();
-                    }
-                });
-                localStorage.setItem('gana_sso_jrv_data', JSON.stringify(window.jrvDataStore));
-                window.actualizarVistasEnTiempoReal();
-            }, (err) => console.error("Error en realtime JRV:", err));
-
-            // 2. Escuchar cambios en Jefes de Centro
-            onSnapshot(window.colPublica('jefes'), (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added" || change.type === "modified") {
-                        window.jefesDataStore[change.doc.id] = change.doc.data();
-                    }
-                });
-                localStorage.setItem('gana_sso_jefes_data', JSON.stringify(window.jefesDataStore));
-                window.actualizarVistasEnTiempoReal();
-            }, (err) => console.error("Error en realtime Jefes:", err));
-
-            // 3. Escuchar cambios en Supervisores
-            onSnapshot(window.colPublica('supervisores'), (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added" || change.type === "modified") {
-                        window.supervisoresDataStore[change.doc.id] = change.doc.data();
-                    }
-                });
-                localStorage.setItem('gana_sso_supervisores_data', JSON.stringify(window.supervisoresDataStore));
-                window.actualizarVistasEnTiempoReal();
-            }, (err) => console.error("Error en realtime Supervisores:", err));
-        }
-
-        window.guardarJefeNube = async function(codigo, data) {
-            try {
-                await setDoc(window.docPublico('jefes', `cv_${codigo}`), data);
-            } catch (e) { console.error("Error al guardar jefe en nube:", e); }
-        }
-
-        window.guardarSupervisorNube = async function(codigo, data) {
-            try {
-                await setDoc(window.docPublico('supervisores', `cv_${codigo}`), data);
-            } catch (e) { console.error("Error al guardar supervisor en nube:", e); }
-        }
-
-        window.guardarJrvNube = async function(numJrv, data) {
-            try {
-                await setDoc(window.docPublico('jrvs', `jrv_${numJrv}`), data);
-            } catch (e) { console.error("Error al guardar JRV en nube:", e); }
-        }
-
-        initAuth();
     </script>
 
     <!-- SCRIPTS CON LA BASE DE DATOS SSO Y LÓGICA DE APLICACIÓN -->
@@ -976,14 +901,19 @@
             window.jefesDataStore[`cv_${cvCodigoActualJefe}`] = payload;
             localStorage.setItem('gana_sso_jefes_data', JSON.stringify(window.jefesDataStore));
 
-            if (window.guardarJefeNube) {
-                await window.guardarJefeNube(cvCodigoActualJefe, payload);
-            }
+            // Enviar a Google Sheets
+            await guardarEnGoogleSheets({
+                tipo: 'JEFE_CENTRO',
+                id: `CV_${cvCodigoActualJefe}`,
+                nombre1: nombre,
+                dui1: dui,
+                tel1: tel
+            });
 
             cerrarModalJefe();
             filtrarCentros();
             actualizarResumenDistrito();
-            mostrarToast('Jefe de Centro guardado y sincronizado');
+            mostrarToast('Jefe de Centro guardado y enviado a Google Sheets');
         }
 
         function cerrarModalJefe() {
@@ -1044,14 +974,19 @@
             window.supervisoresDataStore[`cv_${cvCodigoActualSupervisor}`] = payload;
             localStorage.setItem('gana_sso_supervisores_data', JSON.stringify(window.supervisoresDataStore));
 
-            if (window.guardarSupervisorNube) {
-                await window.guardarSupervisorNube(cvCodigoActualSupervisor, payload);
-            }
+            // Enviar a Google Sheets
+            await guardarEnGoogleSheets({
+                tipo: 'SUPERVISOR',
+                id: `CV_${cvCodigoActualSupervisor}`,
+                nombre1: nombre,
+                dui1: dui,
+                tel1: tel
+            });
 
             cerrarModalSupervisor();
             filtrarCentros();
             actualizarResumenDistrito();
-            mostrarToast('Supervisor guardado y sincronizado');
+            mostrarToast('Supervisor guardado y enviado a Google Sheets');
         }
 
         function cerrarModalSupervisor() {
@@ -1219,9 +1154,17 @@
             window.jrvDataStore[dataKey] = payload;
             localStorage.setItem('gana_sso_jrv_data', JSON.stringify(window.jrvDataStore));
 
-            if (window.guardarJrvNube) {
-                await window.guardarJrvNube(jrvNumeroActual, payload);
-            }
+            // Enviar a Google Sheets
+            await guardarEnGoogleSheets({
+                tipo: 'JRV',
+                id: `JRV_${jrvNumeroActual}`,
+                nombre1: mesa,
+                dui1: duiMesa,
+                tel1: telMesa,
+                nombre2: vig,
+                dui2: duiVig,
+                tel2: telVig
+            });
 
             cerrarSubmodalIntegrantes();
 
@@ -1237,7 +1180,7 @@
             }
 
             actualizarResumenDistrito();
-            mostrarToast(`JRV N° ${jrvNumeroActual} registrada y sincronizada`);
+            mostrarToast(`JRV N° ${jrvNumeroActual} registrada y enviada a Google Sheets`);
         }
 
         function cerrarSubmodalIntegrantes() {
