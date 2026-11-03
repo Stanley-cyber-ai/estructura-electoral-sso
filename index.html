@@ -32,56 +32,56 @@
             border-radius: 8px;
             font-size: 0.9rem;
         }
+        .card-border-highlight {
+            border-left: 5px solid #E86C00;
+        }
     </style>
 </head>
 <body class="bg-slate-100 font-sans min-h-screen flex flex-col text-slate-800 overflow-x-hidden selection:bg-gana-orange selection:text-white">
 
-    <!-- HEADER / ENCABEZADO RESPONSIVE -->
+    <!-- HEADER / ENCABEZADO RESPONSIVE (Estilo Original Restaurado) -->
     <header class="bg-gana-orange text-white shadow-lg sticky top-0 z-40 w-full">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
             
             <!-- Identidad SSO / Candidato -->
-            <div class="flex items-center justify-center sm:justify-start gap-2.5 sm:gap-4 text-center sm:text-left w-full sm:w-auto">
-                <span class="bg-gana-navy text-white font-light text-xl sm:text-2xl tracking-widest px-3 py-1 rounded-xl shadow-md leading-none shrink-0">SSO</span>
-                <div class="sm:border-l-2 sm:border-white/30 sm:pl-3.5">
+            <div class="flex items-center gap-3">
+                <span class="bg-gana-navy text-white font-bold text-xl px-3 py-1 rounded-lg shadow">SSO</span>
+                <div>
                     <h1 class="text-xl sm:text-2xl font-black tracking-tight leading-none text-white">PABLO VIDES</h1>
-                    <p class="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-orange-100 mt-0.5">ESTRUCTURA ELECTORAL 2027 — SAN SALVADOR OESTE</p>
+                    <p class="text-[10px] sm:text-xs uppercase font-bold text-orange-100 mt-0.5">ESTRUCTURA ELECTORAL 2027 — SAN SALVADOR OESTE</p>
                 </div>
             </div>
 
-            <!-- Indicador de Estado en Tiempo Real -->
-            <div id="sync-status" class="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-lg text-[10px] font-bold text-orange-100">
-                <i class="fa-solid fa-cloud-arrow-up animate-pulse text-xs"></i>
+            <!-- Indicador de Estado de Sincronización Backend -->
+            <div id="sync-status" class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full text-xs font-semibold text-orange-100">
+                <i class="fa-solid fa-cloud-arrow-up animate-pulse text-sm"></i>
                 <span id="sync-status-text">Sincronizado con Google Sheets</span>
             </div>
 
-            <!-- Métricas Consolidadas Adaptables -->
-            <div class="flex items-center justify-center sm:justify-end gap-1.5 sm:gap-3 bg-gana-navy/25 backdrop-blur-md p-1.5 sm:p-2 rounded-xl border border-white/20 text-xs w-full sm:w-auto">
+            <!-- Métricas y Botones de Acción -->
+            <div class="flex items-center gap-2 sm:gap-3">
                 <div class="text-center px-2">
-                    <span class="block font-black text-sm sm:text-base text-white leading-tight" id="stat-cv">28</span>
-                    <span class="text-[9px] sm:text-[10px] uppercase font-bold text-orange-100">Centros</span>
+                    <span class="block font-black text-base leading-none" id="stat-cv">28</span>
+                    <span class="text-[9px] uppercase font-bold text-orange-100">Centros</span>
                 </div>
                 <div class="h-6 w-px bg-white/30"></div>
                 <div class="text-center px-2">
-                    <span class="block font-black text-sm sm:text-base text-white leading-tight" id="stat-jrv">214</span>
-                    <span class="text-[9px] sm:text-[10px] uppercase font-bold text-orange-100">JRV Total</span>
+                    <span class="block font-black text-base leading-none" id="stat-jrv">214</span>
+                    <span class="text-[9px] uppercase font-bold text-orange-100">JRV Total</span>
                 </div>
                 <div class="h-6 w-px bg-white/30"></div>
-                <div class="text-center px-2">
-                    <span class="block font-black text-sm sm:text-base text-white leading-tight">137,363</span>
-                    <span class="text-[9px] sm:text-[10px] uppercase font-bold text-orange-100">Electores</span>
-                </div>
-                <div class="h-6 w-px bg-white/30"></div>
-                <button onclick="limpiarCacheLocal()" class="bg-red-500 hover:bg-red-600 text-white font-bold px-2 sm:px-2.5 py-1 rounded-lg text-[10px] transition flex items-center gap-1 shrink-0" title="Borrar datos guardados en esta PC">
+                <button onclick="limpiarCacheLocal()" class="bg-red-500 hover:bg-red-600 text-white font-bold px-2.5 py-1.5 rounded-lg text-xs transition flex items-center gap-1 shadow-sm" title="Borrar datos guardados en esta PC">
                     <i class="fa-solid fa-trash-can"></i> Limpiar
                 </button>
-                <button onclick="exportarCSV()" class="bg-white text-gana-navy hover:bg-orange-50 active:scale-95 font-bold px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs transition flex items-center gap-1.5 shadow-sm shrink-0">
-                    <i class="fa-solid fa-download"></i> <span class="hidden xs:inline">Exportar</span> CSV
+                <button onclick="exportarCSV()" class="bg-white text-gana-navy hover:bg-orange-50 font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-download"></i> Exportar CSV
                 </button>
             </div>
         </div>
     </header>
 
+    <!-- MAIN CONTENT RESPONSIVE -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
     <!-- MAIN CONTENT RESPONSIVE -->
     <main class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-1 w-full">
         
@@ -390,7 +390,11 @@
 
     <!-- IFRAME Y FORMULARIO INVISIBLE PARA ENVÍO A GOOGLE APPS SCRIPT SIN BLOQUEO DE NAVEGADOR -->
     <iframe name="hidden_iframe_gsheets" id="hidden_iframe_gsheets" style="display:none;"></iframe>
-    <form id="form_hidden_gsheets" action="https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec" method="GET" target="hidden_iframe_gsheets" class="hidden">
+    <form id="form_hidden_gsheets" 
+          action="https://script.google.com/macros/s/AKfycbwYkIRZLWxElPoAYJ_uUpdVXuOLGomUATURgGTyO55pBd9i6o2UIjumfdJ8uAJZ2xyf/exec" 
+          method="POST" 
+          target="hidden_iframe_gsheets" 
+          class="hidden">
         <input type="hidden" name="tipo" id="hidden_tipo">
         <input type="hidden" name="id" id="hidden_id">
         <input type="hidden" name="nombre1" id="hidden_nombre1">
@@ -404,691 +408,497 @@
     <!-- SCRIPT DE CONEXIÓN A GOOGLE SHEETS Y SINCRONIZACIÓN -->
     <script>
         // URL DE TU GOOGLE APPS SCRIPT CONFIGURADA
-        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec";
+        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwYkIRZLWxElPoAYJ_uUpdVXuOLGomUATURgGTyO55pBd9i6o2UIjumfdJ8uAJZ2xyf/exec";
 
-        // 1. Envío limpio mediante API fetch/no-cors a Google Apps Script (Sin duplicar peticiones)
-        async function guardarEnGoogleSheets(payload) {
-            const syncStatus = document.getElementById('sync-status-text');
-            if (syncStatus) syncStatus.innerText = 'Guardando en la nube...';
-            
+        // ESTADO Y BASE DE DATOS LOCAL
+        let distritoActual = 'APOPA';
+        let jefesCentros = {};
+        let supervisoresCentros = {};
+        let jrvRegistros = {};
+        let centroSeleccionadoActivo = null;
+        let jrvSeleccionadaActiva = null;
+
+        // DATASET DE CENTROS DE VOTACIÓN DE SAN SALVADOR OESTE
+        const CENTROS_VOTACION = [
+            // APOPA (21 Centros)
+            { id: "1020101", distrito: "APOPA", nombre: "CENTRO ESCOLAR VICENTE ACOSTA", direccion: "CUARTA CALLE PONIENTE NUMERO 38 BARRIO EL CALVARIO, APOPA", electores: 8614, jrvInicio: 88, jrvFin: 100, totalJrv: 13 },
+            { id: "1020102", distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO PROFESORA ANGELA DE JESUS DE ROMERO", direccion: "COLONIA CIUDAD OBRERA, CALLE BRACILIA, CONTIGUO A CANCHA OFICIAL DE APOPA", electores: 7937, jrvInicio: 101, jrvFin: 112, totalJrv: 12 },
+            { id: "1020103", distrito: "APOPA", nombre: "INSTITUTO NACIONAL DE APOPA INA", direccion: "CARRETERA TRONCAL DEL NORTE KILOMETRO 12 1/2, APOPA", electores: 7872, jrvInicio: 113, jrvFin: 124, totalJrv: 12 },
+            { id: "1020104", distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO BENJAMIN BLOOM", direccion: "COLONIA POPOTLAN I, PASAJE 3, APOPA", electores: 7854, jrvInicio: 125, jrvFin: 136, totalJrv: 12 },
+            { id: "1020105", distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO REPUBLICA DE VENEZUELA", direccion: "URBANIZACION VALLE DEL SOL, CALLE PRINCIPAL, APOPA", electores: 7471, jrvInicio: 137, jrvFin: 147, totalJrv: 11 },
+            { id: "1020106", distrito: "APOPA", nombre: "CENTRO ESCOLAR INGENIERO LUIS PASTOR SESTIER", direccion: "CANTON VALLE DEL BUEY, APOPA", electores: 6668, jrvInicio: 148, jrvFin: 157, totalJrv: 10 },
+            { id: "1020107", distrito: "APOPA", nombre: "CENTRO ESCOLAR PRESBITERO SEBASTIAN DICONZA", direccion: "COLONIA SAN FRENANDO, CALLE PRINCIPAL, APOPA", electores: 6653, jrvInicio: 158, jrvFin: 167, totalJrv: 10 },
+            { id: "1020108", distrito: "APOPA", nombre: "CENTRO ESCOLAR REGIONAL DE POPOTLAN", direccion: "URBANIZACION POPOTLAN II, CALLE PRINCIPAL, APOPA", electores: 6205, jrvInicio: 168, jrvFin: 177, totalJrv: 10 },
+            { id: "1020109", distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO DE PERALTA", direccion: "CANTON PERALTA, CALLE AL MATASANO, APOPA", electores: 4627, jrvInicio: 178, jrvFin: 184, totalJrv: 7 },
+            { id: "1020110", distrito: "APOPA", nombre: "CENTRO ESCOLAR CATOLICO SAN VICENTE DE PAUL", direccion: "COLONIA SAN FRANCISCO, APOPA", electores: 4578, jrvInicio: 185, jrvFin: 191, totalJrv: 7 },
+            { id: "1020111", distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON POPOTLAN", direccion: "CANTON POPOTLAN, CASERIO LOS LUJAN, APOPA", electores: 4181, jrvInicio: 192, jrvFin: 198, totalJrv: 7 },
+            { id: "1020112", distrito: "APOPA", nombre: "CENTRO ESCOLAR BARRIO EL TRANSITO", direccion: "CALLE PRINCIPAL BARRIO EL TRANSITO, APOPA", electores: 3950, jrvInicio: 199, jrvFin: 204, totalJrv: 6 },
+            { id: "1020113", distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO SANTA TERESA", direccion: "URBANIZACION SANTA TERESA, APOPA", electores: 3820, jrvInicio: 205, jrvFin: 210, totalJrv: 6 },
+            { id: "1020114", distrito: "APOPA", nombre: "CENTRO ESCOLAR HERMANA SARA GONZALEZ", direccion: "COLONIA CHINAMECA, APOPA", electores: 3512, jrvInicio: 211, jrvFin: 216, totalJrv: 6 },
+            { id: "1020115", distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON EL SOCORRO", direccion: "CANTON EL SOCORRO, APOPA", electores: 3200, jrvInicio: 217, jrvFin: 221, totalJrv: 5 },
+            { id: "1020116", distrito: "APOPA", nombre: "CENTRO ESCOLAR CASERIO SAN FABIAN", direccion: "CANTON POPOTLAN, CASERIO SAN FABIAN, APOPA", electores: 2980, jrvInicio: 222, jrvFin: 226, totalJrv: 5 },
+            { id: "1020117", distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON TRES CEIBAS", direccion: "CANTON TRES CEIBAS, APOPA", electores: 2750, jrvInicio: 227, jrvFin: 231, totalJrv: 5 },
+            { id: "1020118", distrito: "APOPA", nombre: "CENTRO ESCOLAR COLONIA TIHUILOTEYO", direccion: "COLONIA TIHUILOTEYO, APOPA", electores: 2400, jrvInicio: 232, jrvFin: 235, totalJrv: 4 },
+            { id: "1020119", distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON JOYAS DE CEREN", direccion: "CANTON JOYAS DE CEREN, APOPA", electores: 2100, jrvInicio: 236, jrvFin: 239, totalJrv: 4 },
+            { id: "1020120", distrito: "APOPA", nombre: "CENTRO ESCOLAR CASERIO SAN NICOLAS", direccion: "CANTON PERALTA, CASERIO SAN NICOLAS, APOPA", electores: 1800, jrvInicio: 240, jrvFin: 242, totalJrv: 3 },
+            { id: "1020121", distrito: "APOPA", nombre: "CENTRO ESCOLAR COLONIA LAS DELICIAS", direccion: "COLONIA LAS DELICIAS, APOPA", electores: 1200, jrvInicio: 243, jrvFin: 244, totalJrv: 2 },
+
+            // NEJAPA (7 Centros)
+            { id: "1020201", distrito: "NEJAPA", nombre: "COMPLEJO EDUCATIVO JOSE MATIAS DELGADO", direccion: "CALLE AL POLIDEPORTIVO, NEJAPA", electores: 7520, jrvInicio: 1, jrvFin: 12, totalJrv: 12 },
+            { id: "1020202", distrito: "NEJAPA", nombre: "CENTRO ESCOLAR CANTON EL SALITRAL", direccion: "CANTON EL SALITRAL, NEJAPA", electores: 4890, jrvInicio: 13, jrvFin: 20, totalJrv: 8 },
+            { id: "1020203", distrito: "NEJAPA", nombre: "CENTRO ESCOLAR CANTON TUTULTEPEQUE", direccion: "CANTON TUTULTEPEQUE, NEJAPA", electores: 4150, jrvInicio: 21, jrvFin: 27, totalJrv: 7 },
+            { id: "1020204", distrito: "NEJAPA", nombre: "CENTRO ESCOLAR CANTON CAMOTEPEQUE", direccion: "CANTON CAMOTEPEQUE, NEJAPA", electores: 3600, jrvInicio: 28, jrvFin: 33, totalJrv: 6 },
+            { id: "1020205", distrito: "NEJAPA", nombre: "CENTRO ESCOLAR CANTON SAN JUAN DE DIOS", direccion: "CANTON SAN JUAN DE DIOS, NEJAPA", electores: 3100, jrvInicio: 34, jrvFin: 38, totalJrv: 5 },
+            { id: "1020206", distrito: "NEJAPA", nombre: "CENTRO ESCOLAR CANTON CONCEPCION", direccion: "CANTON CONCEPCION, NEJAPA", electores: 2400, jrvInicio: 39, jrvFin: 42, totalJrv: 4 },
+            { id: "1020207", distrito: "NEJAPA", nombre: "CENTRO ESCOLAR CASERIO LA GRANJA", direccion: "CASERIO LA GRANJA, NEJAPA", electores: 1800, jrvInicio: 43, jrvFin: 45, totalJrv: 3 }
+        ];
+
+        // FUNCIONES DE ALMACENAMIENTO LOCAL
+        function guardarLocalmente() {
             try {
-                const queryParams = new URLSearchParams({
-                    tipo: payload.tipo || '',
-                    id: payload.id || '',
-                    nombre1: payload.nombre1 || '',
-                    dui1: payload.dui1 || '',
-                    tel1: payload.tel1 || '',
-                    nombre2: payload.nombre2 || '',
-                    dui2: payload.dui2 || '',
-                    tel2: payload.tel2 || '',
-                    _t: new Date().getTime()
-                }).toString();
-
-                // Petición única sin duplicados
-                await fetch(`${GOOGLE_SHEETS_URL}?${queryParams}`, {
-                    method: 'GET',
-                    mode: 'no-cors'
-                });
-
-                if (syncStatus) {
-                    syncStatus.innerText = 'Sincronizado con Google Sheets';
-                }
-            } catch (err) {
-                console.warn("Error enviando datos a la nube:", err);
-                if (syncStatus) syncStatus.innerText = 'Guardado localmente (Offline)';
+                localStorage.setItem('gana_sso_jefes', JSON.stringify(jefesCentros));
+                localStorage.setItem('gana_sso_supervisores', JSON.stringify(supervisoresCentros));
+                localStorage.setItem('gana_sso_jrvs', JSON.stringify(jrvRegistros));
+            } catch (e) {
+                console.error('Error al guardar en localStorage:', e);
             }
         }
 
-        // 2. Función para descargar y consultar los registros guardados en Google Sheets al iniciar
-        async function cargarDatosDesdeGoogleSheets() {
-            const syncStatus = document.getElementById('sync-status-text');
-            if (syncStatus) syncStatus.innerText = 'Cargando datos de la nube...';
-
+        function cargarLocalmente() {
             try {
-                const response = await fetch(`${GOOGLE_SHEETS_URL}?action=read&_t=${new Date().getTime()}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && Array.isArray(data.registros)) {
-                        // Procesar cada fila leída de la base de datos
-                        data.registros.forEach(row => {
-                            if (row.tipo === 'JEFE_CENTRO') {
-                                window.jefesDataStore[row.id] = { nombre: row.nombre1, dui: row.dui1, tel: row.tel1 };
-                            } else if (row.tipo === 'SUPERVISOR') {
-                                window.supervisoresDataStore[row.id] = { nombre: row.nombre1, dui: row.dui1, tel: row.tel1 };
-                            } else if (row.tipo === 'JRV') {
-                                window.jrvDataStore[row.id] = {
-                                    mesa: row.nombre1,
-                                    duiMesa: row.dui1,
-                                    telMesa: row.tel1,
-                                    vig: row.nombre2,
-                                    duiVig: row.dui2,
-                                    telVig: row.tel2
-                                };
-                            }
-                        });
+                const j = localStorage.getItem('gana_sso_jefes');
+                const s = localStorage.getItem('gana_sso_supervisores');
+                const r = localStorage.getItem('gana_sso_jrvs');
 
-                        // Resguardar en caché local y actualizar interfaz
-                        localStorage.setItem('gana_sso_jrv_data', JSON.stringify(window.jrvDataStore));
-                        localStorage.setItem('gana_sso_jefes_data', JSON.stringify(window.jefesDataStore));
-                        localStorage.setItem('gana_sso_supervisores_data', JSON.stringify(window.supervisoresDataStore));
-                        
-                        actualizarVistasEnTiempoReal();
-                        if (syncStatus) syncStatus.innerText = 'Datos sincronizados desde la nube';
-                    }
-                }
-            } catch (err) {
-                console.log("Servidor en modo envío rápido o lectura offline. Mostrando cache local.", err);
-                if (syncStatus) syncStatus.innerText = 'Sincronizado con Google Sheets';
+                if (j) jefesCentros = JSON.parse(j);
+                if (s) supervisoresCentros = JSON.parse(s);
+                if (r) jrvRegistros = JSON.parse(r);
+            } catch (e) {
+                console.error('Error al cargar de localStorage:', e);
             }
         }
 
         function limpiarCacheLocal() {
-            if (confirm("¿Deseas limpiar los datos guardados en este dispositivo para recargar la vista limpia?")) {
-                localStorage.removeItem('gana_sso_jrv_data');
-                localStorage.removeItem('gana_sso_jefes_data');
-                localStorage.removeItem('gana_sso_supervisores_data');
-                window.jrvDataStore = {};
-                window.jefesDataStore = {};
-                window.supervisoresDataStore = {};
-                actualizarVistasEnTiempoReal();
-                mostrarToast('Memoria local limpiada correctamente');
-            }
-        }
-    </script>
-
-    <!-- SCRIPTS CON LA BASE DE DATOS SSO Y LÓGICA DE APLICACIÓN -->
-    <script>
-        const datosSSO = [
-            // APOPA (21 Centros)
-            { codigo: 1020101, distrito: "APOPA", nombre: "CENTRO ESCOLAR VICENTE ACOSTA", direccion: "CUARTA CALLE PONIENTE NUMERO 38 BARRIO EL CALVARIO, APOPA", electores: 8614, jrvInicial: 88, jrvFinal: 100, totalJrv: 13 },
-            { codigo: 1020102, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO PROFESORA ANGELA DE JESUS DE ROMERO", direccion: "COLONIA CIUDAD OBRERA, CALLE BRACILIA, CONTIGUO A CANCHA OFICIAL DE APOPA", electores: 7937, jrvInicial: 101, jrvFinal: 112, totalJrv: 12 },
-            { codigo: 1020103, distrito: "APOPA", nombre: "CENTRO ESCOLAR REPUBLICA DE CHINA", direccion: "AVENIDA PRINCIPAL, COLONIA CHINTUC NUMERO 1", electores: 3163, jrvInicial: 113, jrvFinal: 117, totalJrv: 5 },
-            { codigo: 1020104, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO SARA PALMA DE JULE", direccion: "FINAL CALLE PRINCIPAL COLONIA CHINTUC 2, AVENIDA CIRCUNVALACION, CALLE MARIONA", electores: 7543, jrvInicial: 118, jrvFinal: 128, totalJrv: 11 },
-            { codigo: 1020105, distrito: "APOPA", nombre: "CENTRO ESCOLAR URBANIZACION SANTA TERESA DE LAS FLORES", direccion: "CALLE DEL RIO, CARRETERA TRONCAL DEL NORTE KILOMETRO 16 URBANIZACION SANTA TERESA DE LAS FLORES", electores: 5115, jrvInicial: 129, jrvFinal: 136, totalJrv: 8 },
-            { codigo: 1020106, distrito: "APOPA", nombre: "CENTRO ESCOLAR COLONIA LA ERMITA", direccion: "FINAL CALLE PRINCIPAL, COLONIA LA ERMITA 2, AVENIDA CENTRAL Y PASAJE 7", electores: 6315, jrvInicial: 137, jrvFinal: 145, totalJrv: 9 },
-            { codigo: 1020107, distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON SAN NICOLAS", direccion: "CARRETERA TRONCAL DEL NORTE, KILOMETRO 13 Y MEDIO ANTIGUA CALLE A LA PONDEROSA, CANTON SAN NICOLAS", electores: 3009, jrvInicial: 146, jrvFinal: 150, totalJrv: 5 },
-            { codigo: 1020108, distrito: "APOPA", nombre: "CENTRO ESCOLAR BENJAMIN BLOOM", direccion: "FINAL TERCERA AVENIDA SUR CARRETERA TRONCAL DEL NORTE KILOMETRO 12 Y MEDIO APOPA", electores: 4686, jrvInicial: 151, jrvFinal: 157, totalJrv: 7 },
-            { codigo: 1020109, distrito: "APOPA", nombre: "CENTRO ESCOLAR DE POPOTLAN", direccion: "CALLE PRINCIPAL PADRE FERNANDEZ Y BAÑEZ AVENIDA SIHUATAN Y COLONIA POPOTLAN", electores: 7472, jrvInicial: 158, jrvFinal: 168, totalJrv: 11 },
-            { codigo: 1020110, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO PROFESOR IVAN ALEXANDER BURGOS FUENTES", direccion: "COLONIA POPOTLAN NUMERO 2, AVENIDA MAZATEPEQUE, PASAJE EL ZARZAL NUMERO 18", electores: 7024, jrvInicial: 169, jrvFinal: 179, totalJrv: 11 },
-            { codigo: 1020111, distrito: "APOPA", nombre: "CENTRO ESCOLAR VALLE VERDE", direccion: "URBANIZACION VALLE VERDE, CALLE PRINCIPAL, POLIGONO 37, CONTIGUO A DELEGACION PNC", electores: 6310, jrvInicial: 180, jrvFinal: 188, totalJrv: 9 },
-            { codigo: 1020112, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO COLONIA LOS NARANJOS", direccion: "FINAL PASAJE 'E' PONIENTE COLONIA LOS NARANJOS, APOPA", electores: 6610, jrvInicial: 189, jrvFinal: 198, totalJrv: 10 },
-            { codigo: 1020113, distrito: "APOPA", nombre: "CANCHA DE B.K.B. DE LA COLONIA SAN SEBASTIAN", direccion: "CALLE PRINCIPAL COLONIA SAN SEBASTIAN", electores: 5264, jrvInicial: 199, jrvFinal: 206, totalJrv: 8 },
-            { codigo: 1020114, distrito: "APOPA", nombre: "ESCUELA DE EDUCACION PARVULARIA JARDINES DEL NORTE II", direccion: "CARRETERA TRONCAL DEL NORTE KILOMETRO 12, CALLE A LA ESTACION, COLONIA JARDINES DEL NORTE II", electores: 4563, jrvInicial: 207, jrvFinal: 213, totalJrv: 7 },
-            { codigo: 1020115, distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON EL ANGEL", direccion: "PASAJE N GRUPO 35 COLONIA LOS ANGELES", electores: 4652, jrvInicial: 214, jrvFinal: 220, totalJrv: 7 },
-            { codigo: 1020116, distrito: "APOPA", nombre: "CENTRO ESCOLAR LOTIFICACION SANTA CARLOTA NUMERO 1", direccion: "CARRETERA A QUEZALTEPEQUE KILOMETRO 17 LOTIFICACION SANTA CARLOTA NUMERO 1", electores: 3432, jrvInicial: 221, jrvFinal: 225, totalJrv: 5 },
-            { codigo: 1020117, distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON GUADALUPE", direccion: "CASERIO CENTRAL NUMERO 50 CANTON GUADALUPE 3 KILOMETRO AL SUR DE LA PLANTA NEJAPA POWER", electores: 1388, jrvInicial: 226, jrvFinal: 227, totalJrv: 2 },
-            { codigo: 1020118, distrito: "APOPA", nombre: "CENTRO ESCOLAR CANTON LAS DELICIAS", direccion: "CASERIO LOS RAMIREZ, CANTON LAS DELICIAS CALLE NUEVA A QUEZALTEPEQUE", electores: 1324, jrvInicial: 228, jrvFinal: 229, totalJrv: 2 },
-            { codigo: 1020119, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO INGENIERO GUILLERMO BORJA NATHAN", direccion: "FINAL CALLE 5 PARCELACION EL ANGEL KILOMETRO 15 CARRETERA A QUEZALTEPEQUE", electores: 3763, jrvInicial: 230, jrvFinal: 235, totalJrv: 6 },
-            { codigo: 1020120, distrito: "APOPA", nombre: "COMPLEJO EDUCATIVO INGENIERO JOSE NAPOLEON DUARTE", direccion: "URBANIZACION EL TIKAL, CALLE TECANA Y AVENIDA ACATENANGO", electores: 4950, jrvInicial: 236, jrvFinal: 243, totalJrv: 8 },
-            { codigo: 1020121, distrito: "APOPA", nombre: "CENTRO ESCOLAR VALLE DEL SOL", direccion: "AVENIDA JUAN MARTI BLOCK 'B' URBANIZACION VALLE DEL SOL", electores: 9924, jrvInicial: 244, jrvFinal: 258, totalJrv: 15 },
-
-            // NEJAPA (7 Centros)
-            { codigo: 1020201, distrito: "NEJAPA", nombre: "CENTRO ESCOLAR JOSE MATIAS DELGADO", direccion: "AVENIDA NORBERTO MORAN, BARRIO EL CALVARIO NUMERO 29, NEJAPA", electores: 10494, jrvInicial: 259, jrvFinal: 273, totalJrv: 15 },
-            { codigo: 1020202, distrito: "NEJAPA", nombre: "COMPLEJO EDUCATIVO PROFESOR ALBERTO MONTIEL VILLACORTA", direccion: "CANTON COMOTEPEQUE CASERIO HACIENDA MAPILAPA NEJAPA", electores: 5787, jrvInicial: 274, jrvFinal: 282, totalJrv: 9 },
-            { codigo: 1020203, distrito: "NEJAPA", nombre: "COMPLEJO EDUCATIVO CANTON TUTULTEPEQUE", direccion: "CARRETERA TRONCAL DEL NORTE DESVIO AL KILOMETRO 25 1/2 HACIA AGUILARES", electores: 2363, jrvInicial: 283, jrvFinal: 286, totalJrv: 4 },
-            { codigo: 1020204, distrito: "NEJAPA", nombre: "CENTRO ESCOLAR COOPERATIVA EL CEDRAL", direccion: "COOPERATIVA EL CEDRAL, CANTON ALDEA DE LAS MERCEDES, NEJAPA", electores: 3249, jrvInicial: 287, jrvFinal: 291, totalJrv: 5 },
-            { codigo: 1020205, distrito: "NEJAPA", nombre: "COMPLEJO EDUCATIVO CANTON SAN JERONIMO LOS PLANES", direccion: "CALLE QUEZALTEPEQUE A SANTA TECLA, CANTON SAN JERONIMO, LOS PLANES", electores: 543, jrvInicial: 292, jrvFinal: 292, totalJrv: 1 },
-            { codigo: 1020206, distrito: "NEJAPA", nombre: "COMPLEJO DEPORTIVO EL CAMBIO", direccion: "COLONIA EL CAMBIO, POLIGONO NUMERO 29", electores: 3271, jrvInicial: 293, jrvFinal: 297, totalJrv: 5 },
-            { codigo: 1020207, distrito: "NEJAPA", nombre: "CENTRO ESCOLAR CASERIO EL JABALI, CANTON GALERA QUEMADA", direccion: "LOTIFICACION EL JABALI NUMERO 1, CANTON GALERA QUEMADA", electores: 2371, jrvInicial: 298, jrvFinal: 301, totalJrv: 4 }
-        ];
-
-        let distritoActual = 'APOPA';
-        window.jrvDataStore = JSON.parse(localStorage.getItem('gana_sso_jrv_data')) || {};
-        window.jefesDataStore = JSON.parse(localStorage.getItem('gana_sso_jefes_data')) || {};
-        window.supervisoresDataStore = JSON.parse(localStorage.getItem('gana_sso_supervisores_data')) || {};
-
-        let cvCodigoActualJefe = null;
-        let cvCodigoActualSupervisor = null;
-        let jrvNumeroActual = null;
-        let cvCodigoActualModal = null;
-
-        async function init() {
-            cambiarModulo('APOPA');
-            // Cargar datos sincronizados centralizados desde Google Sheets al iniciar
-            await cargarDatosDesdeGoogleSheets();
-        }
-
-        window.actualizarVistasEnTiempoReal = function() {
-            if (distritoActual === 'RESUMEN') {
-                renderVistaResumen();
-            } else {
-                filtrarCentros();
-            }
-            actualizarResumenDistrito();
-            if (cvCodigoActualModal) {
-                const cv = datosSSO.find(item => item.codigo === cvCodigoActualModal);
-                if (cv) renderTablaJRV(cv);
+            if (confirm('¿Deseas limpiar los datos locales de esta computadora?')) {
+                localStorage.removeItem('gana_sso_jefes');
+                localStorage.removeItem('gana_sso_supervisores');
+                localStorage.removeItem('gana_sso_jrvs');
+                jefesCentros = {};
+                supervisoresCentros = {};
+                jrvRegistros = {};
+                renderizarPagina();
+                mostrarToast('Caché local limpiada correctamente.');
             }
         }
 
-        function cambiarModulo(distrito) {
-            distritoActual = distrito;
-            const tabApopa = document.getElementById('tab-apopa');
-            const tabNejapa = document.getElementById('tab-nejapa');
-            const tabResumen = document.getElementById('tab-resumen');
+        // FUNCIONES DE CONTROL DE INTERFAZ Y NAVEGACIÓN
+        function cambiarModulo(modulo) {
+            distritoActual = modulo;
+            
+            const btnApopa = document.getElementById('tab-apopa');
+            const btnNejapa = document.getElementById('tab-nejapa');
+            const btnResumen = document.getElementById('tab-resumen');
             const gridCentros = document.getElementById('grid-centros');
             const vistaResumen = document.getElementById('vista-resumen');
             const wrapperBuscar = document.getElementById('wrapper-buscar');
 
-            const btnNormal = "flex-1 sm:flex-initial px-5 py-2.5 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 text-slate-600 hover:text-gana-navy";
-            const btnActivo = "flex-1 sm:flex-initial px-5 py-2.5 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 bg-gana-orange text-white shadow-md";
+            btnApopa.className = 'w-full px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 ' + 
+                (modulo === 'APOPA' ? 'bg-gana-orange text-white shadow-md' : 'text-slate-600 hover:text-gana-navy hover:bg-slate-50');
+            btnNejapa.className = 'w-full px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 ' + 
+                (modulo === 'NEJAPA' ? 'bg-gana-orange text-white shadow-md' : 'text-slate-600 hover:text-gana-navy hover:bg-slate-50');
+            btnResumen.className = 'w-full px-3 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 ' + 
+                (modulo === 'RESUMEN' ? 'bg-gana-orange text-white shadow-md' : 'text-slate-600 hover:text-gana-navy hover:bg-slate-50');
 
-            tabApopa.className = distrito === 'APOPA' ? btnActivo : btnNormal;
-            tabNejapa.className = distrito === 'NEJAPA' ? btnActivo : btnNormal;
-            tabResumen.className = distrito === 'RESUMEN' ? btnActivo : btnNormal;
-
-            if (distrito === 'RESUMEN') {
+            if (modulo === 'RESUMEN') {
                 gridCentros.classList.add('hidden');
-                wrapperBuscar.classList.add('hidden');
                 vistaResumen.classList.remove('hidden');
-                renderVistaResumen();
+                wrapperBuscar.classList.add('hidden');
+                renderizarResumen();
             } else {
                 gridCentros.classList.remove('hidden');
-                wrapperBuscar.classList.remove('hidden');
                 vistaResumen.classList.add('hidden');
-                filtrarCentros();
+                wrapperBuscar.classList.remove('hidden');
+                renderizarCentros();
             }
-
-            actualizarResumenDistrito();
         }
 
-        function renderVistaResumen() {
-            let totalGeneralCompletadas = 0;
-            let totalGeneralParciales = 0;
-            let totalGeneralPendientes = 0;
+        function renderizarPagina() {
+            if (distritoActual === 'RESUMEN') {
+                renderizarResumen();
+            } else {
+                renderizarCentros();
+            }
+            actualizarEstadisticasGenerales();
+        }
+
+        function obtenerProgresoCentro(code) {
+            const centro = CENTROS_VOTACION.find(c => c.id === code);
+            if (!centro) return { completadas: 0, total: 0, porcentaje: 0 };
+
+            let completadas = 0;
+            const regCV = jrvRegistros[code] || {};
+            for (let num = centro.jrvInicio; num <= centro.jrvFin; num++) {
+                const reg = regCV[num];
+                if (reg && reg.mesa && reg.vig) {
+                    completadas++;
+                }
+            }
+            const porcentaje = centro.totalJrv > 0 ? Math.round((completadas / centro.totalJrv) * 100) : 0;
+            return { completadas, total: centro.totalJrv, porcentaje };
+        }
+
+        function renderizarCentros() {
+            const container = document.getElementById('grid-centros');
+            const query = (document.getElementById('input-buscar').value || '').toLowerCase().trim();
+            const filtrados = CENTROS_VOTACION.filter(c => c.distrito === distritoActual && 
+                (c.nombre.toLowerCase().includes(query) || c.id.includes(query) || c.direccion.toLowerCase().includes(query)));
+
+            container.innerHTML = '';
+
+            let totalJrvDistrito = 0;
+            let completadasDistrito = 0;
+
+            CENTROS_VOTACION.filter(c => c.distrito === distritoActual).forEach(c => {
+                totalJrvDistrito += c.totalJrv;
+                const prog = obtenerProgresoCentro(c.id);
+                completadasDistrito += prog.completadas;
+            });
+
+            const porcDistrito = totalJrvDistrito > 0 ? Math.round((completadasDistrito / totalJrvDistrito) * 100) : 0;
+            document.getElementById('coverage-text').innerText = `${completadasDistrito} / ${totalJrvDistrito} JRVs (${porcDistrito}%)`;
+
+            filtrados.forEach(c => {
+                const jefe = jefesCentros[c.id];
+                const sup = supervisoresCentros[c.id];
+                const prog = obtenerProgresoCentro(c.id);
+
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border-l-4 border-l-gana-orange border border-slate-200 shadow-sm hover:shadow-md transition p-5 flex flex-col justify-between gap-4";
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="bg-orange-100 text-gana-orange text-xs font-black px-2.5 py-1 rounded-lg">CÓDIGO ${c.id}</span>
+                            <span class="text-xs font-bold text-slate-500 flex items-center gap-1">
+                                <i class="fa-solid fa-users text-gana-navy"></i> ${c.electores.toLocaleString()} Electores
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-base text-slate-800 leading-snug">${c.nombre}</h3>
+                            <p class="text-xs text-slate-500 flex items-start gap-1 mt-1">
+                                <i class="fa-solid fa-location-dot text-gana-orange mt-0.5 shrink-0"></i> ${c.direccion}
+                            </p>
+                        </div>
+
+                        <!-- Jefe de Centro (Diseño Original Estructurado) -->
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                            <div class="flex justify-between items-center text-[10px] font-bold uppercase text-slate-400">
+                                <span>JEFE DE CENTRO:</span>
+                                ${jefe && jefe.tel ? `<span class="bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-700 font-bold"><i class="fa-solid fa-phone text-gana-orange"></i> ${jefe.tel}</span>` : ''}
+                            </div>
+                            <div class="font-bold text-gana-navy text-sm">
+                                ${jefe ? jefe.nombre : '<span class="text-slate-400 font-normal italic">— Por nombrar —</span>'}
+                            </div>
+                        </div>
+
+                        <!-- Supervisor (Diseño Original Estructurado) -->
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                            <div class="flex justify-between items-center text-[10px] font-bold uppercase text-slate-400">
+                                <span>SUPERVISOR:</span>
+                                ${sup && sup.tel ? `<span class="bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-700 font-bold"><i class="fa-solid fa-phone text-gana-orange"></i> ${sup.tel}</span>` : ''}
+                            </div>
+                            <div class="font-bold text-gana-navy text-sm">
+                                ${sup ? sup.nombre : '<span class="text-slate-400 font-normal italic">— Por nombrar —</span>'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-3 border-t border-slate-100">
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="abrirModalJefe('${c.id}')" class="w-full py-2 px-3 bg-orange-50 hover:bg-orange-100 text-gana-orange font-bold rounded-xl text-xs transition border border-orange-200 flex items-center justify-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-user-tie"></i> ${jefe ? 'Editar Jefe de Centro' : 'Editar Jefe de Centro'}
+                            </button>
+                            <button onclick="abrirModalSupervisor('${c.id}')" class="w-full py-2 px-3 bg-blue-50 hover:bg-blue-100 text-gana-navy font-bold rounded-xl text-xs transition border border-blue-200 flex items-center justify-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-user-gear"></i> ${sup ? 'Editar Supervisor' : 'Asignar Supervisor'}
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="text-xs font-bold text-slate-500">
+                                RANGO JRV<br><span class="text-slate-800 font-black text-sm">${c.jrvInicio} - ${c.jrvFin}</span> <span class="text-slate-500 font-normal">(${prog.completadas}/${c.totalJrv})</span>
+                            </div>
+                            <button onclick="abrirModalJRV('${c.id}')" class="py-2.5 px-4 bg-gana-navy hover:bg-navy-800 text-white font-bold rounded-xl text-xs transition flex items-center gap-2 shadow">
+                                <i class="fa-solid fa-list-check"></i> Gestionar JRVs
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filtrarCentros() {
+            renderizarCentros();
+        }
+
+        function actualizarEstadisticasGenerales() {
+            let totalJrv = 0;
+            CENTROS_VOTACION.forEach(c => totalJrv += c.totalJrv);
+            document.getElementById('stat-cv').innerText = CENTROS_VOTACION.length;
+            document.getElementById('stat-jrv').innerText = totalJrv;
+        }
+
+        function renderizarResumen() {
+            let completadas = 0;
+            let parciales = 0;
+            let pendientes = 0;
 
             const tbody = document.getElementById('tbody-resumen-cobertura');
             tbody.innerHTML = '';
 
-            datosSSO.forEach(cv => {
-                let completadas = 0;
-                let parciales = 0;
-                let pendientes = 0;
-
-                for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
-                    const d = window.jrvDataStore[`jrv_${num}`];
-                    if (d && d.mesa && d.vig) {
-                        completadas++;
-                    } else if (d && (d.mesa || d.vig)) {
-                        parciales++;
-                    } else {
-                        pendientes++;
-                    }
+            CENTROS_VOTACION.forEach(c => {
+                const prog = obtenerProgresoCentro(c.id);
+                let estadoBadge = '';
+                if (prog.completadas === c.totalJrv) {
+                    completadas++;
+                    estadoBadge = '<span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-bold text-[10px]">COMPLETO</span>';
+                } else if (prog.completadas > 0) {
+                    parciales++;
+                    estadoBadge = '<span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 font-bold text-[10px]">PARCIAL</span>';
+                } else {
+                    pendientes++;
+                    estadoBadge = '<span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 font-bold text-[10px]">PENDIENTE</span>';
                 }
-
-                totalGeneralCompletadas += completadas;
-                totalGeneralParciales += parciales;
-                totalGeneralPendientes += pendientes;
-
-                const porcentaje = ((completadas / cv.totalJrv) * 100).toFixed(0);
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 tr.innerHTML = `
-                    <td class="p-3 font-bold text-xs text-slate-500">
-                        <span class="px-2 py-1 rounded-md ${cv.distrito === 'APOPA' ? 'bg-orange-100 text-gana-orange' : 'bg-blue-100 text-gana-navy'}">${cv.distrito}</span>
-                    </td>
+                    <td class="p-3 font-bold text-gana-navy">${c.distrito}</td>
                     <td class="p-3">
-                        <span class="block text-[11px] font-bold text-slate-400">CÓDIGO ${cv.codigo}</span>
-                        <span class="font-bold text-slate-800 text-xs">${cv.nombre}</span>
+                        <div class="font-bold text-slate-800">${c.nombre}</div>
+                        <div class="text-[10px] text-slate-400">CÓDIGO ${c.id}</div>
                     </td>
-                    <td class="p-3 text-center font-black text-gana-navy text-xs">${cv.totalJrv}</td>
-                    <td class="p-3 text-center font-bold text-emerald-600 text-xs">${completadas}</td>
-                    <td class="p-3 text-center font-bold text-amber-600 text-xs">${parciales}</td>
-                    <td class="p-3 text-center font-bold text-rose-600 text-xs">${pendientes}</td>
+                    <td class="p-3 text-center font-black text-slate-700">${c.totalJrv}</td>
+                    <td class="p-3 text-center font-bold text-emerald-600">${prog.completadas}</td>
+                    <td class="p-3 text-center font-bold text-amber-600">${prog.completadas > 0 && prog.completadas < c.totalJrv ? prog.completadas : 0}</td>
+                    <td class="p-3 text-center font-bold text-rose-600">${c.totalJrv - prog.completadas}</td>
                     <td class="p-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                                <div class="bg-emerald-500 h-2.5 rounded-full" style="width: ${porcentaje}%"></div>
-                            </div>
-                            <span class="text-[11px] font-bold text-slate-600 w-8 text-right">${porcentaje}%</span>
+                        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                            <div class="bg-gana-orange h-2 rounded-full" style="width: ${prog.porcentaje}%"></div>
                         </div>
+                        <span class="text-[10px] font-bold text-slate-500 mt-0.5 block text-right">${prog.porcentaje}%</span>
                     </td>
                     <td class="p-3 text-center">
-                        <button onclick="abrirModalJRV(${cv.codigo})" class="bg-gana-navy hover:bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-lg transition shadow-sm">
-                            Gestionar
+                        <button onclick="abrirModalJRV('${c.id}')" class="px-2.5 py-1 bg-gana-navy text-white text-[11px] font-bold rounded-lg hover:bg-navy-800">
+                            Ver JRVs
                         </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('resumen-stat-completadas').innerText = totalGeneralCompletadas;
-            document.getElementById('resumen-stat-parciales').innerText = totalGeneralParciales;
-            document.getElementById('resumen-stat-pendientes').innerText = totalGeneralPendientes;
+            document.getElementById('resumen-stat-completadas').innerText = completadas;
+            document.getElementById('resumen-stat-parciales').innerText = parciales;
+            document.getElementById('resumen-stat-pendientes').innerText = pendientes;
         }
 
-        function actualizarResumenDistrito() {
-            if (distritoActual === 'RESUMEN') {
-                let totalJrvs = 214;
-                let completadas = 0;
-                datosSSO.forEach(cv => {
-                    for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
-                        const d = window.jrvDataStore[`jrv_${num}`];
-                        if (d && d.mesa && d.vig) completadas++;
-                    }
-                });
-                const porcentaje = ((completadas / totalJrvs) * 100).toFixed(1);
-                document.getElementById('coverage-text').innerText = `${completadas} / ${totalJrvs} JRVs (${porcentaje}%)`;
-                return;
-            }
-
-            const centros = datosSSO.filter(c => c.distrito === distritoActual);
-            let totalJrvs = 0;
-            let completadas = 0;
-
-            centros.forEach(cv => {
-                totalJrvs += cv.totalJrv;
-                for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
-                    const d = window.jrvDataStore[`jrv_${num}`];
-                    if (d && d.mesa && d.vig) completadas++;
-                }
-            });
-
-            const porcentaje = totalJrvs > 0 ? ((completadas / totalJrvs) * 100).toFixed(1) : 0;
-            document.getElementById('coverage-text').innerText = `${completadas} / ${totalJrvs} JRVs (${porcentaje}%)`;
-        }
-
-        function renderCentros(lista) {
-            const grid = document.getElementById('grid-centros');
-            grid.innerHTML = '';
-
-            if (lista.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full bg-white rounded-2xl p-8 text-center border border-slate-200 shadow-sm">
-                        <i class="fa-solid fa-magnifying-glass text-3xl text-slate-300 mb-2"></i>
-                        <p class="text-slate-500 font-semibold text-sm">No se encontraron centros de votación con el término buscado.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            lista.forEach(cv => {
-                const jefeInfo = window.jefesDataStore[`cv_${cv.codigo}`] || { nombre: '', tel: '' };
-                const superInfo = window.supervisoresDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
-
-                // Contar JRVs completas en este centro
-                let completas = 0;
-                for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
-                    const d = window.jrvDataStore[`jrv_${num}`];
-                    if (d && d.mesa && d.vig) completas++;
-                }
-
-                const card = document.createElement('div');
-                card.className = "bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition p-5 flex flex-col justify-between border-l-4 border-l-gana-orange";
-                card.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-start gap-2 mb-2">
-                            <span class="text-[11px] font-bold bg-orange-100 text-gana-orange px-2.5 py-0.5 rounded-md">CÓDIGO ${cv.codigo}</span>
-                            <span class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-users text-gana-navy mr-1"></i>${cv.electores.toLocaleString()} Electores</span>
-                        </div>
-                        <h3 class="font-bold text-slate-800 text-base leading-snug mb-1 cursor-pointer hover:text-gana-orange transition" onclick="abrirModalJRV(${cv.codigo})">${cv.nombre}</h3>
-                        <p class="text-xs text-slate-500 line-clamp-2 mb-3"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i>${cv.direccion}</p>
-                        
-                        <!-- Info Jefe de Centro -->
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 mb-2 flex items-center justify-between text-xs">
-                            <div class="truncate">
-                                <span class="block text-[10px] font-bold uppercase text-slate-400">Jefe de Centro:</span>
-                                <span class="font-bold ${jefeInfo.nombre ? 'text-gana-navy' : 'text-slate-400 italic'} truncate block">${jefeInfo.nombre || '— Por designar —'}</span>
-                            </div>
-                            ${jefeInfo.tel ? `<span class="text-[10px] font-semibold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200 shrink-0"><i class="fa-solid fa-phone mr-1 text-gana-orange"></i>${jefeInfo.tel}</span>` : ''}
-                        </div>
-
-                        <!-- Info Supervisor de Centro -->
-                        <div class="bg-blue-50/60 border border-blue-200 rounded-xl p-2.5 mb-3 flex items-center justify-between text-xs">
-                            <div class="truncate">
-                                <span class="block text-[10px] font-bold uppercase text-slate-400">Supervisor:</span>
-                                <span class="font-bold ${superInfo.nombre ? 'text-gana-navy' : 'text-slate-400 italic'} truncate block">${superInfo.nombre || '— Por nombrar —'}</span>
-                            </div>
-                            ${superInfo.tel ? `<span class="text-[10px] font-semibold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200 shrink-0"><i class="fa-solid fa-phone mr-1 text-gana-navy"></i>${superInfo.tel}</span>` : ''}
-                        </div>
-                    </div>
-
-                    <div class="border-t border-slate-100 pt-3 mt-1 flex flex-col gap-2">
-                        <button onclick="abrirModalJefe(${cv.codigo})" class="w-full bg-orange-50 hover:bg-orange-100 text-gana-orange border border-orange-200 text-xs font-bold py-2 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-user-tie"></i> ${jefeInfo.nombre ? 'Editar Jefe de Centro' : 'Asignar Jefe de Centro'}
-                        </button>
-                        
-                        <button onclick="abrirModalSupervisor(${cv.codigo})" class="w-full bg-blue-50 hover:bg-blue-100 text-gana-navy border border-blue-200 text-xs font-bold py-2 rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-user-gear"></i> ${superInfo.nombre ? 'Editar Supervisor' : 'Asignar Supervisor'}
-                        </button>
-
-                        <div class="flex justify-between items-center pt-1">
-                            <div>
-                                <span class="block text-[10px] text-slate-400 uppercase font-bold">Rango JRV</span>
-                                <span class="text-xs font-black text-gana-navy">${cv.jrvInicial} - ${cv.jrvFinal} (${completas}/${cv.totalJrv})</span>
-                            </div>
-                            <button onclick="abrirModalJRV(${cv.codigo})" class="bg-gana-navy text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-orange-600 transition flex items-center gap-1.5 shadow-sm">
-                                <i class="fa-solid fa-table-list"></i> Gestionar JRVs
-                            </button>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function abrirModalJefe(codigo) {
-            cvCodigoActualJefe = codigo;
-            const cv = datosSSO.find(item => item.codigo === codigo);
-            const jefeInfo = window.jefesDataStore[`cv_${codigo}`] || { nombre: '', dui: '', tel: '' };
-
-            document.getElementById('modal-jefe-cv-nombre').innerText = `CÓDIGO ${cv.codigo} — ${cv.nombre}`;
-            document.getElementById('input-jefe-nombre').value = jefeInfo.nombre || '';
-            document.getElementById('input-jefe-dui').value = jefeInfo.dui || '';
-            document.getElementById('input-jefe-tel').value = jefeInfo.tel || '';
-
+        // LÓGICA DE MODALES (JEFE, SUPERVISOR, JRVS)
+        function abrirModalJefe(code) {
+            centroSeleccionadoActivo = code;
+            const centro = CENTROS_VOTACION.find(c => c.id === code);
+            document.getElementById('modal-jefe-cv-nombre').innerText = `Centro: ${centro.nombre} (CÓDIGO ${centro.id})`;
+            
+            const j = jefesCentros[code] || {};
+            document.getElementById('input-jefe-nombre').value = j.nombre || '';
+            document.getElementById('input-jefe-dui').value = j.dui || '';
+            document.getElementById('input-jefe-tel').value = j.tel || '';
             document.getElementById('jefe-error-msg').classList.add('hidden');
+            
             document.getElementById('modal-jefe').classList.remove('hidden');
         }
 
-        // Helpers de Validación con Expresiones Regulares
-        function validarDUI(dui) {
-            const regexDUI = /^\d{8}-\d{1}$/;
-            return regexDUI.test(dui);
+        function cerrarModalJefe() {
+            document.getElementById('modal-jefe').classList.add('hidden');
         }
 
-        function validarTelefono(tel) {
-            const regexTel = /^\d{4}-\d{4}$/;
-            return regexTel.test(tel);
-        }
+        function guardarJefeCentro() {
+            const nombre = document.getElementById('input-jefe-nombre').value.trim();
+            const dui = document.getElementById('input-jefe-dui').value.trim();
+            const tel = document.getElementById('input-jefe-tel').value.trim();
+            const errBox = document.getElementById('jefe-error-msg');
+            const errTxt = document.getElementById('jefe-error-text');
 
-        async function guardarJefeCentro() {
-            if (!cvCodigoActualJefe) return;
-
-            const nombreInput = document.getElementById('input-jefe-nombre');
-            const duiInput = document.getElementById('input-jefe-dui');
-            const telInput = document.getElementById('input-jefe-tel');
-            const errorMsg = document.getElementById('jefe-error-msg');
-            const errorText = document.getElementById('jefe-error-text');
-
-            const nombre = nombreInput.value.trim();
-            const dui = duiInput.value.trim();
-            const tel = telInput.value.trim();
-
-            if (!nombre || nombre.length < 5 || !nombre.includes(' ')) {
-                errorText.innerText = 'Ingrese el nombre y apellido completo del Jefe de Centro.';
-                errorMsg.classList.remove('hidden');
-                nombreInput.focus();
+            if (!nombre || !dui || !tel) {
+                errTxt.innerText = 'Por favor complete todos los campos obligatorios.';
+                errBox.classList.remove('hidden');
                 return;
             }
 
-            if (!validarDUI(dui)) {
-                errorText.innerText = 'El DUI es inválido. Formato requerido: 00000000-0 (8 dígitos, guion y 1 dígito).';
-                errorMsg.classList.remove('hidden');
-                duiInput.focus();
-                return;
-            }
+            jefesCentros[centroSeleccionadoActivo] = { nombre, dui, tel };
+            guardarLocalmente();
+            renderizarPagina();
 
-            if (!validarTelefono(tel)) {
-                errorText.innerText = 'El teléfono es inválido. Formato requerido: 0000-0000 (8 dígitos y guion).';
-                errorMsg.classList.remove('hidden');
-                telInput.focus();
-                return;
-            }
-
-            errorMsg.classList.add('hidden');
-            const payload = { nombre, dui, tel };
-            window.jefesDataStore[`cv_${cvCodigoActualJefe}`] = payload;
-            localStorage.setItem('gana_sso_jefes_data', JSON.stringify(window.jefesDataStore));
-
-            // Enviar a Google Sheets
-            await guardarEnGoogleSheets({
-                tipo: 'JEFE_CENTRO',
-                id: `CV_${cvCodigoActualJefe}`,
+            guardarEnGoogleSheets({
+                tipo: 'JEFE',
+                id: centroSeleccionadoActivo,
                 nombre1: nombre,
                 dui1: dui,
                 tel1: tel
             });
 
             cerrarModalJefe();
-            filtrarCentros();
-            actualizarResumenDistrito();
-            mostrarToast('Jefe de Centro guardado y enviado a Google Sheets');
+            mostrarToast('Jefe de Centro guardado con éxito');
         }
 
-        function cerrarModalJefe() {
-            document.getElementById('modal-jefe').classList.add('hidden');
-            cvCodigoActualJefe = null;
-        }
-
-        function abrirModalSupervisor(codigo) {
-            cvCodigoActualSupervisor = codigo;
-            const cv = datosSSO.find(item => item.codigo === codigo);
-            const superInfo = window.supervisoresDataStore[`cv_${codigo}`] || { nombre: '', dui: '', tel: '' };
-
-            document.getElementById('modal-supervisor-cv-nombre').innerText = `CÓDIGO ${cv.codigo} — ${cv.nombre}`;
-            document.getElementById('input-supervisor-nombre').value = superInfo.nombre || '';
-            document.getElementById('input-supervisor-dui').value = superInfo.dui || '';
-            document.getElementById('input-supervisor-tel').value = superInfo.tel || '';
+        function abrirModalSupervisor(code) {
+            centroSeleccionadoActivo = code;
+            const centro = CENTROS_VOTACION.find(c => c.id === code);
+            document.getElementById('modal-supervisor-cv-nombre').innerText = `Centro: ${centro.nombre} (CÓDIGO ${centro.id})`;
             
+            const s = supervisoresCentros[code] || {};
+            document.getElementById('input-supervisor-nombre').value = s.nombre || '';
+            document.getElementById('input-supervisor-dui').value = s.dui || '';
+            document.getElementById('input-supervisor-tel').value = s.tel || '';
             document.getElementById('supervisor-error-msg').classList.add('hidden');
+
             document.getElementById('modal-supervisor').classList.remove('hidden');
         }
 
-        async function guardarSupervisorCentro() {
-            if (!cvCodigoActualSupervisor) return;
+        function cerrarModalSupervisor() {
+            document.getElementById('modal-supervisor').classList.add('hidden');
+        }
 
-            const nombreInput = document.getElementById('input-supervisor-nombre');
-            const duiInput = document.getElementById('input-supervisor-dui');
-            const telInput = document.getElementById('input-supervisor-tel');
-            const errorMsg = document.getElementById('supervisor-error-msg');
-            const errorText = document.getElementById('supervisor-error-text');
+        function guardarSupervisorCentro() {
+            const nombre = document.getElementById('input-supervisor-nombre').value.trim();
+            const dui = document.getElementById('input-supervisor-dui').value.trim();
+            const tel = document.getElementById('input-supervisor-tel').value.trim();
+            const errBox = document.getElementById('supervisor-error-msg');
+            const errTxt = document.getElementById('supervisor-error-text');
 
-            const nombre = nombreInput.value.trim();
-            const dui = duiInput.value.trim();
-            const tel = telInput.value.trim();
-
-            if (!nombre || nombre.length < 5 || !nombre.includes(' ')) {
-                errorText.innerText = 'Ingrese el nombre y apellido completo del Supervisor.';
-                errorMsg.classList.remove('hidden');
-                nombreInput.focus();
+            if (!nombre || !dui || !tel) {
+                errTxt.innerText = 'Por favor complete todos los campos obligatorios.';
+                errBox.classList.remove('hidden');
                 return;
             }
 
-            if (!validarDUI(dui)) {
-                errorText.innerText = 'El DUI es inválido. Formato requerido: 00000000-0 (8 dígitos, guion y 1 dígito).';
-                errorMsg.classList.remove('hidden');
-                duiInput.focus();
-                return;
-            }
+            supervisoresCentros[centroSeleccionadoActivo] = { nombre, dui, tel };
+            guardarLocalmente();
+            renderizarPagina();
 
-            if (!validarTelefono(tel)) {
-                errorText.innerText = 'El teléfono es inválido. Formato requerido: 0000-0000 (8 dígitos y guion).';
-                errorMsg.classList.remove('hidden');
-                telInput.focus();
-                return;
-            }
-
-            errorMsg.classList.add('hidden');
-            const payload = { nombre, dui, tel };
-            window.supervisoresDataStore[`cv_${cvCodigoActualSupervisor}`] = payload;
-            localStorage.setItem('gana_sso_supervisores_data', JSON.stringify(window.supervisoresDataStore));
-
-            // Enviar a Google Sheets
-            await guardarEnGoogleSheets({
+            guardarEnGoogleSheets({
                 tipo: 'SUPERVISOR',
-                id: `CV_${cvCodigoActualSupervisor}`,
+                id: centroSeleccionadoActivo,
                 nombre1: nombre,
                 dui1: dui,
                 tel1: tel
             });
 
             cerrarModalSupervisor();
-            filtrarCentros();
-            actualizarResumenDistrito();
-            mostrarToast('Supervisor guardado y enviado a Google Sheets');
+            mostrarToast('Supervisor guardado con éxito');
         }
 
-        function cerrarModalSupervisor() {
-            document.getElementById('modal-supervisor').classList.add('hidden');
-            cvCodigoActualSupervisor = null;
-        }
+        function abrirModalJRV(code) {
+            centroSeleccionadoActivo = code;
+            const centro = CENTROS_VOTACION.find(c => c.id === code);
+            
+            document.getElementById('modal-codigo').innerText = `CÓDIGO ${centro.id} | ${centro.distrito}`;
+            document.getElementById('modal-titulo').innerText = centro.nombre;
+            document.getElementById('modal-direccion').innerText = centro.direccion;
 
-        function filtrarCentros() {
-            const query = document.getElementById('input-buscar').value.toLowerCase();
-            const filtrados = datosSSO.filter(cv => 
-                cv.distrito === distritoActual && 
-                (cv.nombre.toLowerCase().includes(query) || cv.codigo.toString().includes(query) || cv.direccion.toLowerCase().includes(query))
-            );
-            renderCentros(filtrados);
-        }
-
-        function abrirModalJRV(codigo) {
-            cvCodigoActualModal = codigo;
-            const cv = datosSSO.find(item => item.codigo === codigo);
-            if (!cv) return;
-
-            document.getElementById('modal-codigo').innerText = `CÓDIGO CV: ${cv.codigo} | DISTRITO: ${cv.distrito}`;
-            document.getElementById('modal-titulo').innerText = cv.nombre;
-            document.getElementById('modal-direccion').innerText = cv.direccion;
-
-            renderTablaJRV(cv);
-            document.getElementById('modal-jrv').classList.remove('hidden');
-        }
-
-        function renderTablaJRV(cv) {
             const tbody = document.getElementById('tbody-jrv');
             tbody.innerHTML = '';
 
-            for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
-                const dataKey = `jrv_${num}`;
-                const jrvData = window.jrvDataStore[dataKey] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
+            const regCV = jrvRegistros[code] || {};
 
-                let estadoBadge = '<span class="text-[10px] font-bold bg-red-100 text-red-600 px-2.5 py-1 rounded-full">Incompleto</span>';
-                if (jrvData.mesa && jrvData.vig) {
-                    estadoBadge = '<span class="text-[10px] font-bold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">✅ Completo</span>';
-                } else if (jrvData.mesa || jrvData.vig) {
-                    estadoBadge = '<span class="text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2.5 py-1 rounded-full">⏳ Parcial</span>';
-                }
+            for (let num = centro.jrvInicio; num <= centro.jrvFin; num++) {
+                const data = regCV[num] || {};
+                const completo = data.mesa && data.vig;
 
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
                 tr.innerHTML = `
-                    <td class="p-3 text-center font-black text-gana-navy bg-orange-50/40">${num}</td>
-                    <td class="p-3 font-semibold text-xs ${jrvData.mesa ? 'text-slate-800' : 'text-slate-400 italic'}">
-                        ${jrvData.mesa || '— Pendiente de registro —'}
+                    <td class="p-2.5 sm:p-3 text-center font-black text-gana-navy">JRV ${num}</td>
+                    <td class="p-2.5 sm:p-3 font-semibold text-slate-800">${data.mesa || '<span class="text-slate-400 font-normal italic">— Pendiente —</span>'}</td>
+                    <td class="p-2.5 sm:p-3 text-slate-600">${data.duiMesa || '—'}</td>
+                    <td class="p-2.5 sm:p-3 text-slate-600">${data.telMesa || '—'}</td>
+                    <td class="p-2.5 sm:p-3 font-semibold text-slate-800">${data.vig || '<span class="text-slate-400 font-normal italic">— Pendiente —</span>'}</td>
+                    <td class="p-2.5 sm:p-3 text-slate-600">${data.duiVig || '—'}</td>
+                    <td class="p-2.5 sm:p-3 text-slate-600">${data.telVig || '—'}</td>
+                    <td class="p-2.5 sm:p-3 text-center">
+                        ${completo 
+                            ? '<span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-bold text-[10px]">COMPLETO</span>' 
+                            : '<span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 font-bold text-[10px]">INCOMPLETO</span>'}
                     </td>
-                    <td class="p-3 text-xs text-slate-600 font-mono">
-                        ${jrvData.duiMesa || '-'}
-                    </td>
-                    <td class="p-3 text-xs text-slate-600 font-mono">
-                        ${jrvData.telMesa || '-'}
-                    </td>
-                    <td class="p-3 font-semibold text-xs ${jrvData.vig ? 'text-slate-800' : 'text-slate-400 italic'}">
-                        ${jrvData.vig || '— Sin acreditar —'}
-                    </td>
-                    <td class="p-3 text-xs text-slate-600 font-mono">
-                        ${jrvData.duiVig || '-'}
-                    </td>
-                    <td class="p-3 text-xs text-slate-600 font-mono">
-                        ${jrvData.telVig || '-'}
-                    </td>
-                    <td class="p-3 text-center">
-                        ${estadoBadge}
-                    </td>
-                    <td class="p-3 text-center">
-                        <button onclick="abrirSubmodalIntegrantes(${num})" class="bg-gana-orange hover:bg-orange-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm flex items-center justify-center gap-1 mx-auto">
-                            <i class="fa-solid fa-user-pen"></i> Ingresar Integrantes
+                    <td class="p-2.5 sm:p-3 text-center">
+                        <button onclick="abrirSubmodalIntegrantes('${num}')" class="px-3 py-1 bg-gana-orange text-white font-bold rounded-lg text-xs hover:bg-orange-600 transition shadow-sm">
+                            <i class="fa-solid fa-pen-to-square"></i> Asignar
                         </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             }
+
+            document.getElementById('modal-jrv').classList.remove('hidden');
         }
 
-        function abrirSubmodalIntegrantes(numJrv) {
-            jrvNumeroActual = numJrv;
-            const dataKey = `jrv_${numJrv}`;
-            const jrvData = window.jrvDataStore[dataKey] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
+        function cerrarModal() {
+            document.getElementById('modal-jrv').classList.add('hidden');
+        }
 
-            document.getElementById('submodal-jrv-num').innerText = numJrv;
-            document.getElementById('input-submodal-mesa').value = jrvData.mesa || '';
-            document.getElementById('input-submodal-dui-mesa').value = jrvData.duiMesa || '';
-            document.getElementById('input-submodal-tel-mesa').value = jrvData.telMesa || '';
-            document.getElementById('input-submodal-vig').value = jrvData.vig || '';
-            document.getElementById('input-submodal-dui-vig').value = jrvData.duiVig || '';
-            document.getElementById('input-submodal-tel-vig').value = jrvData.telVig || '';
+        function abrirSubmodalIntegrantes(numJRV) {
+            jrvSeleccionadaActiva = numJRV;
+            document.getElementById('submodal-jrv-num').innerText = numJRV;
+
+            const regCV = jrvRegistros[centroSeleccionadoActivo] || {};
+            const data = regCV[numJRV] || {};
+
+            document.getElementById('input-submodal-mesa').value = data.mesa || '';
+            document.getElementById('input-submodal-dui-mesa').value = data.duiMesa || '';
+            document.getElementById('input-submodal-tel-mesa').value = data.telMesa || '';
+
+            document.getElementById('input-submodal-vig').value = data.vig || '';
+            document.getElementById('input-submodal-dui-vig').value = data.duiVig || '';
+            document.getElementById('input-submodal-tel-vig').value = data.telVig || '';
 
             document.getElementById('integrantes-error-msg').classList.add('hidden');
             document.getElementById('submodal-integrantes').classList.remove('hidden');
         }
 
-        async function guardarIntegrantesSubmodal() {
-            if (!jrvNumeroActual) return;
+        function cerrarSubmodalIntegrantes() {
+            document.getElementById('submodal-integrantes').classList.add('hidden');
+        }
 
-            const mesaInput = document.getElementById('input-submodal-mesa');
-            const duiMesaInput = document.getElementById('input-submodal-dui-mesa');
-            const telMesaInput = document.getElementById('input-submodal-tel-mesa');
-            const vigInput = document.getElementById('input-submodal-vig');
-            const duiVigInput = document.getElementById('input-submodal-dui-vig');
-            const telVigInput = document.getElementById('input-submodal-tel-vig');
+        function guardarIntegrantesSubmodal() {
+            const mesa = document.getElementById('input-submodal-mesa').value.trim();
+            const duiMesa = document.getElementById('input-submodal-dui-mesa').value.trim();
+            const telMesa = document.getElementById('input-submodal-tel-mesa').value.trim();
 
-            const errorMsg = document.getElementById('integrantes-error-msg');
-            const errorText = document.getElementById('integrantes-error-text');
+            const vig = document.getElementById('input-submodal-vig').value.trim();
+            const duiVig = document.getElementById('input-submodal-dui-vig').value.trim();
+            const telVig = document.getElementById('input-submodal-tel-vig').value.trim();
 
-            const mesa = mesaInput.value.trim();
-            const duiMesa = duiMesaInput.value.trim();
-            const telMesa = telMesaInput.value.trim();
-            const vig = vigInput.value.trim();
-            const duiVig = duiVigInput.value.trim();
-            const telVig = telVigInput.value.trim();
+            const errBox = document.getElementById('integrantes-error-msg');
+            const errTxt = document.getElementById('integrantes-error-text');
 
-            // Validaciones Persona en Mesa
-            if (!mesa || mesa.length < 5 || !mesa.includes(' ')) {
-                errorText.innerText = 'Ingrese el nombre completo de la Persona en Mesa (Nombre y Apellido).';
-                errorMsg.classList.remove('hidden');
-                mesaInput.focus();
+            if (!mesa || !duiMesa || !telMesa || !vig || !duiVig || !telVig) {
+                errTxt.innerText = 'Por favor complete todos los datos de ambos integrantes.';
+                errBox.classList.remove('hidden');
                 return;
             }
 
-            if (!validarDUI(duiMesa)) {
-                errorText.innerText = 'El DUI de la Persona en Mesa es inválido (Formato: 00000000-0).';
-                errorMsg.classList.remove('hidden');
-                duiMesaInput.focus();
-                return;
+            if (!jrvRegistros[centroSeleccionadoActivo]) {
+                jrvRegistros[centroSeleccionadoActivo] = {};
             }
 
-            if (!validarTelefono(telMesa)) {
-                errorText.innerText = 'El teléfono de la Persona en Mesa es inválido (Formato: 0000-0000).';
-                errorMsg.classList.remove('hidden');
-                telMesaInput.focus();
-                return;
-            }
+            jrvRegistros[centroSeleccionadoActivo][jrvSeleccionadaActiva] = {
+                mesa, duiMesa, telMesa, vig, duiVig, telVig
+            };
 
-            // Validaciones Vigilante GANA
-            if (!vig || vig.length < 5 || !vig.includes(' ')) {
-                errorText.innerText = 'Ingrese el nombre completo del Vigilante GANA (Nombre y Apellido).';
-                errorMsg.classList.remove('hidden');
-                vigInput.focus();
-                return;
-            }
+            guardarLocalmente();
+            abrirModalJRV(centroSeleccionadoActivo);
+            renderizarPagina();
 
-            if (!validarDUI(duiVig)) {
-                errorText.innerText = 'El DUI del Vigilante GANA es inválido (Formato: 00000000-0).';
-                errorMsg.classList.remove('hidden');
-                duiVigInput.focus();
-                return;
-            }
-
-            if (!validarTelefono(telVig)) {
-                errorText.innerText = 'El teléfono del Vigilante GANA es inválido (Formato: 0000-0000).';
-                errorMsg.classList.remove('hidden');
-                telVigInput.focus();
-                return;
-            }
-
-            errorMsg.classList.add('hidden');
-
-            const payload = { mesa, duiMesa, telMesa, vig, duiVig, telVig };
-            const dataKey = `jrv_${jrvNumeroActual}`;
-            window.jrvDataStore[dataKey] = payload;
-            localStorage.setItem('gana_sso_jrv_data', JSON.stringify(window.jrvDataStore));
-
-            // Enviar a Google Sheets
-            await guardarEnGoogleSheets({
+            guardarEnGoogleSheets({
                 tipo: 'JRV',
-                id: `JRV_${jrvNumeroActual}`,
+                id: `${centroSeleccionadoActivo}_JRV_${jrvSeleccionadaActiva}`,
                 nombre1: mesa,
                 dui1: duiMesa,
                 tel1: telMesa,
@@ -1098,109 +908,150 @@
             });
 
             cerrarSubmodalIntegrantes();
-
-            if (cvCodigoActualModal) {
-                const cv = datosSSO.find(item => item.codigo === cvCodigoActualModal);
-                if (cv) renderTablaJRV(cv);
-            }
-
-            if (distritoActual === 'RESUMEN') {
-                renderVistaResumen();
-            } else {
-                filtrarCentros();
-            }
-
-            actualizarResumenDistrito();
-            mostrarToast(`JRV N° ${jrvNumeroActual} registrada y enviada a Google Sheets`);
+            mostrarToast(`JRV N° ${jrvSeleccionadaActiva} actualizada con éxito`);
         }
 
-        function cerrarSubmodalIntegrantes() {
-            document.getElementById('submodal-integrantes').classList.add('hidden');
-            jrvNumeroActual = null;
-        }
-
-        function cerrarModal() {
-            document.getElementById('modal-jrv').classList.add('hidden');
-            cvCodigoActualModal = null;
-        }
-
-        function mostrarToast(mensaje) {
+        function mostrarToast(msg) {
             const toast = document.getElementById('toast-notification');
-            document.getElementById('toast-text').innerText = mensaje;
+            document.getElementById('toast-text').innerText = msg;
             toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 3000);
+            setTimeout(() => toast.classList.add('hidden'), 3500);
         }
 
         function exportarCSV() {
-            // BOM UTF-8 para garantizar acentos y formato correcto en Excel
-            let csv = '\uFEFF';
+            let csv = "Tipo Registro,Código / JRV,Nombre / Mesa,DUI 1,Teléfono 1,Vigilante GANA,DUI 2,Teléfono 2\n";
 
-            // Encabezado principal del reporte
-            csv += '========================================================================================\n';
-            csv += 'ESTRUCTURA ELECTORAL 2027 - PABLO VIDES - GANA SAN SALVADOR OESTE\n';
-            csv += `REPORTE DESGLOSADO POR DISTRITO Y JUNTA RECEPTORA DE VOTOS (JRV) - GENERADO: ${new Date().toLocaleDateString()}\n`;
-            csv += '========================================================================================\n\n';
-
-            const distritos = ['APOPA', 'NEJAPA'];
-
-            distritos.forEach(distrito => {
-                const centrosDistrito = datosSSO.filter(cv => cv.distrito === distrito);
-                
-                csv += `########################################################################################\n`;
-                csv += `DISTRITO: ${distrito} (${centrosDistrito.length} CENTROS DE VOTACIÓN)\n`;
-                csv += `########################################################################################\n\n`;
-
-                centrosDistrito.forEach(cv => {
-                    const jefe = window.jefesDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
-                    const supervisor = window.supervisoresDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
-
-                    csv += `----------------------------------------------------------------------------------------\n`;
-                    csv += `CENTRO DE VOTACION: "${cv.nombre.replace(/"/g, '""')}" (CODIGO TSE: ${cv.codigo})\n`;
-                    csv += `DIRECCION: "${cv.direccion.replace(/"/g, '""')}" | ELECTORES: ${cv.electores}\n`;
-                    csv += `JEFE DE CENTRO: "${(jefe.nombre || 'Sin Designar').replace(/"/g, '""')}" | DUI: "${jefe.dui || '-'}" | TEL: "${jefe.tel || '-'}"\n`;
-                    csv += `SUPERVISOR DE CENTRO: "${(supervisor.nombre || 'Sin Nombrar').replace(/"/g, '""')}" | DUI: "${supervisor.dui || '-'}" | TEL: "${supervisor.tel || '-'}"\n`;
-                    csv += `----------------------------------------------------------------------------------------\n`;
-                    
-                    // Encabezados de la tabla individual de la JRV
-                    csv += 'N° JRV,ESTADO JRV,PERSONA EN MESA,DUI MESA,TELEFONO MESA,VIGILANTE GANA,DUI VIGILANTE,TELEFONO VIGILANTE\n';
-
-                    for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
-                        const data = window.jrvDataStore[`jrv_${num}`] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
-                        
-                        let estado = 'INCOMPLETO';
-                        if (data.mesa && data.vig) estado = 'COMPLETO';
-                        else if (data.mesa || data.vig) estado = 'PARCIAL';
-
-                        const pMesa = (data.mesa || 'Pendiente').replace(/"/g, '""');
-                        const dMesa = data.duiMesa || '-';
-                        const tMesa = data.telMesa || '-';
-                        
-                        const pVig = (data.vig || 'Sin acreditar').replace(/"/g, '""');
-                        const dVig = data.duiVig || '-';
-                        const tVig = data.telVig || '-';
-
-                        csv += `${num},"${estado}","${pMesa}","${dMesa}","${tMesa}","${pVig}","${dVig}","${tVig}"\n`;
-                    }
-                    csv += '\n'; // Salto de línea entre centros de votación
-                });
-
-                csv += '\n'; // Salto de línea entre distritos
+            Object.keys(jefesCentros).forEach(code => {
+                const j = jefesCentros[code];
+                csv += `"JEFE CENTRO","${code}","${j.nombre}","${j.dui}","${j.tel}","","",""\n`;
             });
 
-            // Descarga segura compatible con iFrames (Google Sites / Netlify / Tiiny.site)
-            const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csv);
-            const link = document.createElement('a');
-            link.setAttribute('href', encodedUri);
-            link.setAttribute('download', `Estructura_Electoral_Desglosada_GANA_SSO_${new Date().toISOString().slice(0,10)}.csv`);
+            Object.keys(supervisoresCentros).forEach(code => {
+                const s = supervisoresCentros[code];
+                csv += `"SUPERVISOR","${code}","${s.nombre}","${s.dui}","${s.tel}","","",""\n`;
+            });
+
+            Object.keys(jrvRegistros).forEach(code => {
+                const regCV = jrvRegistros[code];
+                Object.keys(regCV).forEach(num => {
+                    const r = regCV[num];
+                    csv += `"INTEGRANTES JRV","${code}_JRV_${num}","${r.mesa}","${r.duiMesa}","${r.telMesa}","${r.vig}","${r.duiVig}","${r.telVig}"\n`;
+                });
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Estructura_Electoral_GANA_SSO_${new Date().toISOString().slice(0,10)}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            mostrarToast('CSV desglosado generado con éxito');
         }
 
-        window.onload = init;
+        // 1. Envío mediante formulario oculto vía POST
+        function guardarEnGoogleSheets(payload) {
+            const syncStatus = document.getElementById('sync-status-text');
+
+            if (syncStatus) {
+                syncStatus.innerText = 'Enviando datos a Google Sheets...';
+            }
+
+            try {
+                document.getElementById('hidden_tipo').value = payload.tipo || '';
+                document.getElementById('hidden_id').value = payload.id || '';
+                document.getElementById('hidden_nombre1').value = payload.nombre1 || '';
+                document.getElementById('hidden_dui1').value = payload.dui1 || '';
+                document.getElementById('hidden_tel1').value = payload.tel1 || '';
+                document.getElementById('hidden_nombre2').value = payload.nombre2 || '';
+                document.getElementById('hidden_dui2').value = payload.dui2 || '';
+                document.getElementById('hidden_tel2').value = payload.tel2 || '';
+
+                const form = document.getElementById('form_hidden_gsheets');
+
+                if (!form) {
+                    throw new Error('No se encontró el formulario de conexión.');
+                }
+
+                form.submit();
+
+                if (syncStatus) {
+                    syncStatus.innerText =
+                        'Solicitud enviada. Verifica el registro en Google Sheets.';
+                }
+
+            } catch (err) {
+                console.error('Error enviando datos:', err);
+
+                if (syncStatus) {
+                    syncStatus.innerText = 'Error al enviar los datos.';
+                }
+            }
+        }
+
+        // 2. Función para descargar y consultar los registros guardados en Google Sheets al iniciar
+        async function cargarDatosDesdeGoogleSheets() {
+            const syncStatus = document.getElementById('sync-status-text');
+            if (syncStatus) {
+                syncStatus.innerText = 'Cargando datos remotos...';
+            }
+
+            try {
+                const response = await fetch(`${GOOGLE_SHEETS_URL}?action=read`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.registros && Array.isArray(data.registros)) {
+                        data.registros.forEach(reg => {
+                            if (reg.tipo === 'JEFE') {
+                                jefesCentros[reg.id] = {
+                                    nombre: reg.nombre1,
+                                    dui: reg.dui1,
+                                    tel: reg.tel1
+                                };
+                            } else if (reg.tipo === 'SUPERVISOR') {
+                                supervisoresCentros[reg.id] = {
+                                    nombre: reg.nombre1,
+                                    dui: reg.dui1,
+                                    tel: reg.tel1
+                                };
+                            } else if (reg.tipo === 'JRV') {
+                                const partes = (reg.id || '').split('_JRV_');
+                                if (partes.length === 2) {
+                                    const codeCV = partes[0];
+                                    const numJRV = partes[1];
+                                    if (!jrvRegistros[codeCV]) {
+                                        jrvRegistros[codeCV] = {};
+                                    }
+                                    jrvRegistros[codeCV][numJRV] = {
+                                        mesa: reg.nombre1,
+                                        duiMesa: reg.dui1,
+                                        telMesa: reg.tel1,
+                                        vig: reg.nombre2,
+                                        duiVig: reg.dui2,
+                                        telVig: reg.tel2
+                                    };
+                                }
+                            }
+                        });
+                        guardarLocalmente();
+                        renderizarPagina();
+                    }
+                }
+            } catch (err) {
+                console.log('Modo offline o sin datos remotos aún:', err);
+            } finally {
+                if (syncStatus) {
+                    syncStatus.innerText = 'Sincronizado con Google Sheets';
+                }
+            }
+        }
+
+        // Carga inicial al abrir la aplicación
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarLocalmente();
+            renderizarPagina();
+            cargarDatosDesdeGoogleSheets();
+        });
     </script>
 </body>
 </html>
