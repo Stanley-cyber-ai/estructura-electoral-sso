@@ -545,28 +545,49 @@
         // URL DE TU GOOGLE APPS SCRIPT CONFIGURADA
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwSuo0gmsF2z9ILe1jxBg_SyOt2bynQI0HRYjOpat4U9kWyMpjjc-jsM8FsAN_VnkMj/exec";
 
-        // Método de envío garantizado hacia Google Sheets
+        // Método de envío 100% garantizado mediante Formulario Invisible en segundo plano
         async function guardarEnGoogleSheets(payload) {
             const syncStatus = document.getElementById('sync-status-text');
-            if (syncStatus) syncStatus.innerText = 'Guardando en la nube...';
+            if (syncStatus) syncStatus.innerText = 'Enviando a Google Sheets...';
             
             try {
-                // Convertimos el payload a parámetros GET
-                const params = new URLSearchParams(payload).toString();
-                const targetUrl = `${GOOGLE_SHEETS_URL}?${params}&_t=${Date.now()}`;
-
-                // Intentamos envío transparente
-                const img = new Image();
-                img.src = targetUrl;
-
-                // Respaldo secundario con fetch
-                fetch(targetUrl, { mode: 'no-cors', cache: 'no-cache' }).catch(() => {});
-
-                if (syncStatus) {
-                    setTimeout(() => {
-                        syncStatus.innerText = 'Sincronizado en la nube';
-                    }, 1000);
+                // Crear iframe invisible si no existe para evitar recargar la página
+                let iframe = document.getElementById('hidden_iframe_sheets');
+                if (!iframe) {
+                    iframe = document.createElement('iframe');
+                    iframe.id = 'hidden_iframe_sheets';
+                    iframe.name = 'hidden_iframe_sheets';
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
                 }
+
+                // Crear formulario dinámico
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = GOOGLE_SHEETS_URL;
+                form.target = 'hidden_iframe_sheets';
+                form.style.display = 'none';
+
+                // Insertar campos en el formulario
+                for (const key in payload) {
+                    if (payload.hasOwnProperty(key)) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = payload[key] || '';
+                        form.appendChild(input);
+                    }
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+                
+                // Limpiar formulario enviado
+                setTimeout(() => {
+                    document.body.removeChild(form);
+                    if (syncStatus) syncStatus.innerText = 'Sincronizado en la nube';
+                }, 1500);
+
             } catch (err) {
                 console.warn("Error enviando datos:", err);
                 if (syncStatus) syncStatus.innerText = 'Guardado localmente';
