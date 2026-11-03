@@ -49,6 +49,12 @@
                 </div>
             </div>
 
+            <!-- Indicador de Estado en Tiempo Real -->
+            <div id="sync-status" class="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-lg text-[10px] font-bold text-orange-100">
+                <i class="fa-solid fa-cloud-arrow-up animate-pulse text-xs"></i>
+                <span id="sync-status-text">Conectando en la nube...</span>
+            </div>
+
             <!-- Métricas Consolidadas Adaptables -->
             <div class="flex items-center justify-center sm:justify-end gap-1.5 sm:gap-3 bg-gana-navy/25 backdrop-blur-md p-1.5 sm:p-2 rounded-xl border border-white/20 text-xs w-full sm:w-auto">
                 <div class="text-center px-2">
@@ -531,7 +537,112 @@
         <span id="toast-text">Operación realizada con éxito</span>
     </div>
 
-    <!-- SCRIPTS CON LA BASE DE DATOS SSO Y LÓGICA -->
+    <!-- FIREBASE SDK EN TIEMPO REAL -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuración de Firebase y Variables Globales del Entorno
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "demo-key",
+                authDomain: "demo-project.firebaseapp.com",
+                projectId: "demo-project",
+                storageBucket: "demo-project.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123456789:web:demo"
+            };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'gana-sso-2027';
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.appId = appId;
+
+        // Rutas Estrictas de Colección
+        window.colPublica = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
+        window.docPublico = (colName, docId) => doc(db, 'artifacts', appId, 'public', 'data', colName, docId);
+
+        // Autenticación Antes de Cualquier Consulta
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                document.getElementById('sync-status-text').innerText = 'En la nube (Tiempo Real)';
+                iniciarEscuchadoresNube();
+            } catch (err) {
+                console.error("Error al autenticar en la nube:", err);
+                document.getElementById('sync-status-text').innerText = 'Modo Local (Offline)';
+            }
+        }
+
+        // Escuchadores de Cambios Multi-Dispositivo (onSnapshot)
+        function iniciarEscuchadoresNube() {
+            // 1. Escuchar cambios en JRVs
+            onSnapshot(window.colPublica('jrvs'), (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added" || change.type === "modified") {
+                        window.jrvDataStore[change.doc.id] = change.doc.data();
+                    }
+                });
+                localStorage.setItem('gana_sso_jrv_data', JSON.stringify(window.jrvDataStore));
+                window.actualizarVistasEnTiempoReal();
+            }, (err) => console.error("Error en realtime JRV:", err));
+
+            // 2. Escuchar cambios en Jefes de Centro
+            onSnapshot(window.colPublica('jefes'), (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added" || change.type === "modified") {
+                        window.jefesDataStore[change.doc.id] = change.doc.data();
+                    }
+                });
+                localStorage.setItem('gana_sso_jefes_data', JSON.stringify(window.jefesDataStore));
+                window.actualizarVistasEnTiempoReal();
+            }, (err) => console.error("Error en realtime Jefes:", err));
+
+            // 3. Escuchar cambios en Supervisores
+            onSnapshot(window.colPublica('supervisores'), (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added" || change.type === "modified") {
+                        window.supervisoresDataStore[change.doc.id] = change.doc.data();
+                    }
+                });
+                localStorage.setItem('gana_sso_supervisores_data', JSON.stringify(window.supervisoresDataStore));
+                window.actualizarVistasEnTiempoReal();
+            }, (err) => console.error("Error en realtime Supervisores:", err));
+        }
+
+        window.guardarJefeNube = async function(codigo, data) {
+            try {
+                await setDoc(window.docPublico('jefes', `cv_${codigo}`), data);
+            } catch (e) { console.error("Error al guardar jefe en nube:", e); }
+        }
+
+        window.guardarSupervisorNube = async function(codigo, data) {
+            try {
+                await setDoc(window.docPublico('supervisores', `cv_${codigo}`), data);
+            } catch (e) { console.error("Error al guardar supervisor en nube:", e); }
+        }
+
+        window.guardarJrvNube = async function(numJrv, data) {
+            try {
+                await setDoc(window.docPublico('jrvs', `jrv_${numJrv}`), data);
+            } catch (e) { console.error("Error al guardar JRV en nube:", e); }
+        }
+
+        initAuth();
+    </script>
+
+    <!-- SCRIPTS CON LA BASE DE DATOS SSO Y LÓGICA DE APLICACIÓN -->
     <script>
         const datosSSO = [
             // APOPA (21 Centros)
@@ -568,9 +679,10 @@
         ];
 
         let distritoActual = 'APOPA';
-        let jrvDataStore = JSON.parse(localStorage.getItem('gana_sso_jrv_data')) || {};
-        let jefesDataStore = JSON.parse(localStorage.getItem('gana_sso_jefes_data')) || {};
-        let supervisoresDataStore = JSON.parse(localStorage.getItem('gana_sso_supervisores_data')) || {};
+        window.jrvDataStore = JSON.parse(localStorage.getItem('gana_sso_jrv_data')) || {};
+        window.jefesDataStore = JSON.parse(localStorage.getItem('gana_sso_jefes_data')) || {};
+        window.supervisoresDataStore = JSON.parse(localStorage.getItem('gana_sso_supervisores_data')) || {};
+
         let cvCodigoActualJefe = null;
         let cvCodigoActualSupervisor = null;
         let jrvNumeroActual = null;
@@ -578,6 +690,19 @@
 
         function init() {
             cambiarModulo('APOPA');
+        }
+
+        window.actualizarVistasEnTiempoReal = function() {
+            if (distritoActual === 'RESUMEN') {
+                renderVistaResumen();
+            } else {
+                filtrarCentros();
+            }
+            actualizarResumenDistrito();
+            if (cvCodigoActualModal) {
+                const cv = datosSSO.find(item => item.codigo === cvCodigoActualModal);
+                if (cv) renderTablaJRV(cv);
+            }
         }
 
         function cambiarModulo(distrito) {
@@ -625,7 +750,7 @@
                 let pendientes = 0;
 
                 for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
-                    const d = jrvDataStore[`jrv_${num}`];
+                    const d = window.jrvDataStore[`jrv_${num}`];
                     if (d && d.mesa && d.vig) {
                         completadas++;
                     } else if (d && (d.mesa || d.vig)) {
@@ -683,7 +808,7 @@
                 let completadas = 0;
                 datosSSO.forEach(cv => {
                     for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
-                        const d = jrvDataStore[`jrv_${num}`];
+                        const d = window.jrvDataStore[`jrv_${num}`];
                         if (d && d.mesa && d.vig) completadas++;
                     }
                 });
@@ -699,7 +824,7 @@
             centros.forEach(cv => {
                 totalJrvs += cv.totalJrv;
                 for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
-                    const d = jrvDataStore[`jrv_${num}`];
+                    const d = window.jrvDataStore[`jrv_${num}`];
                     if (d && d.mesa && d.vig) completadas++;
                 }
             });
@@ -723,13 +848,13 @@
             }
 
             lista.forEach(cv => {
-                const jefeInfo = jefesDataStore[`cv_${cv.codigo}`] || { nombre: '', tel: '' };
-                const superInfo = supervisoresDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
+                const jefeInfo = window.jefesDataStore[`cv_${cv.codigo}`] || { nombre: '', tel: '' };
+                const superInfo = window.supervisoresDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
 
                 // Contar JRVs completas en este centro
                 let completas = 0;
                 for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
-                    const d = jrvDataStore[`jrv_${num}`];
+                    const d = window.jrvDataStore[`jrv_${num}`];
                     if (d && d.mesa && d.vig) completas++;
                 }
 
@@ -790,7 +915,7 @@
         function abrirModalJefe(codigo) {
             cvCodigoActualJefe = codigo;
             const cv = datosSSO.find(item => item.codigo === codigo);
-            const jefeInfo = jefesDataStore[`cv_${codigo}`] || { nombre: '', dui: '', tel: '' };
+            const jefeInfo = window.jefesDataStore[`cv_${codigo}`] || { nombre: '', dui: '', tel: '' };
 
             document.getElementById('modal-jefe-cv-nombre').innerText = `CÓDIGO ${cv.codigo} — ${cv.nombre}`;
             document.getElementById('input-jefe-nombre').value = jefeInfo.nombre || '';
@@ -812,7 +937,7 @@
             return regexTel.test(tel);
         }
 
-        function guardarJefeCentro() {
+        async function guardarJefeCentro() {
             if (!cvCodigoActualJefe) return;
 
             const nombreInput = document.getElementById('input-jefe-nombre');
@@ -847,13 +972,18 @@
             }
 
             errorMsg.classList.add('hidden');
-            jefesDataStore[`cv_${cvCodigoActualJefe}`] = { nombre, dui, tel };
-            localStorage.setItem('gana_sso_jefes_data', JSON.stringify(jefesDataStore));
+            const payload = { nombre, dui, tel };
+            window.jefesDataStore[`cv_${cvCodigoActualJefe}`] = payload;
+            localStorage.setItem('gana_sso_jefes_data', JSON.stringify(window.jefesDataStore));
+
+            if (window.guardarJefeNube) {
+                await window.guardarJefeNube(cvCodigoActualJefe, payload);
+            }
 
             cerrarModalJefe();
             filtrarCentros();
             actualizarResumenDistrito();
-            mostrarToast('Jefe de Centro guardado con éxito');
+            mostrarToast('Jefe de Centro guardado y sincronizado');
         }
 
         function cerrarModalJefe() {
@@ -864,7 +994,7 @@
         function abrirModalSupervisor(codigo) {
             cvCodigoActualSupervisor = codigo;
             const cv = datosSSO.find(item => item.codigo === codigo);
-            const superInfo = supervisoresDataStore[`cv_${codigo}`] || { nombre: '', dui: '', tel: '' };
+            const superInfo = window.supervisoresDataStore[`cv_${codigo}`] || { nombre: '', dui: '', tel: '' };
 
             document.getElementById('modal-supervisor-cv-nombre').innerText = `CÓDIGO ${cv.codigo} — ${cv.nombre}`;
             document.getElementById('input-supervisor-nombre').value = superInfo.nombre || '';
@@ -875,7 +1005,7 @@
             document.getElementById('modal-supervisor').classList.remove('hidden');
         }
 
-        function guardarSupervisorCentro() {
+        async function guardarSupervisorCentro() {
             if (!cvCodigoActualSupervisor) return;
 
             const nombreInput = document.getElementById('input-supervisor-nombre');
@@ -910,13 +1040,18 @@
             }
 
             errorMsg.classList.add('hidden');
-            supervisoresDataStore[`cv_${cvCodigoActualSupervisor}`] = { nombre, dui, tel };
-            localStorage.setItem('gana_sso_supervisores_data', JSON.stringify(supervisoresDataStore));
+            const payload = { nombre, dui, tel };
+            window.supervisoresDataStore[`cv_${cvCodigoActualSupervisor}`] = payload;
+            localStorage.setItem('gana_sso_supervisores_data', JSON.stringify(window.supervisoresDataStore));
+
+            if (window.guardarSupervisorNube) {
+                await window.guardarSupervisorNube(cvCodigoActualSupervisor, payload);
+            }
 
             cerrarModalSupervisor();
             filtrarCentros();
             actualizarResumenDistrito();
-            mostrarToast('Supervisor de Centro guardado con éxito');
+            mostrarToast('Supervisor guardado y sincronizado');
         }
 
         function cerrarModalSupervisor() {
@@ -952,7 +1087,7 @@
 
             for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
                 const dataKey = `jrv_${num}`;
-                const jrvData = jrvDataStore[dataKey] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
+                const jrvData = window.jrvDataStore[dataKey] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
 
                 let estadoBadge = '<span class="text-[10px] font-bold bg-red-100 text-red-600 px-2.5 py-1 rounded-full">Incompleto</span>';
                 if (jrvData.mesa && jrvData.vig) {
@@ -999,7 +1134,7 @@
         function abrirSubmodalIntegrantes(numJrv) {
             jrvNumeroActual = numJrv;
             const dataKey = `jrv_${numJrv}`;
-            const jrvData = jrvDataStore[dataKey] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
+            const jrvData = window.jrvDataStore[dataKey] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
 
             document.getElementById('submodal-jrv-num').innerText = numJrv;
             document.getElementById('input-submodal-mesa').value = jrvData.mesa || '';
@@ -1013,7 +1148,7 @@
             document.getElementById('submodal-integrantes').classList.remove('hidden');
         }
 
-        function guardarIntegrantesSubmodal() {
+        async function guardarIntegrantesSubmodal() {
             if (!jrvNumeroActual) return;
 
             const mesaInput = document.getElementById('input-submodal-mesa');
@@ -1079,9 +1214,14 @@
 
             errorMsg.classList.add('hidden');
 
+            const payload = { mesa, duiMesa, telMesa, vig, duiVig, telVig };
             const dataKey = `jrv_${jrvNumeroActual}`;
-            jrvDataStore[dataKey] = { mesa, duiMesa, telMesa, vig, duiVig, telVig };
-            localStorage.setItem('gana_sso_jrv_data', JSON.stringify(jrvDataStore));
+            window.jrvDataStore[dataKey] = payload;
+            localStorage.setItem('gana_sso_jrv_data', JSON.stringify(window.jrvDataStore));
+
+            if (window.guardarJrvNube) {
+                await window.guardarJrvNube(jrvNumeroActual, payload);
+            }
 
             cerrarSubmodalIntegrantes();
 
@@ -1097,7 +1237,7 @@
             }
 
             actualizarResumenDistrito();
-            mostrarToast(`JRV N° ${jrvNumeroActual} registrada con éxito`);
+            mostrarToast(`JRV N° ${jrvNumeroActual} registrada y sincronizada`);
         }
 
         function cerrarSubmodalIntegrantes() {
@@ -1139,8 +1279,8 @@
                 csv += `########################################################################################\n\n`;
 
                 centrosDistrito.forEach(cv => {
-                    const jefe = jefesDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
-                    const supervisor = supervisoresDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
+                    const jefe = window.jefesDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
+                    const supervisor = window.supervisoresDataStore[`cv_${cv.codigo}`] || { nombre: '', dui: '', tel: '' };
 
                     csv += `----------------------------------------------------------------------------------------\n`;
                     csv += `CENTRO DE VOTACION: "${cv.nombre.replace(/"/g, '""')}" (CODIGO TSE: ${cv.codigo})\n`;
@@ -1153,7 +1293,7 @@
                     csv += 'N° JRV,ESTADO JRV,PERSONA EN MESA,DUI MESA,TELEFONO MESA,VIGILANTE GANA,DUI VIGILANTE,TELEFONO VIGILANTE\n';
 
                     for (let num = cv.jrvInicial; num <= cv.jrvFinal; num++) {
-                        const data = jrvDataStore[`jrv_${num}`] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
+                        const data = window.jrvDataStore[`jrv_${num}`] || { mesa: '', duiMesa: '', telMesa: '', vig: '', duiVig: '', telVig: '' };
                         
                         let estado = 'INCOMPLETO';
                         if (data.mesa && data.vig) estado = 'COMPLETO';
