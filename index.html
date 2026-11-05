@@ -630,38 +630,64 @@
                         jrvRegistros = {};
 
                         data.registros.forEach(reg => {
-                            if (reg.tipo === 'ELIMINAR') return;
+                            if (!reg || String(reg.tipo || '').toUpperCase() === 'ELIMINAR') return;
 
-                            if (reg.tipo === 'JEFE') {
-                                jefesCentros[reg.id] = { nombre: reg.nombre1, dui: reg.dui1, tel: reg.tel1 };
-                            } else if (reg.tipo === 'SUPERVISOR' || reg.id.startsWith('SUP-')) {
-                                const realId = reg.id.replace('SUP-', '');
-                                supervisoresCentros[realId] = { nombre: reg.nombre1, dui: reg.dui1, tel: reg.tel1 };
-                            } else if (reg.tipo === 'JEM' || reg.id.startsWith('JEM-')) {
-                                const realId = reg.id.replace('JEM-', '');
-                                jemCentros[realId] = { nombre: reg.nombre1, dui: reg.dui1, tel: reg.tel1 };
-                            } else if (reg.tipo === 'JRV') {
-                                const parts = reg.id.split('-JRV-');
+                            // Google Sheets puede devolver los códigos numéricos como números.
+                            // Convertimos todos los identificadores a texto antes de procesarlos.
+                            const tipo = String(reg.tipo || '').toUpperCase();
+                            const id = String(reg.id == null ? '' : reg.id).trim();
+                            const persona = {
+                                nombre: reg.nombre1 == null ? '' : String(reg.nombre1),
+                                dui: reg.dui1 == null ? '' : String(reg.dui1),
+                                tel: reg.tel1 == null ? '' : String(reg.tel1)
+                            };
+
+                            if (tipo === 'JEFE') {
+                                jefesCentros[id] = persona;
+                            } else if (tipo === 'SUPERVISOR' || id.startsWith('SUP-')) {
+                                const realId = id.replace(/^SUP-/, '');
+                                supervisoresCentros[realId] = persona;
+                            } else if (tipo === 'JEM' || id.startsWith('JEM-')) {
+                                const realId = id.replace(/^JEM-/, '');
+                                jemCentros[realId] = persona;
+                            } else if (tipo === 'JRV') {
+                                const parts = id.split('-JRV-');
                                 const cvCode = parts[0];
                                 const jrvNum = parts[1];
                                 if (cvCode && jrvNum) {
                                     if (!jrvRegistros[cvCode]) jrvRegistros[cvCode] = {};
                                     jrvRegistros[cvCode][jrvNum] = {
-                                        mesa: { nombre: reg.nombre1, dui: reg.dui1, tel: reg.tel1 },
-                                        vig: { nombre: reg.nombre2, dui: reg.dui2, tel: reg.tel2 },
-                                        sup: { nombre: reg.nombre3 || '', dui: reg.dui3 || '', tel: reg.tel3 || '' }
+                                        mesa: persona,
+                                        vig: {
+                                            nombre: reg.nombre2 == null ? '' : String(reg.nombre2),
+                                            dui: reg.dui2 == null ? '' : String(reg.dui2),
+                                            tel: reg.tel2 == null ? '' : String(reg.tel2)
+                                        },
+                                        sup: {
+                                            nombre: reg.nombre3 == null ? '' : String(reg.nombre3),
+                                            dui: reg.dui3 == null ? '' : String(reg.dui3),
+                                            tel: reg.tel3 == null ? '' : String(reg.tel3)
+                                        }
                                     };
                                 }
                             }
                         });
                         guardarLocalmente();
                         renderizarPagina();
+                        if (syncStatus) {
+                            syncStatus.innerText = `Datos recuperados: ${data.registros.length} registros`;
+                        }
+                    } else {
+                        throw new Error('La respuesta de Google Sheets no contiene una lista de registros válida.');
                     }
+                } else {
+                    throw new Error(`Error HTTP ${response.status} al consultar Google Sheets.`);
                 }
             } catch (e) {
-                console.warn('No se pudieron consultar datos remotos:', e);
+                console.error('No se pudieron consultar datos remotos:', e);
+                if (syncStatus) syncStatus.innerText = 'Error al recuperar datos de Google Sheets';
             } finally {
-                if (syncStatus) syncStatus.innerText = 'Sincronizado con Google Sheets';
+                // El estado de éxito se establece únicamente después de procesar la respuesta.
             }
         }
 
