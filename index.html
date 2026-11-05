@@ -575,80 +575,99 @@
 
         // COMUNICACIÓN CON GOOGLE SHEETS
         // COMUNICACIÓN CON GOOGLE SHEETS
+        // Comprueba si el registro que se intenta eliminar todavía existe
+        // en las estructuras locales después de volver a consultar Google Sheets.
         function existeRegistroEliminadoEnMemoria(payload) {
-            const tipo = String(payload.tipo || '').toUpperCase();
+            const tipo = String(payload.tipoOriginal || payload.tipo || '').trim().toUpperCase();
             const id = String(payload.id || '').trim();
 
-            if (tipo === 'JEFE') return !!jefesCentros[id];
-            if (tipo === 'SUPERVISOR') return !!supervisoresCentros[id.replace(/^SUP-/, '')];
-            if (tipo === 'JEM') return !!jemCentros[id.replace(/^JEM-/, '')];
+            if (!id) return true;
+
+            if (tipo === 'JEFE') {
+                return Object.prototype.hasOwnProperty.call(jefesCentros, id);
+            }
+            if (tipo === 'SUPERVISOR') {
+                const realId = id.replace(/^SUP-/, '');
+                return Object.prototype.hasOwnProperty.call(supervisoresCentros, realId);
+            }
+            if (tipo === 'JEM') {
+                const realId = id.replace(/^JEM-/, '');
+                return Object.prototype.hasOwnProperty.call(jemCentros, realId);
+            }
             if (tipo === 'JRV') {
                 const partes = id.split('-JRV-');
-                return !!(partes[0] && partes[1] && jrvRegistros[partes[0]] && jrvRegistros[partes[0]][partes[1]]);
+                const codigoCentro = partes[0];
+                const numeroJrv = partes[1];
+                return !!(codigoCentro && numeroJrv && jrvRegistros[codigoCentro] &&
+                    Object.prototype.hasOwnProperty.call(jrvRegistros[codigoCentro], numeroJrv));
             }
             return true;
         }
 
-        function guardarEnGoogleSheets(payload) {
+        async function guardarEnGoogleSheets(payload) {
             const syncStatus = document.getElementById('sync-status-text');
-            const esEliminacion = String(payload.accion || '').toLowerCase() === 'eliminar';
-            if (syncStatus) syncStatus.innerText = esEliminacion
-                ? 'Enviando solicitud de eliminación...'
-                : 'Enviando datos a Google Sheets...';
+            const esEliminacion = String(payload.accion || '').trim().toLowerCase() === 'eliminar';
 
             try {
-                document.getElementById('hidden_accion').value = payload.accion || 'guardar';
-                document.getElementById('hidden_tipoOriginal').value = payload.tipoOriginal || '';
-                document.getElementById('hidden_tipo').value = payload.tipo || '';
-                document.getElementById('hidden_id').value = payload.id || '';
-                document.getElementById('hidden_nombre1').value = payload.nombre1 || '';
-                document.getElementById('hidden_dui1').value = payload.dui1 || '';
-                document.getElementById('hidden_tel1').value = payload.tel1 || '';
-                document.getElementById('hidden_nombre2').value = payload.nombre2 || '';
-                document.getElementById('hidden_dui2').value = payload.dui2 || '';
-                document.getElementById('hidden_tel2').value = payload.tel2 || '';
-                document.getElementById('hidden_nombre3').value = payload.nombre3 || '';
-                document.getElementById('hidden_dui3').value = payload.dui3 || '';
-                document.getElementById('hidden_tel3').value = payload.tel3 || '';
+                const campos = {
+                    hidden_accion: payload.accion || 'guardar',
+                    hidden_tipoOriginal: payload.tipoOriginal || '',
+                    hidden_tipo: payload.tipo || '',
+                    hidden_id: payload.id || '',
+                    hidden_nombre1: payload.nombre1 || '',
+                    hidden_dui1: payload.dui1 || '',
+                    hidden_tel1: payload.tel1 || '',
+                    hidden_nombre2: payload.nombre2 || '',
+                    hidden_dui2: payload.dui2 || '',
+                    hidden_tel2: payload.tel2 || '',
+                    hidden_nombre3: payload.nombre3 || '',
+                    hidden_dui3: payload.dui3 || '',
+                    hidden_tel3: payload.tel3 || ''
+                };
+
+                Object.entries(campos).forEach(([id, valor]) => {
+                    const campo = document.getElementById(id);
+                    if (!campo) throw new Error(`No se encontró el campo ${id}`);
+                    campo.value = String(valor);
+                });
 
                 const form = document.getElementById('form_hidden_gsheets');
-                const iframe = document.getElementById('hidden_iframe_gsheets');
-                if (!form || !iframe) throw new Error('No se encontró el formulario o iframe de conexión.');
+                if (!form) throw new Error('No se encontró el formulario de conexión.');
 
-                if (esEliminacion) {
-                    let verificacionIniciada = false;
-                    const verificarEliminacion = async () => {
-                        if (verificacionIniciada) return;
-                        verificacionIniciada = true;
-                        // Espera breve para que Google Sheets termine de confirmar la escritura.
-                        await new Promise(resolve => setTimeout(resolve, 500));
-                        const datosActualizados = await cargarDatosDesdeGoogleSheets();
-                        if (!datosActualizados) {
-                            if (syncStatus) syncStatus.innerText = 'No se pudo verificar la eliminación. Revisa la conexión.';
-                            mostrarToast('No se pudo confirmar la eliminación. Intenta nuevamente.');
-                            return;
-                        }
-                        if (existeRegistroEliminadoEnMemoria(payload)) {
-                            if (syncStatus) syncStatus.innerText = 'El registro continúa en Google Sheets.';
-                            mostrarToast('No se eliminó el registro en la base de datos. Verifica e intenta nuevamente.');
-                        } else {
-                            if (syncStatus) syncStatus.innerText = 'Eliminación confirmada en Google Sheets.';
-                            mostrarToast('Registro eliminado correctamente de la base de datos.');
-                        }
-                    };
-
-                    // La carga del iframe indica que Apps Script respondió; el temporizador es respaldo.
-                    iframe.addEventListener('load', verificarEliminacion, { once: true });
+                if (!esEliminacion) {
+                    if (syncStatus) syncStatus.innerText = 'Enviando datos a Google Sheets...';
                     form.submit();
-                    setTimeout(verificarEliminacion, 5000);
-                } else {
-                    form.submit();
-                    if (syncStatus) syncStatus.innerText = 'Solicitud enviada. Sincronizando con Google Sheets.';
+                    return true;
                 }
-            } catch (err) {
-                console.error('Error enviando datos:', err);
-                if (syncStatus) syncStatus.innerText = 'Error al enviar los datos.';
-                mostrarToast('Ocurrió un error al enviar la solicitud.');
+
+                if (syncStatus) syncStatus.innerText = 'Enviando solicitud de eliminación...';
+                form.submit();
+
+                // El formulario se envía al iframe porque Apps Script responde
+                // desde otro dominio. Confirmamos el resultado leyendo la hoja
+                // nuevamente, con una URL distinta para evitar respuestas en caché.
+                for (let intento = 1; intento <= 8; intento++) {
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    const consultaCorrecta = await cargarDatosDesdeGoogleSheets();
+
+                    if (consultaCorrecta && !existeRegistroEliminadoEnMemoria(payload)) {
+                        if (syncStatus) syncStatus.innerText = 'Eliminación confirmada en Google Sheets.';
+                        mostrarToast('Registro eliminado correctamente de Google Sheets.');
+                        return true;
+                    }
+                }
+
+                // Si el servidor no eliminó el registro, la última lectura remota
+                // habrá restaurado el dato en pantalla y en localStorage.
+                if (syncStatus) syncStatus.innerText = 'No se confirmó la eliminación en Google Sheets.';
+                mostrarToast('No se pudo confirmar la eliminación. El registro puede seguir en Google Sheets.');
+                return false;
+
+            } catch (error) {
+                console.error('Error enviando datos a Google Sheets:', error);
+                if (syncStatus) syncStatus.innerText = 'Error al procesar la solicitud.';
+                mostrarToast('Ocurrió un error al procesar la solicitud.');
+                return false;
             }
         }
 
@@ -656,76 +675,86 @@
             const syncStatus = document.getElementById('sync-status-text');
             try {
                 if (syncStatus) syncStatus.innerText = 'Consultando datos en la nube...';
-                const response = await fetch(`${GOOGLE_SHEETS_URL}?action=read`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.registros && Array.isArray(data.registros)) {
-                        jefesCentros = {};
-                        supervisoresCentros = {};
-                        jemCentros = {};
-                        jrvRegistros = {};
 
-                        data.registros.forEach(reg => {
-                            if (!reg || String(reg.tipo || '').toUpperCase() === 'ELIMINAR') return;
+                const urlConsulta = `${GOOGLE_SHEETS_URL}?action=read&t=${Date.now()}`;
+                const response = await fetch(urlConsulta, {
+                    method: 'GET',
+                    cache: 'no-store'
+                });
 
-                            // Google Sheets puede devolver los códigos numéricos como números.
-                            // Convertimos todos los identificadores a texto antes de procesarlos.
-                            const tipo = String(reg.tipo || '').toUpperCase();
-                            const id = String(reg.id == null ? '' : reg.id).trim();
-                            const persona = {
-                                nombre: reg.nombre1 == null ? '' : String(reg.nombre1),
-                                dui: reg.dui1 == null ? '' : String(reg.dui1),
-                                tel: reg.tel1 == null ? '' : String(reg.tel1)
-                            };
-
-                            if (tipo === 'JEFE') {
-                                jefesCentros[id] = persona;
-                            } else if (tipo === 'SUPERVISOR' || id.startsWith('SUP-')) {
-                                const realId = id.replace(/^SUP-/, '');
-                                supervisoresCentros[realId] = persona;
-                            } else if (tipo === 'JEM' || id.startsWith('JEM-')) {
-                                const realId = id.replace(/^JEM-/, '');
-                                jemCentros[realId] = persona;
-                            } else if (tipo === 'JRV') {
-                                const parts = id.split('-JRV-');
-                                const cvCode = parts[0];
-                                const jrvNum = parts[1];
-                                if (cvCode && jrvNum) {
-                                    if (!jrvRegistros[cvCode]) jrvRegistros[cvCode] = {};
-                                    jrvRegistros[cvCode][jrvNum] = {
-                                        mesa: persona,
-                                        vig: {
-                                            nombre: reg.nombre2 == null ? '' : String(reg.nombre2),
-                                            dui: reg.dui2 == null ? '' : String(reg.dui2),
-                                            tel: reg.tel2 == null ? '' : String(reg.tel2)
-                                        },
-                                        sup: {
-                                            nombre: reg.nombre3 == null ? '' : String(reg.nombre3),
-                                            dui: reg.dui3 == null ? '' : String(reg.dui3),
-                                            tel: reg.tel3 == null ? '' : String(reg.tel3)
-                                        }
-                                    };
-                                }
-                            }
-                        });
-                        guardarLocalmente();
-                        renderizarPagina();
-                        if (syncStatus) {
-                            syncStatus.innerText = `Datos recuperados: ${data.registros.length} registros`;
-                        }
-                        return true;
-                    } else {
-                        throw new Error('La respuesta de Google Sheets no contiene una lista de registros válida.');
-                    }
-                } else {
+                if (!response.ok) {
                     throw new Error(`Error HTTP ${response.status} al consultar Google Sheets.`);
                 }
-            } catch (e) {
-                console.error('No se pudieron consultar datos remotos:', e);
-                if (syncStatus) syncStatus.innerText = 'Error al recuperar datos de Google Sheets';
+
+                const data = await response.json();
+                if (!data || data.success === false || !Array.isArray(data.registros)) {
+                    throw new Error((data && data.message) || 'La respuesta de Google Sheets no contiene una lista válida de registros.');
+                }
+
+                jefesCentros = {};
+                supervisoresCentros = {};
+                jemCentros = {};
+                jrvRegistros = {};
+
+                data.registros.forEach(reg => {
+                    const tipo = String(reg.tipo || '').trim().toUpperCase();
+                    const id = String(reg.id || '').trim();
+                    if (!id || tipo === 'ELIMINAR') return;
+
+                    if (tipo === 'JEFE') {
+                        jefesCentros[id] = {
+                            nombre: String(reg.nombre1 || ''),
+                            dui: String(reg.dui1 || ''),
+                            tel: String(reg.tel1 || '')
+                        };
+                    } else if (tipo === 'SUPERVISOR' || id.startsWith('SUP-')) {
+                        const realId = id.replace(/^SUP-/, '');
+                        supervisoresCentros[realId] = {
+                            nombre: String(reg.nombre1 || ''),
+                            dui: String(reg.dui1 || ''),
+                            tel: String(reg.tel1 || '')
+                        };
+                    } else if (tipo === 'JEM' || id.startsWith('JEM-')) {
+                        const realId = id.replace(/^JEM-/, '');
+                        jemCentros[realId] = {
+                            nombre: String(reg.nombre1 || ''),
+                            dui: String(reg.dui1 || ''),
+                            tel: String(reg.tel1 || '')
+                        };
+                    } else if (tipo === 'JRV') {
+                        const partes = id.split('-JRV-');
+                        const codigoCentro = partes[0];
+                        const numeroJrv = partes[1];
+                        if (codigoCentro && numeroJrv) {
+                            if (!jrvRegistros[codigoCentro]) jrvRegistros[codigoCentro] = {};
+                            jrvRegistros[codigoCentro][numeroJrv] = {
+                                mesa: {
+                                    nombre: String(reg.nombre1 || ''),
+                                    dui: String(reg.dui1 || ''),
+                                    tel: String(reg.tel1 || '')
+                                },
+                                vig: {
+                                    nombre: String(reg.nombre2 || ''),
+                                    dui: String(reg.dui2 || ''),
+                                    tel: String(reg.tel2 || '')
+                                },
+                                sup: {
+                                    nombre: String(reg.nombre3 || ''),
+                                    dui: String(reg.dui3 || ''),
+                                    tel: String(reg.tel3 || '')
+                                }
+                            };
+                        }
+                    }
+                });
+
+                guardarLocalmente();
+                renderizarPagina();
+                return true;
+
+            } catch (error) {
+                console.warn('No se pudieron consultar datos remotos:', error);
                 return false;
-            } finally {
-                // El estado de éxito se establece únicamente después de procesar la respuesta.
             }
         }
 
@@ -1039,6 +1068,7 @@
                 });
 
                 cerrarModalJefe();
+                mostrarToast('Jefe de Centro eliminado');
             }
         }
 
@@ -1115,6 +1145,7 @@
                 });
 
                 cerrarModalSupervisor();
+                mostrarToast('Supervisor de Centro eliminado');
             }
         }
 
@@ -1192,6 +1223,7 @@
                 });
 
                 cerrarModalJEM();
+                mostrarToast('Representante JEM eliminado');
             }
         }
 
@@ -1367,6 +1399,7 @@
                 });
 
                 cerrarSubmodalIntegrantes();
+                mostrarToast(`Integrantes de JRV N° ${jrvSeleccionadaActiva} eliminados`);
             }
         }
 
