@@ -83,6 +83,8 @@
           method="POST"
           target="hidden_iframe_gsheets"
           class="hidden">
+        <input type="hidden" name="accion" id="hidden_accion">
+        <input type="hidden" name="tipoOriginal" id="hidden_tipoOriginal">
         <input type="hidden" name="tipo" id="hidden_tipo">
         <input type="hidden" name="id" id="hidden_id">
         <input type="hidden" name="nombre1" id="hidden_nombre1">
@@ -572,6 +574,7 @@
         }
 
         // COMUNICACIÓN CON GOOGLE SHEETS
+        // COMUNICACIÓN CON GOOGLE SHEETS
         function guardarEnGoogleSheets(payload) {
             const syncStatus = document.getElementById('sync-status-text');
             if (syncStatus) {
@@ -579,6 +582,10 @@
             }
 
             try {
+                // Por defecto, toda operación es un guardado.
+                document.getElementById('hidden_accion').value = payload.accion || 'guardar';
+                document.getElementById('hidden_tipoOriginal').value = payload.tipoOriginal || '';
+
                 document.getElementById('hidden_tipo').value = payload.tipo || '';
                 document.getElementById('hidden_id').value = payload.id || '';
                 document.getElementById('hidden_nombre1').value = payload.nombre1 || '';
@@ -597,7 +604,9 @@
                 form.submit();
 
                 if (syncStatus) {
-                    syncStatus.innerText = 'Solicitud enviada. Sincronizando con Google Sheets.';
+                    syncStatus.innerText = payload.accion === 'eliminar'
+                        ? 'Solicitud de eliminación enviada a Google Sheets.'
+                        : 'Solicitud enviada. Sincronizando con Google Sheets.';
                 }
             } catch (err) {
                 console.error('Error enviando datos:', err);
@@ -959,11 +968,10 @@
 
                 // Notificar borrado a Google Sheets
                 guardarEnGoogleSheets({
-                    tipo: 'ELIMINAR',
-                    id: centroSeleccionadoActivo,
-                    nombre1: '',
-                    dui1: '',
-                    tel1: ''
+                    accion: 'eliminar',
+                    tipo: 'JEFE',
+                    tipoOriginal: 'JEFE',
+                    id: centroSeleccionadoActivo
                 });
 
                 cerrarModalJefe();
@@ -1037,11 +1045,10 @@
 
                 // Notificar borrado a Google Sheets
                 guardarEnGoogleSheets({
-                    tipo: 'ELIMINAR',
-                    id: `SUP-${centroSeleccionadoActivo}`,
-                    nombre1: '',
-                    dui1: '',
-                    tel1: ''
+                    accion: 'eliminar',
+                    tipo: 'SUPERVISOR',
+                    tipoOriginal: 'SUPERVISOR',
+                    id: `SUP-${centroSeleccionadoActivo}`
                 });
 
                 cerrarModalSupervisor();
@@ -1116,11 +1123,10 @@
 
                 // Notificar borrado a Google Sheets
                 guardarEnGoogleSheets({
-                    tipo: 'ELIMINAR',
-                    id: `JEM-${centroSeleccionadoActivo}`,
-                    nombre1: '',
-                    dui1: '',
-                    tel1: ''
+                    accion: 'eliminar',
+                    tipo: 'JEM',
+                    tipoOriginal: 'JEM',
+                    id: `JEM-${centroSeleccionadoActivo}`
                 });
 
                 cerrarModalJEM();
@@ -1293,11 +1299,10 @@
                 renderizarPagina();
 
                 guardarEnGoogleSheets({
-                    tipo: 'ELIMINAR',
-                    id: `${centroSeleccionadoActivo}-JRV-${jrvSeleccionadaActiva}`,
-                    nombre1: '',
-                    dui1: '',
-                    tel1: ''
+                    accion: 'eliminar',
+                    tipo: 'JRV',
+                    tipoOriginal: 'JRV',
+                    id: `${centroSeleccionadoActivo}-JRV-${jrvSeleccionadaActiva}`
                 });
 
                 cerrarSubmodalIntegrantes();
