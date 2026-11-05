@@ -181,6 +181,25 @@
                 </div>
             </div>
 
+            <!-- AVANCE GENERAL DE COBERTURA DE LAS 214 JRV -->
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="font-black text-sm sm:text-base text-gana-navy uppercase">Avance general de cobertura</h3>
+                        <p class="text-xs text-slate-500">Progreso de las 214 Juntas Receptoras de Votos</p>
+                    </div>
+                    <span id="resumen-porcentaje-general" class="text-2xl sm:text-3xl font-black text-gana-orange">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-4 overflow-hidden">
+                    <div id="resumen-barra-general" class="bg-gana-orange h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <div class="flex flex-wrap justify-between gap-2 text-xs font-bold">
+                    <span class="text-emerald-600" id="resumen-texto-completadas">0 completadas</span>
+                    <span class="text-amber-600" id="resumen-texto-parciales">0 parciales</span>
+                    <span class="text-rose-600" id="resumen-texto-pendientes">214 pendientes</span>
+                </div>
+            </div>
+
             <!-- Tabla Detallada por Centro de Votación -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-4 bg-gana-navy text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b-4 border-gana-orange">
@@ -866,21 +885,17 @@
             let completadas = 0;
             let parciales = 0;
             let pendientes = 0;
+            let totalGeneral = 0;
 
             const tbody = document.getElementById('tbody-resumen-cobertura');
             tbody.innerHTML = '';
 
             CENTROS_VOTACION.forEach(c => {
                 const prog = obtenerProgresoCentro(c.id);
-                if (prog.completadas === c.totalJrv && c.totalJrv > 0) {
-                    completadas++;
-                } else if (prog.completadas > 0) {
-                    parciales++;
-                } else {
-                    pendientes++;
-                }
+                totalGeneral += c.totalJrv;
 
-                // Cálculo para saber cuántas JRVs en este centro están en estado parcial (tienen al menos a alguien registrado pero aún no cumplen Mesa + Propietario)
+                // Una JRV parcial tiene al menos una persona registrada,
+                // pero todavía no cuenta con Persona en Mesa y Vigilante Propietario.
                 let jrvParcialesCount = 0;
                 const regCV = jrvRegistros[c.id] || {};
                 for (let num = c.jrvInicio; num <= c.jrvFin; num++) {
@@ -895,6 +910,11 @@
                     }
                 }
 
+                const jrvPendientesCentro = Math.max(0, c.totalJrv - prog.completadas - jrvParcialesCount);
+                completadas += prog.completadas;
+                parciales += jrvParcialesCount;
+                pendientes += jrvPendientesCentro;
+
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 tr.innerHTML = `
@@ -906,7 +926,7 @@
                     <td class="p-3 text-center font-black text-slate-700">${c.totalJrv}</td>
                     <td class="p-3 text-center font-bold text-emerald-600">${prog.completadas}</td>
                     <td class="p-3 text-center font-bold text-amber-600">${jrvParcialesCount}</td>
-                    <td class="p-3 text-center font-bold text-rose-600">${c.totalJrv - prog.completadas}</td>
+                    <td class="p-3 text-center font-bold text-rose-600">${jrvPendientesCentro}</td>
                     <td class="p-3">
                         <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
                             <div class="bg-gana-orange h-2 rounded-full" style="width: ${prog.porcentaje}%"></div>
@@ -922,9 +942,21 @@
                 tbody.appendChild(tr);
             });
 
+            const porcentajeGeneral = totalGeneral > 0
+                ? Math.round((completadas / totalGeneral) * 100)
+                : 0;
+
+            // Las métricas superiores cuentan JRV, no centros de votación.
             document.getElementById('resumen-stat-completadas').innerText = completadas;
             document.getElementById('resumen-stat-parciales').innerText = parciales;
             document.getElementById('resumen-stat-pendientes').innerText = pendientes;
+
+            // Barra y desglose general de las 214 JRV.
+            document.getElementById('resumen-porcentaje-general').innerText = `${porcentajeGeneral}%`;
+            document.getElementById('resumen-barra-general').style.width = `${porcentajeGeneral}%`;
+            document.getElementById('resumen-texto-completadas').innerText = `${completadas} completadas`;
+            document.getElementById('resumen-texto-parciales').innerText = `${parciales} parciales`;
+            document.getElementById('resumen-texto-pendientes').innerText = `${pendientes} pendientes`;
         }
 
         // LÓGICA DE MODALES
