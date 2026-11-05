@@ -181,25 +181,6 @@
                 </div>
             </div>
 
-            <!-- AVANCE GENERAL DE COBERTURA DE LAS 214 JRV -->
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-3">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                        <h3 class="font-black text-sm sm:text-base text-gana-navy uppercase">Avance general de cobertura</h3>
-                        <p class="text-xs text-slate-500">Progreso de las 214 Juntas Receptoras de Votos</p>
-                    </div>
-                    <span id="resumen-porcentaje-general" class="text-2xl sm:text-3xl font-black text-gana-orange">0%</span>
-                </div>
-                <div class="w-full bg-slate-200 rounded-full h-4 overflow-hidden">
-                    <div id="resumen-barra-general" class="bg-gana-orange h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
-                </div>
-                <div class="flex flex-wrap justify-between gap-2 text-xs font-bold">
-                    <span class="text-emerald-600" id="resumen-texto-completadas">0 completadas</span>
-                    <span class="text-amber-600" id="resumen-texto-parciales">0 parciales</span>
-                    <span class="text-rose-600" id="resumen-texto-pendientes">214 pendientes</span>
-                </div>
-            </div>
-
             <!-- Tabla Detallada por Centro de Votación -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-4 bg-gana-navy text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b-4 border-gana-orange">
@@ -594,17 +575,30 @@
 
         // COMUNICACIÓN CON GOOGLE SHEETS
         // COMUNICACIÓN CON GOOGLE SHEETS
+        function existeRegistroEliminadoEnMemoria(payload) {
+            const tipo = String(payload.tipo || '').toUpperCase();
+            const id = String(payload.id || '').trim();
+
+            if (tipo === 'JEFE') return !!jefesCentros[id];
+            if (tipo === 'SUPERVISOR') return !!supervisoresCentros[id.replace(/^SUP-/, '')];
+            if (tipo === 'JEM') return !!jemCentros[id.replace(/^JEM-/, '')];
+            if (tipo === 'JRV') {
+                const partes = id.split('-JRV-');
+                return !!(partes[0] && partes[1] && jrvRegistros[partes[0]] && jrvRegistros[partes[0]][partes[1]]);
+            }
+            return true;
+        }
+
         function guardarEnGoogleSheets(payload) {
             const syncStatus = document.getElementById('sync-status-text');
-            if (syncStatus) {
-                syncStatus.innerText = 'Enviando datos a Google Sheets...';
-            }
+            const esEliminacion = String(payload.accion || '').toLowerCase() === 'eliminar';
+            if (syncStatus) syncStatus.innerText = esEliminacion
+                ? 'Enviando solicitud de eliminación...'
+                : 'Enviando datos a Google Sheets...';
 
             try {
-                // Por defecto, toda operación es un guardado.
                 document.getElementById('hidden_accion').value = payload.accion || 'guardar';
                 document.getElementById('hidden_tipoOriginal').value = payload.tipoOriginal || '';
-
                 document.getElementById('hidden_tipo').value = payload.tipo || '';
                 document.getElementById('hidden_id').value = payload.id || '';
                 document.getElementById('hidden_nombre1').value = payload.nombre1 || '';
@@ -618,20 +612,43 @@
                 document.getElementById('hidden_tel3').value = payload.tel3 || '';
 
                 const form = document.getElementById('form_hidden_gsheets');
-                if (!form) throw new Error('No se encontró el formulario de conexión.');
+                const iframe = document.getElementById('hidden_iframe_gsheets');
+                if (!form || !iframe) throw new Error('No se encontró el formulario o iframe de conexión.');
 
-                form.submit();
+                if (esEliminacion) {
+                    let verificacionIniciada = false;
+                    const verificarEliminacion = async () => {
+                        if (verificacionIniciada) return;
+                        verificacionIniciada = true;
+                        // Espera breve para que Google Sheets termine de confirmar la escritura.
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        const datosActualizados = await cargarDatosDesdeGoogleSheets();
+                        if (!datosActualizados) {
+                            if (syncStatus) syncStatus.innerText = 'No se pudo verificar la eliminación. Revisa la conexión.';
+                            mostrarToast('No se pudo confirmar la eliminación. Intenta nuevamente.');
+                            return;
+                        }
+                        if (existeRegistroEliminadoEnMemoria(payload)) {
+                            if (syncStatus) syncStatus.innerText = 'El registro continúa en Google Sheets.';
+                            mostrarToast('No se eliminó el registro en la base de datos. Verifica e intenta nuevamente.');
+                        } else {
+                            if (syncStatus) syncStatus.innerText = 'Eliminación confirmada en Google Sheets.';
+                            mostrarToast('Registro eliminado correctamente de la base de datos.');
+                        }
+                    };
 
-                if (syncStatus) {
-                    syncStatus.innerText = payload.accion === 'eliminar'
-                        ? 'Solicitud de eliminación enviada a Google Sheets.'
-                        : 'Solicitud enviada. Sincronizando con Google Sheets.';
+                    // La carga del iframe indica que Apps Script respondió; el temporizador es respaldo.
+                    iframe.addEventListener('load', verificarEliminacion, { once: true });
+                    form.submit();
+                    setTimeout(verificarEliminacion, 5000);
+                } else {
+                    form.submit();
+                    if (syncStatus) syncStatus.innerText = 'Solicitud enviada. Sincronizando con Google Sheets.';
                 }
             } catch (err) {
                 console.error('Error enviando datos:', err);
-                if (syncStatus) {
-                    syncStatus.innerText = 'Error al enviar los datos.';
-                }
+                if (syncStatus) syncStatus.innerText = 'Error al enviar los datos.';
+                mostrarToast('Ocurrió un error al enviar la solicitud.');
             }
         }
 
@@ -696,6 +713,7 @@
                         if (syncStatus) {
                             syncStatus.innerText = `Datos recuperados: ${data.registros.length} registros`;
                         }
+                        return true;
                     } else {
                         throw new Error('La respuesta de Google Sheets no contiene una lista de registros válida.');
                     }
@@ -705,6 +723,7 @@
             } catch (e) {
                 console.error('No se pudieron consultar datos remotos:', e);
                 if (syncStatus) syncStatus.innerText = 'Error al recuperar datos de Google Sheets';
+                return false;
             } finally {
                 // El estado de éxito se establece únicamente después de procesar la respuesta.
             }
@@ -885,17 +904,21 @@
             let completadas = 0;
             let parciales = 0;
             let pendientes = 0;
-            let totalGeneral = 0;
 
             const tbody = document.getElementById('tbody-resumen-cobertura');
             tbody.innerHTML = '';
 
             CENTROS_VOTACION.forEach(c => {
                 const prog = obtenerProgresoCentro(c.id);
-                totalGeneral += c.totalJrv;
+                if (prog.completadas === c.totalJrv && c.totalJrv > 0) {
+                    completadas++;
+                } else if (prog.completadas > 0) {
+                    parciales++;
+                } else {
+                    pendientes++;
+                }
 
-                // Una JRV parcial tiene al menos una persona registrada,
-                // pero todavía no cuenta con Persona en Mesa y Vigilante Propietario.
+                // Cálculo para saber cuántas JRVs en este centro están en estado parcial (tienen al menos a alguien registrado pero aún no cumplen Mesa + Propietario)
                 let jrvParcialesCount = 0;
                 const regCV = jrvRegistros[c.id] || {};
                 for (let num = c.jrvInicio; num <= c.jrvFin; num++) {
@@ -910,11 +933,6 @@
                     }
                 }
 
-                const jrvPendientesCentro = Math.max(0, c.totalJrv - prog.completadas - jrvParcialesCount);
-                completadas += prog.completadas;
-                parciales += jrvParcialesCount;
-                pendientes += jrvPendientesCentro;
-
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                 tr.innerHTML = `
@@ -926,7 +944,7 @@
                     <td class="p-3 text-center font-black text-slate-700">${c.totalJrv}</td>
                     <td class="p-3 text-center font-bold text-emerald-600">${prog.completadas}</td>
                     <td class="p-3 text-center font-bold text-amber-600">${jrvParcialesCount}</td>
-                    <td class="p-3 text-center font-bold text-rose-600">${jrvPendientesCentro}</td>
+                    <td class="p-3 text-center font-bold text-rose-600">${c.totalJrv - prog.completadas}</td>
                     <td class="p-3">
                         <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
                             <div class="bg-gana-orange h-2 rounded-full" style="width: ${prog.porcentaje}%"></div>
@@ -942,21 +960,9 @@
                 tbody.appendChild(tr);
             });
 
-            const porcentajeGeneral = totalGeneral > 0
-                ? Math.round((completadas / totalGeneral) * 100)
-                : 0;
-
-            // Las métricas superiores cuentan JRV, no centros de votación.
             document.getElementById('resumen-stat-completadas').innerText = completadas;
             document.getElementById('resumen-stat-parciales').innerText = parciales;
             document.getElementById('resumen-stat-pendientes').innerText = pendientes;
-
-            // Barra y desglose general de las 214 JRV.
-            document.getElementById('resumen-porcentaje-general').innerText = `${porcentajeGeneral}%`;
-            document.getElementById('resumen-barra-general').style.width = `${porcentajeGeneral}%`;
-            document.getElementById('resumen-texto-completadas').innerText = `${completadas} completadas`;
-            document.getElementById('resumen-texto-parciales').innerText = `${parciales} parciales`;
-            document.getElementById('resumen-texto-pendientes').innerText = `${pendientes} pendientes`;
         }
 
         // LÓGICA DE MODALES
@@ -1033,7 +1039,6 @@
                 });
 
                 cerrarModalJefe();
-                mostrarToast('Jefe de Centro eliminado');
             }
         }
 
@@ -1110,7 +1115,6 @@
                 });
 
                 cerrarModalSupervisor();
-                mostrarToast('Supervisor de Centro eliminado');
             }
         }
 
@@ -1188,7 +1192,6 @@
                 });
 
                 cerrarModalJEM();
-                mostrarToast('Representante JEM eliminado');
             }
         }
 
@@ -1364,7 +1367,6 @@
                 });
 
                 cerrarSubmodalIntegrantes();
-                mostrarToast(`Integrantes de JRV N° ${jrvSeleccionadaActiva} eliminados`);
             }
         }
 
