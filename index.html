@@ -829,40 +829,49 @@
         }
 
         function renderizarResumen() {
-            let completadas = 0;
-            let parciales = 0;
-            let pendientes = 0;
+            let completadasTotal = 0;
+            let parcialesTotal = 0;
+            let pendientesTotal = 0;
+            let totalJrvsGlobal = 0;
 
             const tbody = document.getElementById('tbody-resumen-cobertura');
             tbody.innerHTML = '';
 
             CENTROS_VOTACION.forEach(c => {
-                const prog = obtenerProgresoCentro(c.id);
-                if (prog.completadas === c.totalJrv && c.totalJrv > 0) {
-                    completadas++;
-                } else if (prog.completadas > 0) {
-                    parciales++;
-                } else {
-                    pendientes++;
-                }
+                totalJrvsGlobal += c.totalJrv;
+                let completadasCentro = 0;
+                let parcialesCentro = 0;
+                let pendientesCentro = 0;
 
-                // Cálculo para saber cuántas JRVs en este centro están en estado parcial (tienen al menos a alguien registrado pero aún no cumplen Mesa + Propietario)
-                let jrvParcialesCount = 0;
                 const regCV = jrvRegistros[c.id] || {};
+
                 for (let num = c.jrvInicio; num <= c.jrvFin; num++) {
                     const reg = regCV[num];
                     if (reg) {
                         const m = reg.mesa && reg.mesa.nombre;
                         const v = reg.vig && reg.vig.nombre;
                         const s = reg.sup && reg.sup.nombre;
-                        if ((m || v || s) && !(m && v)) {
-                            jrvParcialesCount++;
+
+                        if (m && v) {
+                            completadasCentro++;
+                        } else if (m || v || s) {
+                            parcialesCentro++;
+                        } else {
+                            pendientesCentro++;
                         }
+                    } else {
+                        pendientesCentro++;
                     }
                 }
 
+                completadasTotal += completadasCentro;
+                parcialesTotal += parcialesCentro;
+                pendientesTotal += pendientesCentro;
+
+                const porcentajeCentro = c.totalJrv > 0 ? Math.round((completadasCentro / c.totalJrv) * 100) : 0;
+
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
                 tr.innerHTML = `
                     <td class="p-3 font-bold text-gana-navy">${c.distrito}</td>
                     <td class="p-3">
@@ -870,17 +879,17 @@
                         <div class="text-[10px] text-slate-400">CÓDIGO ${c.id}</div>
                     </td>
                     <td class="p-3 text-center font-black text-slate-700">${c.totalJrv}</td>
-                    <td class="p-3 text-center font-bold text-emerald-600">${prog.completadas}</td>
-                    <td class="p-3 text-center font-bold text-amber-600">${jrvParcialesCount}</td>
-                    <td class="p-3 text-center font-bold text-rose-600">${c.totalJrv - prog.completadas}</td>
+                    <td class="p-3 text-center font-bold text-emerald-600">${completadasCentro}</td>
+                    <td class="p-3 text-center font-bold text-amber-600">${parcialesCentro}</td>
+                    <td class="p-3 text-center font-bold text-rose-600">${pendientesCentro}</td>
                     <td class="p-3">
                         <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                            <div class="bg-gana-orange h-2 rounded-full" style="width: ${prog.porcentaje}%"></div>
+                            <div class="bg-gana-orange h-2 rounded-full transition-all duration-300" style="width: ${porcentajeCentro}%"></div>
                         </div>
-                        <span class="text-[10px] font-bold text-slate-500 mt-0.5 block text-right">${prog.porcentaje}%</span>
+                        <span class="text-[10px] font-bold text-slate-500 mt-0.5 block text-right">${porcentajeCentro}%</span>
                     </td>
                     <td class="p-3 text-center">
-                        <button onclick="abrirModalJRV('${c.id}')" class="px-2.5 py-1 bg-gana-navy text-white text-[11px] font-bold rounded-lg hover:bg-navy-800">
+                        <button onclick="abrirModalJRV('${c.id}')" class="px-2.5 py-1 bg-gana-navy text-white text-[11px] font-bold rounded-lg hover:bg-navy-800 transition shadow-sm">
                             Ver JRVs
                         </button>
                     </td>
@@ -888,9 +897,10 @@
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('resumen-stat-completadas').innerText = completadas;
-            document.getElementById('resumen-stat-parciales').innerText = parciales;
-            document.getElementById('resumen-stat-pendientes').innerText = pendientes;
+            // Actualizar tarjetas de métricas generales a nivel de JRVs acumuladas
+            document.getElementById('resumen-stat-completadas').innerText = completadasTotal;
+            document.getElementById('resumen-stat-parciales').innerText = parcialesTotal;
+            document.getElementById('resumen-stat-pendientes').innerText = pendientesTotal;
         }
 
         // LÓGICA DE MODALES
