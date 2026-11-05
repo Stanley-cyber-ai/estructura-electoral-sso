@@ -39,7 +39,7 @@
 </head>
 <body class="bg-slate-100 font-sans min-h-screen flex flex-col text-slate-800 overflow-x-hidden selection:bg-gana-orange selection:text-white">
 
-    <!-- HEADER / ENCABEZADO RESPONSIVE (Estilo Original Restaurado) -->
+    <!-- HEADER / ENCABEZADO RESPONSIVE -->
     <header class="bg-gana-orange text-white shadow-lg sticky top-0 z-40 w-full">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
             
@@ -77,8 +77,26 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT RESPONSIVE -->
-    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+    <!-- FORMULARIO OCULTO PARA ENVÍO CON GOOGLE SHEETS -->
+    <form id="form_hidden_gsheets"
+          action="https://script.google.com/macros/s/AKfycbwYkIRZLWxElPoAYJ_uUpdVXuOLGomUATURgGTyO55pBd9i6o2UIjumfdJ8uAJZ2xyf/exec"
+          method="POST"
+          target="hidden_iframe_gsheets"
+          class="hidden">
+        <input type="hidden" name="tipo" id="hidden_tipo">
+        <input type="hidden" name="id" id="hidden_id">
+        <input type="hidden" name="nombre1" id="hidden_nombre1">
+        <input type="hidden" name="dui1" id="hidden_dui1">
+        <input type="hidden" name="tel1" id="hidden_tel1">
+        <input type="hidden" name="nombre2" id="hidden_nombre2">
+        <input type="hidden" name="dui2" id="hidden_dui2">
+        <input type="hidden" name="tel2" id="hidden_tel2">
+        <input type="hidden" name="nombre3" id="hidden_nombre3">
+        <input type="hidden" name="dui3" id="hidden_dui3">
+        <input type="hidden" name="tel3" id="hidden_tel3">
+    </form>
+    <iframe name="hidden_iframe_gsheets" id="hidden_iframe_gsheets" class="hidden"></iframe>
+
     <!-- MAIN CONTENT RESPONSIVE -->
     <main class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-1 w-full">
         
@@ -116,7 +134,7 @@
             <!-- Cargado dinámicamente -->
         </div>
 
-        <!-- VISTA DE RESUMEN DE COBERTURA (PENDIENTES Y COMPLETADAS) -->
+        <!-- VISTA DE RESUMEN DE COBERTURA -->
         <div id="vista-resumen" class="hidden space-y-4 sm:space-y-6">
             <!-- Métricas Generales -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -192,7 +210,7 @@
         </div>
     </main>
 
-    <!-- MODAL REGISTRO JEFE DE CENTRO RESPONSIVE -->
+    <!-- MODAL REGISTRO JEFE DE CENTRO -->
     <div id="modal-jefe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full my-auto overflow-hidden border border-slate-200">
             <div class="bg-gana-navy text-white p-3.5 sm:p-4 flex justify-between items-center border-b-4 border-gana-orange">
@@ -232,7 +250,7 @@
         </div>
     </div>
 
-    <!-- MODAL REGISTRO SUPERVISOR DE CENTRO RESPONSIVE -->
+    <!-- MODAL REGISTRO SUPERVISOR DE CENTRO -->
     <div id="modal-supervisor" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full my-auto overflow-hidden border border-slate-200">
             <div class="bg-gana-navy text-white p-3.5 sm:p-4 flex justify-between items-center border-b-4 border-gana-orange">
@@ -272,9 +290,51 @@
         </div>
     </div>
 
-    <!-- MODAL TABLA DE JRV POR CENTRO RESPONSIVE -->
+    <!-- MODAL REGISTRO JUNTA ELECTORAL MUNICIPAL (JEM POR CENTRO) -->
+    <div id="modal-jem" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full my-auto overflow-hidden border border-slate-200">
+            <div class="bg-gana-navy text-white p-3.5 sm:p-4 flex justify-between items-center border-b-4 border-gana-orange">
+                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-gana-orange"></i> Integrante JEM - Centro de Votación
+                </h3>
+                <button onclick="cerrarModalJEM()" class="text-white/80 hover:text-white p-1 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 sm:p-5 space-y-3.5">
+                <div>
+                    <span id="modal-jem-cv-nombre" class="text-xs font-bold text-gana-navy block mb-1 bg-amber-50 p-2.5 rounded-xl border border-amber-200 leading-snug"></span>
+                </div>
+                <div id="jem-error-msg" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm shrink-0"></i>
+                    <span id="jem-error-text"></span>
+                </div>
+                <div>
+                    <label class="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo del JEM <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-jem-nombre" placeholder="Nombre de representante JEM" class="w-full px-3 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">DUI (00000000-0) <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-jem-dui" placeholder="Ej. 12345678-9" maxlength="10" class="w-full px-3 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">Teléfono (0000-0000) <span class="text-red-500">*</span>:</label>
+                    <input type="text" id="input-jem-tel" placeholder="Ej. 7788-9900" maxlength="9" class="w-full px-3 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none">
+                </div>
+            </div>
+            <div class="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center gap-2">
+                <button id="btn-eliminar-jem" onclick="eliminarJEM()" class="px-3.5 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-xl text-xs transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-trash-can"></i> Eliminar
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="cerrarModalJEM()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Cancelar</button>
+                    <button onclick="guardarJEM()" class="px-4 py-2 bg-gana-orange text-white font-bold rounded-xl text-xs hover:bg-orange-600 transition shadow-sm">Guardar JEM</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TABLA DE JRV POR CENTRO -->
     <div id="modal-jrv" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-slate-200">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-slate-200">
             
             <!-- Header Modal -->
             <div class="bg-gana-navy text-white p-3.5 sm:p-5 flex justify-between items-start gap-3 border-b-4 border-gana-orange shrink-0">
@@ -288,19 +348,19 @@
                 </button>
             </div>
 
-            <!-- Contenido Modal (Tabla de JRVs Responsiva) -->
+            <!-- Contenido Modal -->
             <div class="p-3 sm:p-5 overflow-y-auto flex-1 bg-slate-50">
                 <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-sm bg-white">
-                    <table class="w-full text-left text-xs sm:text-sm min-w-[700px]">
+                    <table class="w-full text-left text-xs sm:text-sm min-w-[850px]">
                         <thead class="bg-slate-100 text-slate-700 text-[11px] uppercase font-bold border-b border-slate-200">
                             <tr>
                                 <th class="p-2.5 sm:p-3 text-center w-14 sm:w-16">N° JRV</th>
                                 <th class="p-2.5 sm:p-3">Persona en Mesa</th>
-                                <th class="p-2.5 sm:p-3">DUI</th>
-                                <th class="p-2.5 sm:p-3">Teléfono</th>
-                                <th class="p-2.5 sm:p-3">Vigilante GANA</th>
-                                <th class="p-2.5 sm:p-3">DUI</th>
-                                <th class="p-2.5 sm:p-3">Teléfono</th>
+                                <th class="p-2.5 sm:p-3">DUI / Tel.</th>
+                                <th class="p-2.5 sm:p-3">Vigilante Propietario</th>
+                                <th class="p-2.5 sm:p-3">DUI / Tel.</th>
+                                <th class="p-2.5 sm:p-3">Vigilante Suplente</th>
+                                <th class="p-2.5 sm:p-3">DUI / Tel.</th>
                                 <th class="p-2.5 sm:p-3 text-center">Estado</th>
                                 <th class="p-2.5 sm:p-3 text-center">Acción</th>
                             </tr>
@@ -321,9 +381,9 @@
         </div>
     </div>
 
-    <!-- SUB-MODAL INTEGRANTES DE MESA RESPONSIVE -->
+    <!-- SUB-MODAL INTEGRANTES DE JRV -->
     <div id="submodal-integrantes" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full my-auto overflow-hidden border border-slate-200">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full my-auto overflow-hidden border border-slate-200">
             <div class="bg-gana-navy text-white p-3.5 sm:p-4 flex justify-between items-center border-b-4 border-gana-orange">
                 <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
                     <i class="fa-solid fa-users-gear text-gana-orange"></i> Integrantes de JRV N° <span id="submodal-jrv-num" class="text-gana-orange"></span>
@@ -343,51 +403,77 @@
                         <i class="fa-solid fa-user-check"></i> Persona en Mesa
                     </h4>
                     <div>
-                        <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Nombre Completo <span class="text-red-500">*</span>:</label>
+                        <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Nombre Completo:</label>
                         <input type="text" id="input-submodal-mesa" placeholder="Nombre completo" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">DUI <span class="text-red-500">*</span>:</label>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">DUI:</label>
                             <input type="text" id="input-submodal-dui-mesa" placeholder="12345678-9" maxlength="10" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
                         </div>
                         <div>
-                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Teléfono <span class="text-red-500">*</span>:</label>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Teléfono:</label>
                             <input type="text" id="input-submodal-tel-mesa" placeholder="7788-9900" maxlength="9" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
                         </div>
                     </div>
                 </div>
 
-                <!-- Sección Vigilante GANA -->
+                <!-- Sección Vigilante Propietario -->
                 <div class="bg-blue-50/60 border border-blue-200 rounded-xl p-3.5 sm:p-4 space-y-2.5">
                     <h4 class="text-xs font-black uppercase text-gana-navy flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-shield"></i> Vigilante GANA
+                        <i class="fa-solid fa-user-shield"></i> Vigilante Propietario GANA
                     </h4>
                     <div>
-                        <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Nombre Completo <span class="text-red-500">*</span>:</label>
+                        <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Nombre Completo:</label>
                         <input type="text" id="input-submodal-vig" placeholder="Nombre completo" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">DUI <span class="text-red-500">*</span>:</label>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">DUI:</label>
                             <input type="text" id="input-submodal-dui-vig" placeholder="12345678-9" maxlength="10" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
                         </div>
                         <div>
-                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Teléfono <span class="text-red-500">*</span>:</label>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Teléfono:</label>
                             <input type="text" id="input-submodal-tel-vig" placeholder="7788-9900" maxlength="9" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección Vigilante Suplente -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 sm:p-4 space-y-2.5">
+                    <h4 class="text-xs font-black uppercase text-slate-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-plus"></i> Vigilante Suplente GANA
+                    </h4>
+                    <div>
+                        <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Nombre Completo:</label>
+                        <input type="text" id="input-submodal-sup" placeholder="Nombre completo suplente" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">DUI:</label>
+                            <input type="text" id="input-submodal-dui-sup" placeholder="12345678-9" maxlength="10" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase mb-1">Teléfono:</label>
+                            <input type="text" id="input-submodal-tel-sup" placeholder="7788-9900" maxlength="9" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-gana-orange focus:outline-none bg-white">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-                <button onclick="cerrarSubmodalIntegrantes()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Cancelar</button>
-                <button onclick="guardarIntegrantesSubmodal()" class="px-4 py-2 bg-gana-orange text-white font-bold rounded-xl text-xs hover:bg-orange-600 transition shadow-sm">Guardar Integrantes</button>
+            <div class="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center gap-2">
+                <button id="btn-eliminar-jrv" onclick="eliminarIntegrantesSubmodal()" class="px-3.5 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-xl text-xs transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-trash-can"></i> Eliminar Integrantes
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="cerrarSubmodalIntegrantes()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Cancelar</button>
+                    <button onclick="guardarIntegrantesSubmodal()" class="px-4 py-2 bg-gana-orange text-white font-bold rounded-xl text-xs hover:bg-orange-600 transition shadow-sm">Guardar Integrantes</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATION RESPONSIVE -->
+    <!-- TOAST NOTIFICATION -->
     <div id="toast-notification" class="fixed bottom-4 right-4 left-4 sm:left-auto max-w-sm bg-gana-navy text-white px-4 py-3 rounded-xl shadow-2xl border border-white/20 text-xs font-bold hidden flex items-center justify-between gap-3 z-[100]">
         <div class="flex items-center gap-2">
             <i class="fa-solid fa-circle-check text-gana-orange text-base shrink-0"></i>
@@ -395,76 +481,62 @@
         </div>
     </div>
 
-    <!-- IFRAME Y FORMULARIO INVISIBLE PARA ENVÍO A GOOGLE APPS SCRIPT SIN BLOQUEO DE NAVEGADOR -->
-    <iframe name="hidden_iframe_gsheets" id="hidden_iframe_gsheets" style="display:none;"></iframe>
-    <form id="form_hidden_gsheets" 
-          action="https://script.google.com/macros/s/AKfycbwYkIRZLWxElPoAYJ_uUpdVXuOLGomUATURgGTyO55pBd9i6o2UIjumfdJ8uAJZ2xyf/exec" 
-          method="POST" 
-          target="hidden_iframe_gsheets" 
-          class="hidden">
-        <input type="hidden" name="tipo" id="hidden_tipo">
-        <input type="hidden" name="id" id="hidden_id">
-        <input type="hidden" name="nombre1" id="hidden_nombre1">
-        <input type="hidden" name="dui1" id="hidden_dui1">
-        <input type="hidden" name="tel1" id="hidden_tel1">
-        <input type="hidden" name="nombre2" id="hidden_nombre2">
-        <input type="hidden" name="dui2" id="hidden_dui2">
-        <input type="hidden" name="tel2" id="hidden_tel2">
-    </form>
-
-    <!-- SCRIPT DE CONEXIÓN A GOOGLE SHEETS Y SINCRONIZACIÓN -->
+    <!-- LÓGICA JAVASCRIPT COMPLETA Y UNIFICADA -->
     <script>
-        // URL DE TU GOOGLE APPS SCRIPT CONFIGURADA
-        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwYkIRZLWxElPoAYJ_uUpdVXuOLGomUATURgGTyO55pBd9i6o2UIjumfdJ8uAJZ2xyf/exec";
+        // CONFIGURACIÓN GLOBAL
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwYkIRZLWxElPoAYJ_uUpdVXuOLGomUATURgGTyO55pBd9i6o2UIjumfdJ8uAJZ2xyf/exec';
 
-        // ESTADO Y BASE DE DATOS LOCAL
+        // BASE DE DATOS DE CENTROS DE VOTACIÓN CON CÓDIGOS OFICIALES, VOTANTES Y JRVS REALES
+        const CENTROS_VOTACION = [
+            // APOPA (171 JRVs, JRV 88 - 258)
+            { id: "1020101", distrito: "APOPA", nombre: "Centro Escolar Vicente Acosta", direccion: "Calle Vicente Acosta, Apopa", electores: 8614, jrvInicio: 88, jrvFin: 100, totalJrv: 13 },
+            { id: "1020102", distrito: "APOPA", nombre: "Complejo Educativo Profesora Ángela de Jesús de Romero", direccion: "Colonia San Sebastián, Apopa", electores: 7937, jrvInicio: 101, jrvFin: 112, totalJrv: 12 },
+            { id: "1020103", distrito: "APOPA", nombre: "Centro Escolar República de China", direccion: "Colonia Popotlán 1, Apopa", electores: 3163, jrvInicio: 113, jrvFin: 117, totalJrv: 5 },
+            { id: "1020104", distrito: "APOPA", nombre: "Complejo Educativo Sara Palma de Jule", direccion: "Apopa Centro", electores: 7543, jrvInicio: 118, jrvFin: 128, totalJrv: 11 },
+            { id: "1020105", distrito: "APOPA", nombre: "Centro Escolar Urbanización Santa Teresa de las Flores", direccion: "Urb. Santa Teresa, Apopa", electores: 5115, jrvInicio: 129, jrvFin: 136, totalJrv: 8 },
+            { id: "1020106", distrito: "APOPA", nombre: "Centro Escolar Colonia La Ermita", direccion: "Colonia La Ermita, Apopa", electores: 6315, jrvInicio: 137, jrvFin: 145, totalJrv: 9 },
+            { id: "1020107", distrito: "APOPA", nombre: "Centro Escolar Cantón San Nicolás", direccion: "Cantón San Nicolás, Apopa", electores: 3009, jrvInicio: 146, jrvFin: 150, totalJrv: 5 },
+            { id: "1020108", distrito: "APOPA", nombre: "Centro Escolar Benjamín Bloom", direccion: "Barrio El Tránsito, Apopa", electores: 4686, jrvInicio: 151, jrvFin: 157, totalJrv: 7 },
+            { id: "1020109", distrito: "APOPA", nombre: "Centro Escolar de Popotlán", direccion: "Colonia Popotlán 2, Apopa", electores: 7472, jrvInicio: 158, jrvFin: 168, totalJrv: 11 },
+            { id: "1020110", distrito: "APOPA", nombre: "Complejo Educativo Profesor Iván Alexander Burgos Fuentes", direccion: "Popotlán, Apopa", electores: 7024, jrvInicio: 169, jrvFin: 179, totalJrv: 11 },
+            { id: "1020111", distrito: "APOPA", nombre: "Centro Escolar Valle Verde", direccion: "Urbanización Valle Verde, Apopa", electores: 6310, jrvInicio: 180, jrvFin: 188, totalJrv: 9 },
+            { id: "1020112", distrito: "APOPA", nombre: "Complejo Educativo Colonia Los Naranjos", direccion: "Colonia Los Naranjos, Apopa", electores: 6610, jrvInicio: 189, jrvFin: 198, totalJrv: 10 },
+            { id: "1020113", distrito: "APOPA", nombre: "Cancha de B.K.B. de la Colonia San Sebastián", direccion: "Colonia San Sebastián, Apopa", electores: 5264, jrvInicio: 199, jrvFin: 206, totalJrv: 8 },
+            { id: "1020114", distrito: "APOPA", nombre: "Escuela de Educación Parvularia Jardines del Norte II", direccion: "Jardines del Norte II, Apopa", electores: 4563, jrvInicio: 207, jrvFin: 213, totalJrv: 7 },
+            { id: "1020115", distrito: "APOPA", nombre: "Centro Escolar Cantón El Ángel", direccion: "Cantón El Ángel, Apopa", electores: 4652, jrvInicio: 214, jrvFin: 220, totalJrv: 7 },
+            { id: "1020116", distrito: "APOPA", nombre: "Centro Escolar Lotificación Santa Carlota N.º 1", direccion: "Lotif. Santa Carlota N.° 1, Apopa", electores: 3432, jrvInicio: 221, jrvFin: 225, totalJrv: 5 },
+            { id: "1020117", distrito: "APOPA", nombre: "Centro Escolar Cantón Guadalupe", direccion: "Cantón Guadalupe, Apopa", electores: 1388, jrvInicio: 226, jrvFin: 227, totalJrv: 2 },
+            { id: "1020118", distrito: "APOPA", nombre: "Centro Escolar Cantón Las Delicias", direccion: "Cantón Las Delicias, Apopa", electores: 1324, jrvInicio: 228, jrvFin: 229, totalJrv: 2 },
+            { id: "1020119", distrito: "APOPA", nombre: "Complejo Educativo Ingeniero Guillermo Borja Nathan", direccion: "Carretera a Troncal del Norte, Apopa", electores: 3763, jrvInicio: 230, jrvFin: 235, totalJrv: 6 },
+            { id: "1020120", distrito: "APOPA", nombre: "Complejo Educativo Ingeniero José Napoleón Duarte", direccion: "Apopa", electores: 4950, jrvInicio: 236, jrvFin: 243, totalJrv: 8 },
+            { id: "1020121", distrito: "APOPA", nombre: "Centro Escolar Valle del Sol", direccion: "Urbanización Valle del Sol, Apopa", electores: 9924, jrvInicio: 244, jrvFin: 258, totalJrv: 15 },
+
+            // NEJAPA (43 JRVs, JRV 259 - 301)
+            { id: "1020201", distrito: "NEJAPA", nombre: "Centro Escolar José Matías Delgado", direccion: "Nejapa Centro", electores: 10198, jrvInicio: 259, jrvFin: 273, totalJrv: 15 },
+            { id: "1020202", distrito: "NEJAPA", nombre: "Complejo Educativo Prof. Alberto Montiel Villacorta", direccion: "Nejapa", electores: 5983, jrvInicio: 274, jrvFin: 282, totalJrv: 9 },
+            { id: "1020203", distrito: "NEJAPA", nombre: "Complejo Educativo Cantón Tutultepeque", direccion: "Cantón Tutultepeque, Nejapa", electores: 2688, jrvInicio: 283, jrvFin: 286, totalJrv: 4 },
+            { id: "1020204", distrito: "NEJAPA", nombre: "Centro Escolar Cooperativa El Cedral", direccion: "El Cedral, Nejapa", electores: 3421, jrvInicio: 287, jrvFin: 291, totalJrv: 5 },
+            { id: "1020205", distrito: "NEJAPA", nombre: "Complejo Educativo Cantón San Jerónimo Los Planes", direccion: "Cantón San Jerónimo Los Planes, Nejapa", electores: 514, jrvInicio: 292, jrvFin: 292, totalJrv: 1 },
+            { id: "1020206", distrito: "NEJAPA", nombre: "Complejo Deportivo El Cambio", direccion: "Nejapa", electores: 3562, jrvInicio: 293, jrvFin: 297, totalJrv: 5 },
+            { id: "1020207", distrito: "NEJAPA", nombre: "Centro Escolar Caserío El Jabalí, Cantón Galera Quemada", direccion: "Caserío El Jabalí, Nejapa", electores: 2731, jrvInicio: 298, jrvFin: 301, totalJrv: 4 }
+        ];
+
+        // ESTADO DE LA APLICACIÓN
         let distritoActual = 'APOPA';
-        let jefesCentros = {};
-        let supervisoresCentros = {};
-        let jrvRegistros = {};
         let centroSeleccionadoActivo = null;
         let jrvSeleccionadaActiva = null;
 
-        // DATASET DE CENTROS DE VOTACIÓN DE SAN SALVADOR OESTE (APOPA: 171 JRVs | NEJAPA: 43 JRVs)
-        const CENTROS_VOTACION = [
-            // APOPA (171 JRVs Totales: JRV 88 a 258)
-            { id: "1020101", distrito: "APOPA", nombre: "Centro Escolar Vicente Acosta", direccion: "CUARTA CALLE PONIENTE NUMERO 38 BARRIO EL CALVARIO, APOPA", electores: 8614, jrvInicio: 88, jrvFin: 100, totalJrv: 13 },
-            { id: "1020102", distrito: "APOPA", nombre: "Complejo Educativo Prof. Ángela de Jesús de Romero", direccion: "COLONIA CIUDAD OBRERA, CALLE BRACILIA, CONTIGUO A CANCHA OFICIAL DE APOPA", electores: 7937, jrvInicio: 101, jrvFin: 112, totalJrv: 12 },
-            { id: "1020103", distrito: "APOPA", nombre: "Centro Escolar República de China", direccion: "APOPA, SAN SALVADOR OESTE", electores: 3163, jrvInicio: 113, jrvFin: 117, totalJrv: 5 },
-            { id: "1020104", distrito: "APOPA", nombre: "Complejo Educativo Sara Palma de Jule", direccion: "APOPA, SAN SALVADOR OESTE", electores: 7543, jrvInicio: 118, jrvFin: 128, totalJrv: 11 },
-            { id: "1020105", distrito: "APOPA", nombre: "Centro Escolar Urbanización Santa Teresa de las Flores", direccion: "URBANIZACIÓN SANTA TERESA, APOPA", electores: 5115, jrvInicio: 129, jrvFin: 136, totalJrv: 8 },
-            { id: "1020106", distrito: "APOPA", nombre: "Centro Escolar Colonia La Ermita", direccion: "COLONIA LA ERMITA, APOPA", electores: 6315, jrvInicio: 137, jrvFin: 145, totalJrv: 9 },
-            { id: "1020107", distrito: "APOPA", nombre: "Centro Escolar Cantón San Nicolás", direccion: "CANTÓN SAN NICOLÁS, APOPA", electores: 3009, jrvInicio: 146, jrvFin: 150, totalJrv: 5 },
-            { id: "1020108", distrito: "APOPA", nombre: "Centro Escolar Benjamín Bloom", direccion: "COLONIA POPOTLAN I, PASAJE 3, APOPA", electores: 4686, jrvInicio: 151, jrvFin: 157, totalJrv: 7 },
-            { id: "1020109", distrito: "APOPA", nombre: "Centro Escolar de Popotlán", direccion: "URBANIZACIÓN POPOTLÁN, APOPA", electores: 7472, jrvInicio: 158, jrvFin: 168, totalJrv: 11 },
-            { id: "1020110", distrito: "APOPA", nombre: "Complejo Educativo Prof. Iván Alexander Burgos Fuentes", direccion: "APOPA, SAN SALVADOR OESTE", electores: 7024, jrvInicio: 169, jrvFin: 179, totalJrv: 11 },
-            { id: "1020111", distrito: "APOPA", nombre: "Centro Escolar Valle Verde", direccion: "URBANIZACIÓN VALLE VERDE, APOPA", electores: 6310, jrvInicio: 180, jrvFin: 188, totalJrv: 9 },
-            { id: "1020112", distrito: "APOPA", nombre: "Complejo Educativo Colonia Los Naranjos", direccion: "COLONIA LOS NARANJOS, APOPA", electores: 6610, jrvInicio: 189, jrvFin: 198, totalJrv: 10 },
-            { id: "1020113", distrito: "APOPA", nombre: "Cancha de B.K.B. Colonia San Sebastián", direccion: "COLONIA SAN SEBASTIÁN, APOPA", electores: 5264, jrvInicio: 199, jrvFin: 206, totalJrv: 8 },
-            { id: "1020114", distrito: "APOPA", nombre: "Escuela de Educación Parvularia Jardines del Norte II", direccion: "JARDINES DEL NORTE II, APOPA", electores: 4563, jrvInicio: 207, jrvFin: 213, totalJrv: 7 },
-            { id: "1020115", distrito: "APOPA", nombre: "Centro Escolar Cantón El Ángel", direccion: "CANTÓN EL ÁNGEL, APOPA", electores: 4652, jrvInicio: 214, jrvFin: 220, totalJrv: 7 },
-            { id: "1020116", distrito: "APOPA", nombre: "Centro Escolar Lotificación Santa Carlota N.° 1", direccion: "LOTIFICACIÓN SANTA CARLOTA N.° 1, APOPA", electores: 3432, jrvInicio: 221, jrvFin: 225, totalJrv: 5 },
-            { id: "1020117", distrito: "APOPA", nombre: "Centro Escolar Cantón Guadalupe", direccion: "CANTÓN GUADALUPE, APOPA", electores: 1388, jrvInicio: 226, jrvFin: 227, totalJrv: 2 },
-            { id: "1020118", distrito: "APOPA", nombre: "Centro Escolar Cantón Las Delicias", direccion: "CANTÓN LAS DELICIAS, APOPA", electores: 1324, jrvInicio: 228, jrvFin: 229, totalJrv: 2 },
-            { id: "1020119", distrito: "APOPA", nombre: "Complejo Educativo Ing. Guillermo Borja Nathan", direccion: "APOPA, SAN SALVADOR OESTE", electores: 3763, jrvInicio: 230, jrvFin: 235, totalJrv: 6 },
-            { id: "1020120", distrito: "APOPA", nombre: "Complejo Educativo Ing. José Napoleón Duarte", direccion: "APOPA, SAN SALVADOR OESTE", electores: 4950, jrvInicio: 236, jrvFin: 243, totalJrv: 8 },
-            { id: "1020121", distrito: "APOPA", nombre: "Centro Escolar Valle del Sol", direccion: "URBANIZACIÓN VALLE DEL SOL, APOPA", electores: 9924, jrvInicio: 244, jrvFin: 258, totalJrv: 15 },
+        let jefesCentros = {};
+        let supervisoresCentros = {};
+        let jemCentros = {};
+        let jrvRegistros = {};
 
-            // NEJAPA (43 JRVs Totales: JRV 259 a 301)
-            { id: "1020201", distrito: "NEJAPA", nombre: "Centro Escolar José Matías Delgado", direccion: "NEJAPA, SAN SALVADOR OESTE", electores: 10198, jrvInicio: 259, jrvFin: 273, totalJrv: 15 },
-            { id: "1020202", distrito: "NEJAPA", nombre: "Complejo Educativo Prof. Alberto Montiel Villacorta", direccion: "NEJAPA, SAN SALVADOR OESTE", electores: 5983, jrvInicio: 274, jrvFin: 282, totalJrv: 9 },
-            { id: "1020203", distrito: "NEJAPA", nombre: "Complejo Educativo Cantón Tutultepeque", direccion: "CANTÓN TUTULTEPEQUE, NEJAPA", electores: 2688, jrvInicio: 283, jrvFin: 286, totalJrv: 4 },
-            { id: "1020204", distrito: "NEJAPA", nombre: "Centro Escolar Cooperativa El Cedral", direccion: "NEJAPA, SAN SALVADOR OESTE", electores: 3421, jrvInicio: 287, jrvFin: 291, totalJrv: 5 },
-            { id: "1020205", distrito: "NEJAPA", nombre: "Complejo Educativo Cantón San Jerónimo Los Planes", direccion: "CANTÓN SAN JERÓNIMO LOS PLANES, NEJAPA", electores: 514, jrvInicio: 292, jrvFin: 292, totalJrv: 1 },
-            { id: "1020206", distrito: "NEJAPA", nombre: "Complejo Deportivo El Cambio", direccion: "NEJAPA, SAN SALVADOR OESTE", electores: 3562, jrvInicio: 293, jrvFin: 297, totalJrv: 5 },
-            { id: "1020207", distrito: "NEJAPA", nombre: "Centro Escolar Caserío El Jabalí, Cantón Galera Quemada", direccion: "CASERÍO EL JABALÍ, CANTÓN GALERA QUEMADA, NEJAPA", electores: 2731, jrvInicio: 298, jrvFin: 301, totalJrv: 4 }
-        ];
-
-        // FUNCIONES DE ALMACENAMIENTO LOCAL
+        // MANEJO DE ALMACENAMIENTO LOCAL
         function guardarLocalmente() {
             try {
                 localStorage.setItem('gana_sso_jefes', JSON.stringify(jefesCentros));
                 localStorage.setItem('gana_sso_supervisores', JSON.stringify(supervisoresCentros));
+                localStorage.setItem('gana_sso_jem', JSON.stringify(jemCentros));
                 localStorage.setItem('gana_sso_jrvs', JSON.stringify(jrvRegistros));
             } catch (e) {
                 console.error('Error al guardar en localStorage:', e);
@@ -475,30 +547,116 @@
             try {
                 const j = localStorage.getItem('gana_sso_jefes');
                 const s = localStorage.getItem('gana_sso_supervisores');
+                const jem = localStorage.getItem('gana_sso_jem');
                 const r = localStorage.getItem('gana_sso_jrvs');
 
                 if (j) jefesCentros = JSON.parse(j);
                 if (s) supervisoresCentros = JSON.parse(s);
+                if (jem) jemCentros = JSON.parse(jem);
                 if (r) jrvRegistros = JSON.parse(r);
             } catch (e) {
                 console.error('Error al cargar de localStorage:', e);
             }
         }
 
-        function limpiarCacheLocal() {
-            if (confirm('¿Deseas limpiar los datos locales de esta computadora?')) {
-                localStorage.removeItem('gana_sso_jefes');
-                localStorage.removeItem('gana_sso_supervisores');
-                localStorage.removeItem('gana_sso_jrvs');
-                jefesCentros = {};
-                supervisoresCentros = {};
-                jrvRegistros = {};
-                renderizarPagina();
-                mostrarToast('Caché local limpiada correctamente.');
+        function mostrarToast(mensaje) {
+            const toast = document.getElementById('toast-notification');
+            const txt = document.getElementById('toast-text');
+            if (toast && txt) {
+                txt.innerText = mensaje;
+                toast.classList.remove('hidden');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 3000);
             }
         }
 
-        // FUNCIONES DE CONTROL DE INTERFAZ Y NAVEGACIÓN
+        // COMUNICACIÓN CON GOOGLE SHEETS
+        function guardarEnGoogleSheets(payload) {
+            const syncStatus = document.getElementById('sync-status-text');
+            if (syncStatus) {
+                syncStatus.innerText = 'Enviando datos a Google Sheets...';
+            }
+
+            try {
+                document.getElementById('hidden_tipo').value = payload.tipo || '';
+                document.getElementById('hidden_id').value = payload.id || '';
+                document.getElementById('hidden_nombre1').value = payload.nombre1 || '';
+                document.getElementById('hidden_dui1').value = payload.dui1 || '';
+                document.getElementById('hidden_tel1').value = payload.tel1 || '';
+                document.getElementById('hidden_nombre2').value = payload.nombre2 || '';
+                document.getElementById('hidden_dui2').value = payload.dui2 || '';
+                document.getElementById('hidden_tel2').value = payload.tel2 || '';
+                document.getElementById('hidden_nombre3').value = payload.nombre3 || '';
+                document.getElementById('hidden_dui3').value = payload.dui3 || '';
+                document.getElementById('hidden_tel3').value = payload.tel3 || '';
+
+                const form = document.getElementById('form_hidden_gsheets');
+                if (!form) throw new Error('No se encontró el formulario de conexión.');
+
+                form.submit();
+
+                if (syncStatus) {
+                    syncStatus.innerText = 'Solicitud enviada. Sincronizando con Google Sheets.';
+                }
+            } catch (err) {
+                console.error('Error enviando datos:', err);
+                if (syncStatus) {
+                    syncStatus.innerText = 'Error al enviar los datos.';
+                }
+            }
+        }
+
+        async function cargarDatosDesdeGoogleSheets() {
+            const syncStatus = document.getElementById('sync-status-text');
+            try {
+                if (syncStatus) syncStatus.innerText = 'Consultando datos en la nube...';
+                const response = await fetch(`${GOOGLE_SHEETS_URL}?action=read`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.registros && Array.isArray(data.registros)) {
+                        jefesCentros = {};
+                        supervisoresCentros = {};
+                        jemCentros = {};
+                        jrvRegistros = {};
+
+                        data.registros.forEach(reg => {
+                            if (reg.tipo === 'ELIMINAR') return;
+
+                            if (reg.tipo === 'JEFE') {
+                                jefesCentros[reg.id] = { nombre: reg.nombre1, dui: reg.dui1, tel: reg.tel1 };
+                            } else if (reg.tipo === 'SUPERVISOR' || reg.id.startsWith('SUP-')) {
+                                const realId = reg.id.replace('SUP-', '');
+                                supervisoresCentros[realId] = { nombre: reg.nombre1, dui: reg.dui1, tel: reg.tel1 };
+                            } else if (reg.tipo === 'JEM' || reg.id.startsWith('JEM-')) {
+                                const realId = reg.id.replace('JEM-', '');
+                                jemCentros[realId] = { nombre: reg.nombre1, dui: reg.dui1, tel: reg.tel1 };
+                            } else if (reg.tipo === 'JRV') {
+                                const parts = reg.id.split('-JRV-');
+                                const cvCode = parts[0];
+                                const jrvNum = parts[1];
+                                if (cvCode && jrvNum) {
+                                    if (!jrvRegistros[cvCode]) jrvRegistros[cvCode] = {};
+                                    jrvRegistros[cvCode][jrvNum] = {
+                                        mesa: { nombre: reg.nombre1, dui: reg.dui1, tel: reg.tel1 },
+                                        vig: { nombre: reg.nombre2, dui: reg.dui2, tel: reg.tel2 },
+                                        sup: { nombre: reg.nombre3 || '', dui: reg.dui3 || '', tel: reg.tel3 || '' }
+                                    };
+                                }
+                            }
+                        });
+                        guardarLocalmente();
+                        renderizarPagina();
+                    }
+                }
+            } catch (e) {
+                console.warn('No se pudieron consultar datos remotos:', e);
+            } finally {
+                if (syncStatus) syncStatus.innerText = 'Sincronizado con Google Sheets';
+            }
+        }
+
+        // NAVEGACIÓN Y VISTAS
         function cambiarModulo(modulo) {
             distritoActual = modulo;
             
@@ -546,7 +704,8 @@
             const regCV = jrvRegistros[code] || {};
             for (let num = centro.jrvInicio; num <= centro.jrvFin; num++) {
                 const reg = regCV[num];
-                if (reg && reg.mesa && reg.vig) {
+                // Una JRV se considera completada si cuenta con Persona en Mesa y Vigilante Propietario
+                if (reg && reg.mesa && reg.mesa.nombre && reg.vig && reg.vig.nombre) {
                     completadas++;
                 }
             }
@@ -577,6 +736,7 @@
             filtrados.forEach(c => {
                 const jefe = jefesCentros[c.id];
                 const sup = supervisoresCentros[c.id];
+                const jem = jemCentros[c.id];
                 const prog = obtenerProgresoCentro(c.id);
 
                 const card = document.createElement('div');
@@ -596,7 +756,18 @@
                             </p>
                         </div>
 
-                        <!-- Jefe de Centro (Diseño Original Estructurado) -->
+                        <!-- JEM (Primera Posición) -->
+                        <div class="bg-amber-50/70 p-3 rounded-xl border border-amber-200 text-xs space-y-1">
+                            <div class="flex justify-between items-center text-[10px] font-bold uppercase text-amber-700">
+                                <span>REPRESENTANTE JEM:</span>
+                                ${jem && jem.tel ? `<span class="bg-white px-2 py-0.5 rounded border border-amber-200 text-amber-800 font-bold"><i class="fa-solid fa-phone text-gana-orange"></i> ${jem.tel}</span>` : ''}
+                            </div>
+                            <div class="font-bold text-slate-800 text-sm">
+                                ${jem ? jem.nombre : '<span class="text-slate-400 font-normal italic">— Por nombrar —</span>'}
+                            </div>
+                        </div>
+
+                        <!-- Jefe de Centro (Segunda Posición) -->
                         <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
                             <div class="flex justify-between items-center text-[10px] font-bold uppercase text-slate-400">
                                 <span>JEFE DE CENTRO:</span>
@@ -607,7 +778,7 @@
                             </div>
                         </div>
 
-                        <!-- Supervisor (Diseño Original Estructurado) -->
+                        <!-- Supervisor (Tercera Posición) -->
                         <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
                             <div class="flex justify-between items-center text-[10px] font-bold uppercase text-slate-400">
                                 <span>SUPERVISOR:</span>
@@ -620,12 +791,15 @@
                     </div>
 
                     <div class="space-y-3 pt-3 border-t border-slate-100">
-                        <div class="grid grid-cols-2 gap-2">
-                            <button onclick="abrirModalJefe('${c.id}')" class="w-full py-2 px-3 bg-orange-50 hover:bg-orange-100 text-gana-orange font-bold rounded-xl text-xs transition border border-orange-200 flex items-center justify-center gap-1.5 shadow-sm">
-                                <i class="fa-solid fa-user-tie"></i> ${jefe ? 'Editar Jefe de Centro' : 'Editar Jefe de Centro'}
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="abrirModalJEM('${c.id}')" class="w-full py-2 px-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl text-[11px] transition border border-amber-300 flex items-center justify-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-building-columns"></i> JEM
                             </button>
-                            <button onclick="abrirModalSupervisor('${c.id}')" class="w-full py-2 px-3 bg-blue-50 hover:bg-blue-100 text-gana-navy font-bold rounded-xl text-xs transition border border-blue-200 flex items-center justify-center gap-1.5 shadow-sm">
-                                <i class="fa-solid fa-user-gear"></i> ${sup ? 'Editar Supervisor' : 'Asignar Supervisor'}
+                            <button onclick="abrirModalJefe('${c.id}')" class="w-full py-2 px-2 bg-orange-50 hover:bg-orange-100 text-gana-orange font-bold rounded-xl text-[11px] transition border border-orange-200 flex items-center justify-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-user-tie"></i> Jefe
+                            </button>
+                            <button onclick="abrirModalSupervisor('${c.id}')" class="w-full py-2 px-2 bg-blue-50 hover:bg-blue-100 text-gana-navy font-bold rounded-xl text-[11px] transition border border-blue-200 flex items-center justify-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-user-gear"></i> Supervisor
                             </button>
                         </div>
                         <div class="flex items-center justify-between gap-2">
@@ -663,16 +837,27 @@
 
             CENTROS_VOTACION.forEach(c => {
                 const prog = obtenerProgresoCentro(c.id);
-                let estadoBadge = '';
-                if (prog.completadas === c.totalJrv) {
+                if (prog.completadas === c.totalJrv && c.totalJrv > 0) {
                     completadas++;
-                    estadoBadge = '<span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-bold text-[10px]">COMPLETO</span>';
                 } else if (prog.completadas > 0) {
                     parciales++;
-                    estadoBadge = '<span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 font-bold text-[10px]">PARCIAL</span>';
                 } else {
                     pendientes++;
-                    estadoBadge = '<span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 font-bold text-[10px]">PENDIENTE</span>';
+                }
+
+                // Cálculo para saber cuántas JRVs en este centro están en estado parcial (tienen al menos a alguien registrado pero aún no cumplen Mesa + Propietario)
+                let jrvParcialesCount = 0;
+                const regCV = jrvRegistros[c.id] || {};
+                for (let num = c.jrvInicio; num <= c.jrvFin; num++) {
+                    const reg = regCV[num];
+                    if (reg) {
+                        const m = reg.mesa && reg.mesa.nombre;
+                        const v = reg.vig && reg.vig.nombre;
+                        const s = reg.sup && reg.sup.nombre;
+                        if ((m || v || s) && !(m && v)) {
+                            jrvParcialesCount++;
+                        }
+                    }
                 }
 
                 const tr = document.createElement('tr');
@@ -685,7 +870,7 @@
                     </td>
                     <td class="p-3 text-center font-black text-slate-700">${c.totalJrv}</td>
                     <td class="p-3 text-center font-bold text-emerald-600">${prog.completadas}</td>
-                    <td class="p-3 text-center font-bold text-amber-600">${prog.completadas > 0 && prog.completadas < c.totalJrv ? prog.completadas : 0}</td>
+                    <td class="p-3 text-center font-bold text-amber-600">${jrvParcialesCount}</td>
                     <td class="p-3 text-center font-bold text-rose-600">${c.totalJrv - prog.completadas}</td>
                     <td class="p-3">
                         <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
@@ -707,7 +892,7 @@
             document.getElementById('resumen-stat-pendientes').innerText = pendientes;
         }
 
-        // LÓGICA DE MODALES (JEFE, SUPERVISOR, JRVS)
+        // LÓGICA DE MODALES
         function abrirModalJefe(code) {
             centroSeleccionadoActivo = code;
             const centro = CENTROS_VOTACION.find(c => c.id === code);
@@ -717,42 +902,28 @@
             }
             
             const j = jefesCentros[code] || {};
-            const inputNombre = document.getElementById('input-jefe-nombre');
-            const inputDui = document.getElementById('input-jefe-dui');
-            const inputTel = document.getElementById('input-jefe-tel');
-            const errBox = document.getElementById('jefe-error-msg');
-
-            if (inputNombre) inputNombre.value = j.nombre || '';
-            if (inputDui) inputDui.value = j.dui || '';
-            if (inputTel) inputTel.value = j.tel || '';
-            if (errBox) errBox.classList.add('hidden');
+            document.getElementById('input-jefe-nombre').value = j.nombre || '';
+            document.getElementById('input-jefe-dui').value = j.dui || '';
+            document.getElementById('input-jefe-tel').value = j.tel || '';
+            document.getElementById('jefe-error-msg').classList.add('hidden');
             
             const btnEliminar = document.getElementById('btn-eliminar-jefe');
             if (btnEliminar) {
-                if (j.nombre) {
-                    btnEliminar.classList.remove('hidden');
-                } else {
-                    btnEliminar.classList.add('hidden');
-                }
+                btnEliminar.classList.toggle('hidden', !j.nombre);
             }
 
-            const modalJefe = document.getElementById('modal-jefe');
-            if (modalJefe) modalJefe.classList.remove('hidden');
+            document.getElementById('modal-jefe').classList.remove('hidden');
         }
 
         function cerrarModalJefe() {
-            const modalJefe = document.getElementById('modal-jefe');
-            if (modalJefe) modalJefe.classList.add('hidden');
+            document.getElementById('modal-jefe').classList.add('hidden');
         }
 
         function guardarJefeCentro() {
-            const inputNombre = document.getElementById('input-jefe-nombre');
-            const inputDui = document.getElementById('input-jefe-dui');
-            const inputTel = document.getElementById('input-jefe-tel');
+            const nombre = document.getElementById('input-jefe-nombre').value.trim();
+            const dui = document.getElementById('input-jefe-dui').value.trim();
+            const tel = document.getElementById('input-jefe-tel').value.trim();
 
-            const nombre = inputNombre ? inputNombre.value.trim() : '';
-            const dui = inputDui ? inputDui.value.trim() : '';
-            const tel = inputTel ? inputTel.value.trim() : '';
             const errBox = document.getElementById('jefe-error-msg');
             const errTxt = document.getElementById('jefe-error-text');
 
@@ -779,14 +950,16 @@
         }
 
         function eliminarJefeCentro() {
-            if (!centroSeleccionadoActivo || !jefesCentros[centroSeleccionadoActivo]) return;
+            if (!centroSeleccionadoActivo) return;
             if (confirm('¿Deseas eliminar la asignación del Jefe de Centro?')) {
+                // Borrado inmediato local
                 delete jefesCentros[centroSeleccionadoActivo];
                 guardarLocalmente();
                 renderizarPagina();
 
+                // Notificar borrado a Google Sheets
                 guardarEnGoogleSheets({
-                    tipo: 'ELIMINAR_JEFE',
+                    tipo: 'ELIMINAR',
                     id: centroSeleccionadoActivo,
                     nombre1: '',
                     dui1: '',
@@ -798,7 +971,6 @@
             }
         }
 
-        // SUPERVISOR FUNCTIONS
         function abrirModalSupervisor(code) {
             centroSeleccionadoActivo = code;
             const centro = CENTROS_VOTACION.find(c => c.id === code);
@@ -807,43 +979,29 @@
                 titleElem.innerText = `Centro: ${centro.nombre} (CÓDIGO ${centro.id})`;
             }
 
-            const s = supervisoresCentros[code] || {};
-            const inputNombre = document.getElementById('input-supervisor-nombre');
-            const inputDui = document.getElementById('input-supervisor-dui');
-            const inputTel = document.getElementById('input-supervisor-tel');
-            const errBox = document.getElementById('supervisor-error-msg');
-
-            if (inputNombre) inputNombre.value = s.nombre || '';
-            if (inputDui) inputDui.value = s.dui || '';
-            if (inputTel) inputTel.value = s.tel || '';
-            if (errBox) errBox.classList.add('hidden');
+            const sup = supervisoresCentros[code] || {};
+            document.getElementById('input-supervisor-nombre').value = sup.nombre || '';
+            document.getElementById('input-supervisor-dui').value = sup.dui || '';
+            document.getElementById('input-supervisor-tel').value = sup.tel || '';
+            document.getElementById('supervisor-error-msg').classList.add('hidden');
 
             const btnEliminar = document.getElementById('btn-eliminar-supervisor');
             if (btnEliminar) {
-                if (s.nombre) {
-                    btnEliminar.classList.remove('hidden');
-                } else {
-                    btnEliminar.classList.add('hidden');
-                }
+                btnEliminar.classList.toggle('hidden', !sup.nombre);
             }
 
-            const modalSupervisor = document.getElementById('modal-supervisor');
-            if (modalSupervisor) modalSupervisor.classList.remove('hidden');
+            document.getElementById('modal-supervisor').classList.remove('hidden');
         }
 
         function cerrarModalSupervisor() {
-            const modalSupervisor = document.getElementById('modal-supervisor');
-            if (modalSupervisor) modalSupervisor.classList.add('hidden');
+            document.getElementById('modal-supervisor').classList.add('hidden');
         }
 
         function guardarSupervisorCentro() {
-            const inputNombre = document.getElementById('input-supervisor-nombre');
-            const inputDui = document.getElementById('input-supervisor-dui');
-            const inputTel = document.getElementById('input-supervisor-tel');
+            const nombre = document.getElementById('input-supervisor-nombre').value.trim();
+            const dui = document.getElementById('input-supervisor-dui').value.trim();
+            const tel = document.getElementById('input-supervisor-tel').value.trim();
 
-            const nombre = inputNombre ? inputNombre.value.trim() : '';
-            const dui = inputDui ? inputDui.value.trim() : '';
-            const tel = inputTel ? inputTel.value.trim() : '';
             const errBox = document.getElementById('supervisor-error-msg');
             const errTxt = document.getElementById('supervisor-error-text');
 
@@ -859,26 +1017,28 @@
 
             guardarEnGoogleSheets({
                 tipo: 'SUPERVISOR',
-                id: centroSeleccionadoActivo,
+                id: `SUP-${centroSeleccionadoActivo}`,
                 nombre1: nombre,
                 dui1: dui,
                 tel1: tel
             });
 
             cerrarModalSupervisor();
-            mostrarToast('Supervisor de Centro guardado con éxito');
+            mostrarToast('Supervisor guardado con éxito');
         }
 
         function eliminarSupervisorCentro() {
-            if (!centroSeleccionadoActivo || !supervisoresCentros[centroSeleccionadoActivo]) return;
+            if (!centroSeleccionadoActivo) return;
             if (confirm('¿Deseas eliminar la asignación del Supervisor?')) {
+                // Borrado inmediato local
                 delete supervisoresCentros[centroSeleccionadoActivo];
                 guardarLocalmente();
                 renderizarPagina();
 
+                // Notificar borrado a Google Sheets
                 guardarEnGoogleSheets({
-                    tipo: 'ELIMINAR_SUPERVISOR',
-                    id: centroSeleccionadoActivo,
+                    tipo: 'ELIMINAR',
+                    id: `SUP-${centroSeleccionadoActivo}`,
                     nombre1: '',
                     dui1: '',
                     tel1: ''
@@ -889,25 +1049,100 @@
             }
         }
 
-        // JRV MODAL FUNCTIONS
+        function abrirModalJEM(code) {
+            centroSeleccionadoActivo = code;
+            const centro = CENTROS_VOTACION.find(c => c.id === code);
+            const titleElem = document.getElementById('modal-jem-cv-nombre');
+            if (titleElem && centro) {
+                titleElem.innerText = `Centro: ${centro.nombre} (CÓDIGO ${centro.id})`;
+            }
+
+            const j = jemCentros[code] || {};
+            document.getElementById('input-jem-nombre').value = j.nombre || '';
+            document.getElementById('input-jem-dui').value = j.dui || '';
+            document.getElementById('input-jem-tel').value = j.tel || '';
+            document.getElementById('jem-error-msg').classList.add('hidden');
+
+            const btnEliminar = document.getElementById('btn-eliminar-jem');
+            if (btnEliminar) {
+                btnEliminar.classList.toggle('hidden', !j.nombre);
+            }
+
+            document.getElementById('modal-jem').classList.remove('hidden');
+        }
+
+        function cerrarModalJEM() {
+            document.getElementById('modal-jem').classList.add('hidden');
+        }
+
+        function guardarJEM() {
+            const nombre = document.getElementById('input-jem-nombre').value.trim();
+            const dui = document.getElementById('input-jem-dui').value.trim();
+            const tel = document.getElementById('input-jem-tel').value.trim();
+
+            const errBox = document.getElementById('jem-error-msg');
+            const errTxt = document.getElementById('jem-error-text');
+
+            if (!nombre || !dui || !tel) {
+                if (errTxt) errTxt.innerText = 'Por favor complete todos los campos obligatorios para JEM.';
+                if (errBox) errBox.classList.remove('hidden');
+                return;
+            }
+
+            jemCentros[centroSeleccionadoActivo] = { nombre, dui, tel };
+            guardarLocalmente();
+            renderizarPagina();
+
+            guardarEnGoogleSheets({
+                tipo: 'JEM',
+                id: `JEM-${centroSeleccionadoActivo}`,
+                nombre1: nombre,
+                dui1: dui,
+                tel1: tel
+            });
+
+            cerrarModalJEM();
+            mostrarToast('Representante JEM guardado con éxito');
+        }
+
+        function eliminarJEM() {
+            if (!centroSeleccionadoActivo) return;
+
+            if (confirm('¿Deseas eliminar al representante JEM de este Centro de Votación?')) {
+                // Borrado inmediato local
+                delete jemCentros[centroSeleccionadoActivo];
+                guardarLocalmente();
+                renderizarPagina();
+
+                // Notificar borrado a Google Sheets
+                guardarEnGoogleSheets({
+                    tipo: 'ELIMINAR',
+                    id: `JEM-${centroSeleccionadoActivo}`,
+                    nombre1: '',
+                    dui1: '',
+                    tel1: ''
+                });
+
+                cerrarModalJEM();
+                mostrarToast('Representante JEM eliminado');
+            }
+        }
+
         function abrirModalJRV(code) {
             centroSeleccionadoActivo = code;
             const centro = CENTROS_VOTACION.find(c => c.id === code);
             if (!centro) return;
 
-            document.getElementById('modal-codigo').innerText = `CÓDIGO ${centro.id}`;
+            document.getElementById('modal-codigo').innerText = `CÓDIGO ${centro.id} - ${centro.distrito}`;
             document.getElementById('modal-titulo').innerText = centro.nombre;
             document.getElementById('modal-direccion').innerText = centro.direccion;
 
             renderizarTablaJRV(centro);
-
-            const modalJRV = document.getElementById('modal-jrv');
-            if (modalJRV) modalJRV.classList.remove('hidden');
+            document.getElementById('modal-jrv').classList.remove('hidden');
         }
 
         function cerrarModal() {
-            const modalJRV = document.getElementById('modal-jrv');
-            if (modalJRV) modalJRV.classList.add('hidden');
+            document.getElementById('modal-jrv').classList.add('hidden');
         }
 
         function renderizarTablaJRV(centro) {
@@ -920,9 +1155,11 @@
                 const reg = regCV[num] || {};
                 const mesa = reg.mesa || {};
                 const vig = reg.vig || {};
+                const sup = reg.sup || {};
 
+                // Criterio principal: Persona en Mesa + Vigilante Propietario
                 const completo = mesa.nombre && vig.nombre;
-                const parcial = (mesa.nombre && !vig.nombre) || (!mesa.nombre && vig.nombre);
+                const parcial = (mesa.nombre || vig.nombre || sup.nombre) && !completo;
 
                 let estadoHtml = '<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-700 font-bold text-[10px]">PENDIENTE</span>';
                 if (completo) {
@@ -936,11 +1173,11 @@
                 tr.innerHTML = `
                     <td class="p-2.5 text-center font-black text-gana-navy">${num}</td>
                     <td class="p-2.5 font-semibold text-slate-800">${mesa.nombre || '<span class="text-slate-400 italic font-normal">—</span>'}</td>
-                    <td class="p-2.5 font-mono text-slate-600">${mesa.dui || '—'}</td>
-                    <td class="p-2.5 font-mono text-slate-600">${mesa.tel || '—'}</td>
+                    <td class="p-2.5 font-mono text-slate-600 text-xs">${mesa.dui ? `${mesa.dui}<br><span class="text-[10px] text-slate-400">${mesa.tel || ''}</span>` : '—'}</td>
                     <td class="p-2.5 font-semibold text-slate-800">${vig.nombre || '<span class="text-slate-400 italic font-normal">—</span>'}</td>
-                    <td class="p-2.5 font-mono text-slate-600">${vig.dui || '—'}</td>
-                    <td class="p-2.5 font-mono text-slate-600">${vig.tel || '—'}</td>
+                    <td class="p-2.5 font-mono text-slate-600 text-xs">${vig.dui ? `${vig.dui}<br><span class="text-[10px] text-slate-400">${vig.tel || ''}</span>` : '—'}</td>
+                    <td class="p-2.5 font-semibold text-slate-800">${sup.nombre || '<span class="text-slate-400 italic font-normal">—</span>'}</td>
+                    <td class="p-2.5 font-mono text-slate-600 text-xs">${sup.dui ? `${sup.dui}<br><span class="text-[10px] text-slate-400">${sup.tel || ''}</span>` : '—'}</td>
                     <td class="p-2.5 text-center">${estadoHtml}</td>
                     <td class="p-2.5 text-center">
                         <button onclick="abrirSubmodalIntegrantes(${num})" class="px-2.5 py-1 bg-gana-orange text-white text-xs font-bold rounded-lg hover:bg-orange-600 transition shadow-sm">
@@ -952,7 +1189,6 @@
             }
         }
 
-        // SUBMODAL INTEGRANTES JRV
         function abrirSubmodalIntegrantes(jrvNum) {
             jrvSeleccionadaActiva = jrvNum;
             document.getElementById('submodal-jrv-num').innerText = jrvNum;
@@ -961,6 +1197,7 @@
             const reg = regCV[jrvNum] || {};
             const mesa = reg.mesa || {};
             const vig = reg.vig || {};
+            const sup = reg.sup || {};
 
             document.getElementById('input-submodal-mesa').value = mesa.nombre || '';
             document.getElementById('input-submodal-dui-mesa').value = mesa.dui || '';
@@ -970,7 +1207,17 @@
             document.getElementById('input-submodal-dui-vig').value = vig.dui || '';
             document.getElementById('input-submodal-tel-vig').value = vig.tel || '';
 
+            document.getElementById('input-submodal-sup').value = sup.nombre || '';
+            document.getElementById('input-submodal-dui-sup').value = sup.dui || '';
+            document.getElementById('input-submodal-tel-sup').value = sup.tel || '';
+
             document.getElementById('integrantes-error-msg').classList.add('hidden');
+            
+            const btnEliminar = document.getElementById('btn-eliminar-jrv');
+            if (btnEliminar) {
+                btnEliminar.classList.toggle('hidden', !(mesa.nombre || vig.nombre || sup.nombre));
+            }
+
             document.getElementById('submodal-integrantes').classList.remove('hidden');
         }
 
@@ -987,11 +1234,15 @@
             const vigDui = document.getElementById('input-submodal-dui-vig').value.trim();
             const vigTel = document.getElementById('input-submodal-tel-vig').value.trim();
 
+            const supNombre = document.getElementById('input-submodal-sup').value.trim();
+            const supDui = document.getElementById('input-submodal-dui-sup').value.trim();
+            const supTel = document.getElementById('input-submodal-tel-sup').value.trim();
+
             const errBox = document.getElementById('integrantes-error-msg');
             const errTxt = document.getElementById('integrantes-error-text');
 
-            if (!mesaNombre && !vigNombre) {
-                if (errTxt) errTxt.innerText = 'Ingrese al menos los datos de una persona en mesa o vigilante GANA.';
+            if (!mesaNombre && !vigNombre && !supNombre) {
+                if (errTxt) errTxt.innerText = 'Ingrese al menos los datos de un integrante para la JRV.';
                 if (errBox) errBox.classList.remove('hidden');
                 return;
             }
@@ -1002,7 +1253,8 @@
 
             jrvRegistros[centroSeleccionadoActivo][jrvSeleccionadaActiva] = {
                 mesa: { nombre: mesaNombre, dui: mesaDui, tel: mesaTel },
-                vig: { nombre: vigNombre, dui: vigDui, tel: vigTel }
+                vig: { nombre: vigNombre, dui: vigDui, tel: vigTel },
+                sup: { nombre: supNombre, dui: supDui, tel: supTel }
             };
 
             guardarLocalmente();
@@ -1018,113 +1270,58 @@
                 tel1: mesaTel,
                 nombre2: vigNombre,
                 dui2: vigDui,
-                tel2: vigTel
+                tel2: vigTel,
+                nombre3: supNombre,
+                dui3: supDui,
+                tel3: supTel
             });
 
             cerrarSubmodalIntegrantes();
             mostrarToast(`Integrantes de JRV N° ${jrvSeleccionadaActiva} guardados`);
         }
 
-        // BACKEND POST & UTILITIES
-        function guardarEnGoogleSheets(payload) {
-            const syncStatus = document.getElementById('sync-status-text');
-
-            if (syncStatus) {
-                syncStatus.innerText = 'Enviando datos a Google Sheets...';
-            }
-
-            try {
-                document.getElementById('hidden_tipo').value = payload.tipo || '';
-                document.getElementById('hidden_id').value = payload.id || '';
-                document.getElementById('hidden_nombre1').value = payload.nombre1 || '';
-                document.getElementById('hidden_dui1').value = payload.dui1 || '';
-                document.getElementById('hidden_tel1').value = payload.tel1 || '';
-                document.getElementById('hidden_nombre2').value = payload.nombre2 || '';
-                document.getElementById('hidden_dui2').value = payload.dui2 || '';
-                document.getElementById('hidden_tel2').value = payload.tel2 || '';
-
-                const form = document.getElementById('form_hidden_gsheets');
-
-                if (!form) {
-                    throw new Error('No se encontró el formulario de conexión.');
+        function eliminarIntegrantesSubmodal() {
+            if (!centroSeleccionadoActivo || !jrvSeleccionadaActiva) return;
+            if (confirm(`¿Deseas eliminar los integrantes de la JRV N° ${jrvSeleccionadaActiva}?`)) {
+                if (jrvRegistros[centroSeleccionadoActivo]) {
+                    delete jrvRegistros[centroSeleccionadoActivo][jrvSeleccionadaActiva];
                 }
+                guardarLocalmente();
 
-                form.submit();
+                const centro = CENTROS_VOTACION.find(c => c.id === centroSeleccionadoActivo);
+                if (centro) renderizarTablaJRV(centro);
+                renderizarPagina();
 
-                if (syncStatus) {
-                    syncStatus.innerText = 'Solicitud enviada. Verifica el registro en Google Sheets.';
-                }
+                guardarEnGoogleSheets({
+                    tipo: 'ELIMINAR',
+                    id: `${centroSeleccionadoActivo}-JRV-${jrvSeleccionadaActiva}`,
+                    nombre1: '',
+                    dui1: '',
+                    tel1: ''
+                });
 
-            } catch (err) {
-                console.error('Error enviando datos:', err);
-
-                if (syncStatus) {
-                    syncStatus.innerText = 'Error al enviar los datos.';
-                }
-            }
-        }
-
-        async function cargarDatosDesdeGoogleSheets() {
-            const syncStatus = document.getElementById('sync-status-text');
-            try {
-                if (syncStatus) syncStatus.innerText = 'Consultando datos en la nube...';
-                const response = await fetch(`${GOOGLE_SHEETS_URL}?action=read`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.registros && Array.isArray(data.registros)) {
-                        data.registros.forEach(reg => {
-                            if (reg.tipo === 'JEFE') {
-                                jefesCentros[reg.id] = { nombre: reg.nombre1, dui: reg.dui1, tel: reg.tel1 };
-                            } else if (reg.tipo === 'SUPERVISOR') {
-                                supervisoresCentros[reg.id] = { nombre: reg.nombre1, dui: reg.dui1, tel: reg.tel1 };
-                            } else if (reg.tipo === 'JRV') {
-                                const parts = reg.id.split('-JRV-');
-                                const cvCode = parts[0];
-                                const jrvNum = parts[1];
-                                if (cvCode && jrvNum) {
-                                    if (!jrvRegistros[cvCode]) jrvRegistros[cvCode] = {};
-                                    jrvRegistros[cvCode][jrvNum] = {
-                                        mesa: { nombre: reg.nombre1, dui: reg.dui1, tel: reg.tel1 },
-                                        vig: { nombre: reg.nombre2, dui: reg.dui2, tel: reg.tel2 }
-                                    };
-                                }
-                            }
-                        });
-                        guardarLocalmente();
-                        renderizarPagina();
-                        if (syncStatus) syncStatus.innerText = 'Sincronizado con Google Sheets';
-                    }
-                }
-            } catch (e) {
-                console.warn('No se pudieron consultar datos remotos:', e);
-                if (syncStatus) syncStatus.innerText = 'Sincronizado con datos locales';
-            }
-        }
-
-        function mostrarToast(mensaje) {
-            const toast = document.getElementById('toast-notification');
-            const toastText = document.getElementById('toast-text');
-            if (toast && toastText) {
-                toastText.innerText = mensaje;
-                toast.classList.remove('hidden');
-                setTimeout(() => {
-                    toast.classList.add('hidden');
-                }, 3000);
+                cerrarSubmodalIntegrantes();
+                mostrarToast(`Integrantes de JRV N° ${jrvSeleccionadaActiva} eliminados`);
             }
         }
 
         function exportarCSV() {
-            let csv = 'Distrito,Codigo Centro,Centro de Votacion,Tipo,JRV Num,Nombre 1,DUI 1,Telefono 1,Nombre 2 (Vigilante),DUI 2,Telefono 2\n';
+            let csv = 'Distrito,Codigo Centro,Centro de Votacion,Tipo,JRV Num,Nombre 1,DUI 1,Telefono 1,Nombre 2 (Vigilante Prop),DUI 2,Telefono 2,Nombre 3 (Vigilante Supl),DUI 3,Telefono 3\n';
 
             CENTROS_VOTACION.forEach(c => {
                 const jefe = jefesCentros[c.id];
                 if (jefe) {
-                    csv += `"${c.distrito}","${c.id}","${c.nombre}","JEFE DE CENTRO","—","${jefe.nombre}","${jefe.dui}","${jefe.tel}","—","—","—"\n`;
+                    csv += `"${c.distrito}","${c.id}","${c.nombre}","JEFE DE CENTRO","—","${jefe.nombre}","${jefe.dui}","${jefe.tel}","—","—","—","—","—","—"\n`;
                 }
 
                 const sup = supervisoresCentros[c.id];
                 if (sup) {
-                    csv += `"${c.distrito}","${c.id}","${c.nombre}","SUPERVISOR","—","${sup.nombre}","${sup.dui}","${sup.tel}","—","—","—"\n`;
+                    csv += `"${c.distrito}","${c.id}","${c.nombre}","SUPERVISOR","—","${sup.nombre}","${sup.dui}","${sup.tel}","—","—","—","—","—","—"\n`;
+                }
+
+                const jem = jemCentros[c.id];
+                if (jem) {
+                    csv += `"${c.distrito}","${c.id}","${c.nombre}","INTEGRANTE JEM","—","${jem.nombre}","${jem.dui}","${jem.tel}","—","—","—","—","—","—"\n`;
                 }
 
                 const regCV = jrvRegistros[c.id] || {};
@@ -1133,7 +1330,8 @@
                     if (reg) {
                         const m = reg.mesa || {};
                         const v = reg.vig || {};
-                        csv += `"${c.distrito}","${c.id}","${c.nombre}","INTEGRANTES JRV","${num}","${m.nombre || ''}","${m.dui || ''}","${m.tel || ''}","${v.nombre || ''}","${v.dui || ''}","${v.tel || ''}"\n`;
+                        const s = reg.sup || {};
+                        csv += `"${c.distrito}","${c.id}","${c.nombre}","INTEGRANTES JRV","${num}","${m.nombre || ''}","${m.dui || ''}","${m.tel || ''}","${v.nombre || ''}","${v.dui || ''}","${v.tel || ''}","${s.nombre || ''}","${s.dui || ''}","${s.tel || ''}"\n`;
                     }
                 }
             });
@@ -1153,6 +1351,36 @@
             cargarLocalmente();
             renderizarPagina();
             cargarDatosDesdeGoogleSheets();
+
+            // Auto-formateo dinámico de DUI y Teléfono para mejor experiencia de usuario
+            const duiInputs = ['input-jefe-dui', 'input-supervisor-dui', 'input-jem-dui', 'input-submodal-dui-mesa', 'input-submodal-dui-vig', 'input-submodal-dui-sup'];
+            const telInputs = ['input-jefe-tel', 'input-supervisor-tel', 'input-jem-tel', 'input-submodal-tel-mesa', 'input-submodal-tel-vig', 'input-submodal-tel-sup'];
+
+            duiInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', (e) => {
+                        let val = e.target.value.replace(/\D/g, '');
+                        if (val.length > 8) {
+                            val = val.substring(0, 8) + '-' + val.substring(8, 9);
+                        }
+                        e.target.value = val;
+                    });
+                }
+            });
+
+            telInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', (e) => {
+                        let val = e.target.value.replace(/\D/g, '');
+                        if (val.length > 4) {
+                            val = val.substring(0, 4) + '-' + val.substring(4, 8);
+                        }
+                        e.target.value = val;
+                    });
+                }
+            });
         });
     </script>
 </body>
